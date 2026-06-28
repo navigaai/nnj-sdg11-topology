@@ -41,21 +41,22 @@ PH for resource accessibility already exists and must be cited and differentiate
 ## 4. Research questions
 
 - **RQ1.** Can population-weighted persistent homology characterize equitable green/public-space access as a topological signature (deserts = persistent voids)?
-- **RQ2 (core).** How does the access topology degrade under spatial disruption, measured as persistence-diagram distance vs. disruption intensity?
-- **RQ3 (NNJ bridge).** How do urban-morphology descriptors (intersection density, circuity, orientation entropy, block size, green-space fragmentation) relate to topological resilience?
+- **RQ2 (core, the mathematics).** How does the access topology degrade under spatial disruption, measured as persistence-diagram distance vs. disruption intensity, and is there a critical transition ρ\* (percolation link)?
+- **RQ3 (NNJ bridge, district-level).** Across *intra-urban districts* (the unit of analysis), how do urban-morphology descriptors (intersection density, circuity, orientation entropy, block size, green-space fragmentation) relate to topological resilience? Cities serve as a typology layer over the district-level relationship, not as the statistical sample.
 
-## 5. Contributions (restated)
+## 5. Contributions (restated, ordered for the "Math for SDG 11" call)
 
-C1 — A topological resilience metric for accessibility (diagram-distance resilience curve; AUC and critical ρ\*).
-C2 — First TDA treatment of SDG 11.7 green/public-space access in an architecture-mathematics framing.
-C3 — Cross-city morphology↔resilience findings with design implications.
+C1 (headline, the mathematics) — A **topological resilience metric** for accessibility: the persistence-diagram-distance resilience curve `D(ρ)` (bottleneck / Wasserstein), its AUC, and the critical transition ρ\* linked to percolation. This is the contribution the special issue rewards directly.
+C2 (framing) — First TDA treatment of SDG 11.7 green/public-space access in an architecture-mathematics setting.
+C3 (supporting, district-level) — A statistically defensible **morphology↔resilience** relationship estimated across intra-urban districts (n in the hundreds), with the five cities providing a typological reading and design implications.
 
 ## 6. Methodology
 
 All steps use open data and open-source Python.
 
 ### 6.1 Data acquisition
-- **Walk network:** OpenStreetMap via `osmnx` (`network_type="walk"`), per-city urban boundary.
+- **Urban boundary (comparability):** use the **GHSL Urban Centre Database (GHS-UCDB)** built-up urban-centre polygon for each city as the analysis boundary, rather than administrative limits. This gives a consistent, reproducible, morphology-agnostic extent so cross-city numbers are comparable (avoids the Phoenix-metro vs. Amsterdam-municipality mismatch).
+- **Walk network:** OpenStreetMap via `osmnx` (`network_type="walk"`), clipped to the GHS-UCDB boundary.
 - **Green/public space:** OSM tags `leisure=park|garden|recreation_ground`, `landuse=grass|recreation_ground`, `place=square`, `natural=wood` clipped to the urban boundary; access points = boundary nodes / entrances / centroids snapped to the walk network.
 - **Population:** GHSL (GHS-POP) or WorldPop gridded population (open, global) → demand points.
 - **Elevation / hazard proxy:** Copernicus DEM or SRTM for flood/seismic-zone disruption.
@@ -79,14 +80,20 @@ Three comparable scenarios across all cities:
 
 For each ρ: recompute `f`, recompute persistence diagram, compute **bottleneck distance d_B** and **Wasserstein distance W_p** to the undisrupted diagram ⇒ **resilience curve** `D(ρ)`. Summaries: area under curve (AUC) and **critical ρ\*** where new persistent deserts are born (topological transition; connects to percolation phase transition).
 
-### 6.5 Cross-city comparison
-- Compare baseline deserts (count, size, total persistence) and resilience curves across the five cities.
-- Regress / correlate resilience summaries against morphology descriptors (`osmnx` stats: intersection density, circuity, orientation entropy, mean block size; plus green-space fragmentation indices). This is the architecture-mathematics bridge.
+### 6.5 District-level analysis and cross-city comparison
+- **Unit of analysis = district.** Tile each city's urban-centre boundary into districts using a uniform **H3 hexagonal grid** (fixed resolution, e.g. res 8 ≈ 0.7 km² cells; report sensitivity to one coarser/finer level). Each hex with sufficient network coverage is one observation.
+- For each hex: compute its local resilience summaries (AUC, ρ\*, baseline total H1 persistence) from the disruption pipeline restricted to that hex's catchment, and its local morphology descriptors (`osmnx` stats: intersection density, circuity, orientation entropy, mean block size; green-space fragmentation).
+- **Statistics:** regress / correlate resilience against morphology across the **pooled district sample** (n in the hundreds), with city as a grouping factor (mixed-effects or city fixed effects) to absorb between-city confounds. This is the architecture-mathematics bridge and the statistically defensible form of C3.
+- **City typology layer:** summarize the five cities (baseline deserts, mean district resilience, resilience-curve shape) as an interpretive overlay on the district-level relationship — not as the n=5 sample.
+- **Selection rationale (state explicitly in the paper):** the five cities are a *purposive maximum-variance* sample chosen to span street-network morphology (grid ↔ organic ↔ sprawl), planning regime, hazard exposure (seismic/flood), and the Global North–South divide relevant to SDG 11.7; they are deep-dive exemplars, while inference rests on districts.
 
 ### 6.6 Stack
-`osmnx`, `networkx`, `geopandas`, `shapely`, `rasterio` (population/DEM), `gudhi` / `ripser` / `persim` (PH + diagram distances), `POT` (Wasserstein), `matplotlib`. Managed with `uv`. Random seeds fixed; configs via Hydra/OmegaConf where useful.
+`osmnx`, `networkx`, `geopandas`, `shapely`, `rasterio` (population/DEM), `h3` (district hex tiling), `gudhi` / `ripser` / `persim` (PH + diagram distances), `POT` (Wasserstein), `statsmodels` (mixed-effects / fixed-effects regression), `matplotlib`. Managed with `uv`. Random seeds fixed; configs via Hydra/OmegaConf where useful.
 
-## 7. Case-study cities (fixed, chosen for morphological contrast)
+## 7. Case-study cities (typology layer — purposive maximum-variance sample)
+
+> These five cities are deep-dive exemplars spanning the morphology/planning/hazard/North–South axes (see §6.5 selection rationale). Statistical inference for RQ3/C3 rests on the pooled **district** sample, not on these five points.
+
 
 | City | Morphology character | Role |
 |------|----------------------|------|

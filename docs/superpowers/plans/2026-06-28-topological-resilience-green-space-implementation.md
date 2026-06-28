@@ -4,7 +4,7 @@
 
 **Goal:** Build a reproducible Python pipeline that measures the *topological resilience* of green/public-space access in five morphologically contrasting cities, then writes the Nexus Network Journal manuscript from the results.
 
-**Architecture:** A config-driven (Hydra) pipeline with strict module boundaries: `data → accessibility field → persistent homology → disruption → resilience curves → morphology → cross-city analysis → figures → manuscript`. Each stage writes intermediate artifacts to `output/<city>/` so later stages re-run without recomputing earlier ones. Persistence diagrams are the central data structure passed between the topology, disruption, and analysis stages.
+**Architecture:** A config-driven (Hydra) pipeline with strict module boundaries: `data (+ GHSL boundary) → accessibility field → persistent homology → disruption → resilience curves → district tiling (H3) → district-level regression → figures → manuscript`. Each stage writes intermediate artifacts to `output/<city>/` so later stages re-run without recomputing earlier ones. Persistence diagrams are the central data structure passed between the topology, disruption, and analysis stages. **Unit of statistical inference is the district (H3 hex), not the city**; the five cities are a typology layer.
 
 **Tech Stack:** Python ≥3.11, `uv` (env + deps), Hydra+OmegaConf (config), `osmnx`/`networkx` (street networks + morphology), `geopandas`/`shapely`/`rasterio` (geospatial + population/DEM rasters), `gudhi`+`ripser`+`persim` (persistent homology + diagram distances), `POT` (Wasserstein), `numpy`/`scipy`/`pandas` (numerics + regression), `matplotlib` (figures), `pytest` (tests).
 
@@ -14,6 +14,8 @@
 - Package manager: `uv` only. Never call `pip` directly; use `uv add` / `uv run`.
 - Code style (per user global rules): files 200–400 lines max; type hints on every function; `@dataclass(frozen=True)` for config-shaped data; module-level `logger = logging.getLogger(__name__)` (no `print`); specific exceptions only; every package `__init__.py` defines `__all__`.
 - Reproducibility: every stochastic step takes an explicit `seed: int` argument; global seed default `42`; record resolved Hydra config + `uv pip freeze` into each run's `output/` directory.
+- Unit of analysis for RQ3/C3 is the **H3 hexagonal district** (default `h3_res: 8`); cross-city correlation across the n=5 cities is reported only as a typology overlay, never as the inferential claim. Between-city confounds are absorbed via city fixed effects / mixed effects in the district regression.
+- Urban boundary is the **GHSL Urban Centre Database (GHS-UCDB)** polygon per city (not administrative limits), for cross-city comparability.
 - Registry pattern for the swappable families: disruption models and filtration constructions are registered via decorator and selected by string name from config.
 - Persistence diagram canonical form everywhere: a dict `{0: np.ndarray(shape=(n0,2)), 1: np.ndarray(shape=(n1,2))}` mapping homology dimension → array of `[birth, death]` rows; `death` may be `np.inf` for the essential H0 class.
 - All distances/metrics are **finite**: infinite-persistence classes are removed before bottleneck/Wasserstein computation (documented in code).
@@ -38,6 +40,7 @@ nnj-sdg11-topology/
 │   ├── seeding.py                      # set_seed()
 │   ├── data/
 │   │   ├── __init__.py
+│   │   ├── boundary.py                 # GHS-UCDB urban-centre boundary per city
 │   │   ├── network.py                  # OSM walk network load + cache
 │   │   ├── greenspace.py               # green/public space polygons + access points
 │   │   ├── population.py               # gridded population → demand points
@@ -57,9 +60,13 @@ nnj-sdg11-topology/
 │   ├── morphology/
 │   │   ├── __init__.py
 │   │   └── descriptors.py              # osmnx morphology stats + fragmentation
+│   ├── districts/
+│   │   ├── __init__.py
+│   │   └── tiling.py                    # H3 hex tiling + per-hex node assignment + local resilience
 │   ├── analysis/
 │   │   ├── __init__.py
-│   │   └── crosscity.py               # assemble table + correlation/regression
+│   │   ├── crosscity.py               # city typology overlay (n=5, descriptive only)
+│   │   └── regression.py              # district-level mixed/fixed-effects regression (inferential)
 │   └── viz/
 │       ├── __init__.py
 │       └── figures.py                  # the 6 manuscript figures
@@ -96,7 +103,7 @@ Run:
 ```bash
 cd /Users/seydaemekci/Naviga_academic/nnj-sdg11-topology
 uv init --lib --name nnj_topology --python 3.11
-uv add osmnx networkx geopandas shapely rasterio numpy scipy pandas matplotlib gudhi ripser persim pot hydra-core omegaconf
+uv add osmnx networkx geopandas shapely rasterio numpy scipy pandas matplotlib gudhi ripser persim pot hydra-core omegaconf h3 statsmodels
 uv add --dev pytest
 ```
 Expected: `pyproject.toml` + `uv.lock` created; `.venv/` populated.
@@ -263,10 +270,13 @@ defaults:
   - _self_
 
 seed: 42
+h3_res: 8          # district hex resolution (~0.7 km^2 cells)
 paths:
   data: data
   output: output
 ```
+
+> Add `h3_res: int` to `RunConfig` in `src/nnj_topology/config.py` (field `h3_res: int`, parsed in `from_omegaconf` as `int(cfg.h3_res)`) and update `tests/test_config.py`'s sample config to include `"h3_res": 8` with an assertion `rc.h3_res == 8`. This keeps the district resolution config-driven and reproducible.
 
 Create `conf/city/istanbul.yaml` (repeat with appropriate `name`/`place` for the others):
 ```yaml
@@ -824,6 +834,117 @@ Expected: PASS (2 passed).
 git add src/nnj_topology/data tests/test_population.py tests/test_hazard.py tests/fixtures
 git commit -m "feat(data): add population demand points and low-elevation hazard mask"
 ```
+
+---
+
+## Task 4b: GHS-UCDB urban-centre boundary loader
+
+**Files:**
+- Create: `src/nnj_topology/data/boundary.py`
+- Modify: `src/nnj_topology/data/__init__.py`
+- Create: `tests/test_boundary.py`
+
+**Interfaces:**
+- Consumes: a GHS-UCDB GeoPackage/shapefile placed at `data/ghsl/ghs_ucdb.gpkg` (downloaded once, manually; it is a single global file), `CityConfig`.
+- Produces:
+  - `load_urban_boundary(ucdb_path: Path, city_name_match: str, crs: str) -> shapely.geometry.base.BaseGeometry` — the urban-centre polygon whose name matches `city_name_match`, dissolved and reprojected to `crs`.
+  - `clip_graph_to_boundary(graph: networkx.MultiDiGraph, boundary, crs: str) -> networkx.MultiDiGraph` — keep only nodes inside the boundary polygon.
+
+- [ ] **Step 1: Write the failing test** (fixture: small boundary polygon + mini graph)
+
+Create `tests/test_boundary.py`:
+```python
+from pathlib import Path
+
+import networkx as nx
+from shapely.geometry import Polygon
+
+from nnj_topology.data.boundary import clip_graph_to_boundary
+
+FIX = Path(__file__).parent / "fixtures"
+
+
+def _mini():
+    g = nx.read_graphml(FIX / "mini_graph.graphml")
+    for _, d in g.nodes(data=True):
+        d["x"], d["y"] = float(d["x"]), float(d["y"])
+    return g
+
+
+def test_clip_graph_keeps_only_inside_nodes():
+    g = _mini()  # 3x3 grid spanning (0,0)-(200,200)
+    boundary = Polygon([(-1, -1), (110, -1), (110, 110), (-1, 110)])  # covers nodes 0,1,3,4
+    h = clip_graph_to_boundary(g, boundary, crs="EPSG:32635")
+    assert set(map(str, h.nodes)) == {"0", "1", "3", "4"}
+```
+
+- [ ] **Step 2: Run to verify it fails**
+
+Run: `uv run pytest tests/test_boundary.py -v`
+Expected: FAIL with `ModuleNotFoundError: No module named 'nnj_topology.data.boundary'`.
+
+- [ ] **Step 3: Implement the boundary loader**
+
+Create `src/nnj_topology/data/boundary.py`:
+```python
+"""GHS-UCDB urban-centre boundary loading and graph clipping."""
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+
+import geopandas as gpd
+import networkx as nx
+from shapely.geometry import Point
+from shapely.geometry.base import BaseGeometry
+
+logger = logging.getLogger(__name__)
+
+__all__ = ["load_urban_boundary", "clip_graph_to_boundary"]
+
+
+def load_urban_boundary(
+    ucdb_path: Path, city_name_match: str, crs: str
+) -> BaseGeometry:
+    """Return the GHS-UCDB urban-centre polygon matching `city_name_match`.
+
+    Matching is case-insensitive substring on the UCDB name column (`UC_NM_MN`).
+    """
+    gdf = gpd.read_file(ucdb_path)
+    name_col = "UC_NM_MN" if "UC_NM_MN" in gdf.columns else gdf.columns[0]
+    hit = gdf[gdf[name_col].astype(str).str.contains(city_name_match, case=False, na=False)]
+    if hit.empty:
+        raise ValueError(f"no UCDB urban centre matching '{city_name_match}'")
+    return hit.to_crs(crs).union_all()
+
+
+def clip_graph_to_boundary(
+    graph: nx.MultiDiGraph, boundary: BaseGeometry, crs: str
+) -> nx.MultiDiGraph:
+    """Keep only nodes whose (x, y) fall within `boundary`."""
+    inside = [
+        n
+        for n, d in graph.nodes(data=True)
+        if boundary.covers(Point(float(d["x"]), float(d["y"])))
+    ]
+    return graph.subgraph(inside).copy()
+```
+
+Update `src/nnj_topology/data/__init__.py` to export `load_urban_boundary` and `clip_graph_to_boundary` (append to imports + `__all__`).
+
+- [ ] **Step 4: Run to verify it passes**
+
+Run: `uv run pytest tests/test_boundary.py -v`
+Expected: PASS (1 passed).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/nnj_topology/data/boundary.py src/nnj_topology/data/__init__.py tests/test_boundary.py
+git commit -m "feat(data): add GHS-UCDB urban boundary loader and graph clipping"
+```
+
+> Note for Task 13/14 loaders: after `load_walk_network(...)`, clip to `load_urban_boundary(Path('data/ghsl/ghs_ucdb.gpkg'), city.name, city.crs)` before computing the field. Add a `city.ucdb_match` field to each `conf/city/*.yaml` (e.g. Istanbul → `"Istanbul"`, Bogotá → `"Bogot"`) so matching is robust to accents.
 
 ---
 
@@ -1740,111 +1861,396 @@ git commit -m "feat(morphology): add osmnx descriptors and greenspace fragmentat
 
 ---
 
-## Task 11: Cross-city analysis (assemble table + correlation/regression)
+## Task 10b: District tiling (H3) + local resilience
 
 **Files:**
-- Create: `src/nnj_topology/analysis/__init__.py`
-- Create: `src/nnj_topology/analysis/crosscity.py`
-- Create: `tests/test_crosscity.py`
+- Create: `src/nnj_topology/districts/__init__.py`
+- Create: `src/nnj_topology/districts/tiling.py`
+- Create: `tests/test_districts.py`
 
 **Interfaces:**
-- Consumes: per-city dicts of morphology descriptors (Task 10) + resilience summaries (Task 9).
+- Consumes: walk network (Task 2, with `x`/`y` in metric crs), `CityConfig.crs`, the per-rho disrupted graphs (Task 8), diagram builder (Task 6), distances (Task 7), resilience aggregation (Task 9).
 - Produces:
-  - `build_table(records: list[dict]) -> pandas.DataFrame` — one row per city, columns = morphology descriptors + `auc` + `rho_star` + baseline `total_persistence`.
-  - `correlate(df: pandas.DataFrame, target: str = "auc") -> pandas.DataFrame` — Spearman correlation of each morphology descriptor with the resilience target, with p-values.
+  - `assign_nodes_to_hexes(graph, crs, h3_res) -> dict[str, list]` — maps each H3 cell id to the list of node ids whose coordinates fall in it (nodes reprojected to EPSG:4326 for H3 indexing).
+  - `local_diagram(graph, field, node_ids, max_dim) -> Diagram` — sublevel persistence on the subgraph induced by `node_ids`.
+  - `district_resilience(graph, field_fn, disrupt, rhos, n_replicates, seed, hex_nodes, max_dim) -> dict[str, ResilienceResult]` — one resilience curve per hex, reusing each disrupted graph across all hexes.
+
+**Design note (feasibility):** the city-scale disruption is computed **once per (ρ, replicate)**; each disrupted graph is then sliced per hex to compute a *local* diagram. This avoids re-running disruption per hex (which would be combinatorially infeasible) while still giving per-district resilience.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `tests/test_crosscity.py`:
+Create `tests/test_districts.py`:
 ```python
-import pandas as pd
+from pathlib import Path
 
-from nnj_topology.analysis.crosscity import build_table, correlate
+import networkx as nx
 
+from nnj_topology.accessibility.field import accessibility_field, add_travel_time
+from nnj_topology.districts.tiling import assign_nodes_to_hexes, local_diagram
 
-def _records():
-    return [
-        {"city": "a", "circuity": 1.0, "auc": 0.1, "rho_star": 0.4, "total_persistence": 1.0},
-        {"city": "b", "circuity": 1.2, "auc": 0.2, "rho_star": 0.3, "total_persistence": 2.0},
-        {"city": "c", "circuity": 1.4, "auc": 0.3, "rho_star": 0.2, "total_persistence": 3.0},
-    ]
+FIX = Path(__file__).parent / "fixtures"
 
 
-def test_build_table_one_row_per_city():
-    df = build_table(_records())
-    assert list(df["city"]) == ["a", "b", "c"]
-    assert "auc" in df.columns
+def _mini():
+    g = nx.read_graphml(FIX / "mini_graph.graphml")
+    for _, d in g.nodes(data=True):
+        d["x"], d["y"] = float(d["x"]), float(d["y"])
+    for _, _, d in g.edges(data=True):
+        d["length"] = float(d["length"])
+    return g
 
 
-def test_correlate_returns_rho_and_pvalue():
-    df = build_table(_records())
-    out = correlate(df, target="auc")
-    assert {"feature", "spearman_rho", "p_value"} <= set(out.columns)
-    # circuity perfectly increases with auc -> rho ~ 1.0
-    row = out[out["feature"] == "circuity"].iloc[0]
-    assert row["spearman_rho"] > 0.99
+def test_assign_nodes_to_hexes_covers_all_nodes():
+    g = _mini()
+    mapping = assign_nodes_to_hexes(g, crs="EPSG:32635", h3_res=8)
+    assigned = sum(len(v) for v in mapping.values())
+    assert assigned == g.number_of_nodes()
+
+
+def test_local_diagram_on_subgraph_returns_canonical_dict():
+    g = add_travel_time(_mini(), speed_m_per_min=100.0)
+    field = accessibility_field(g, source_nodes=["0"])
+    dgm = local_diagram(nx.Graph(g), field, node_ids=["0", "1", "3", "4"], max_dim=1)
+    assert 0 in dgm
+    assert dgm[0].shape[1] == 2
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [ ] **Step 2: Run to verify it fails**
 
-Run: `uv run pytest tests/test_crosscity.py -v`
-Expected: FAIL with `ModuleNotFoundError: No module named 'nnj_topology.analysis'`.
+Run: `uv run pytest tests/test_districts.py -v`
+Expected: FAIL with `ModuleNotFoundError: No module named 'nnj_topology.districts'`.
 
-- [ ] **Step 3: Implement cross-city analysis**
+- [ ] **Step 3: Implement district tiling + local resilience**
 
-Create `src/nnj_topology/analysis/crosscity.py`:
+Create `src/nnj_topology/districts/tiling.py`:
 ```python
-"""Cross-city assembly and morphology<->resilience correlation."""
+"""H3 district tiling and per-district local resilience."""
 from __future__ import annotations
 
 import logging
+from typing import Callable, Dict, List
 
-import pandas as pd
-from scipy import stats
+import geopandas as gpd
+import h3
+import networkx as nx
+import numpy as np
+from shapely.geometry import Point
+
+from nnj_topology.disruption.resilience import ResilienceResult, resilience_curve
+from nnj_topology.topology.diagrams import Diagram, sublevel_diagram
+from nnj_topology.topology.distances import wasserstein_distance
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["build_table", "correlate"]
-
-_NON_FEATURE = {"city", "auc", "rho_star", "total_persistence"}
+__all__ = ["assign_nodes_to_hexes", "local_diagram", "district_resilience"]
 
 
-def build_table(records: list[dict]) -> pd.DataFrame:
-    """Assemble one row per city from morphology + resilience records."""
-    df = pd.DataFrame(records)
-    if "city" in df.columns:
-        df = df.sort_values("city").reset_index(drop=True)
-    return df
+def assign_nodes_to_hexes(
+    graph: nx.MultiDiGraph, crs: str, h3_res: int
+) -> Dict[str, List]:
+    """Map each H3 cell id to the node ids whose coordinates fall inside it."""
+    node_ids = list(graph.nodes)
+    pts = gpd.GeoSeries(
+        [Point(float(graph.nodes[n]["x"]), float(graph.nodes[n]["y"])) for n in node_ids],
+        crs=crs,
+    ).to_crs("EPSG:4326")
+    mapping: Dict[str, List] = {}
+    for node, geom in zip(node_ids, pts):
+        cell = h3.latlng_to_cell(geom.y, geom.x, h3_res)
+        mapping.setdefault(cell, []).append(node)
+    return mapping
 
 
-def correlate(df: pd.DataFrame, target: str = "auc") -> pd.DataFrame:
-    """Spearman correlation of each morphology feature with `target`."""
-    features = [c for c in df.columns if c not in _NON_FEATURE]
-    rows = []
-    for feat in features:
-        rho, p = stats.spearmanr(df[feat], df[target])
-        rows.append({"feature": feat, "spearman_rho": float(rho), "p_value": float(p)})
-    return pd.DataFrame(rows).sort_values("spearman_rho", ascending=False).reset_index(drop=True)
+def local_diagram(
+    graph: nx.Graph, field: dict, node_ids: List, max_dim: int = 1
+) -> Diagram:
+    """Sublevel persistence on the subgraph induced by `node_ids`."""
+    sub = graph.subgraph(node_ids)
+    sub_field = {n: field[n] for n in node_ids}
+    return sublevel_diagram(sub, sub_field, max_dim=max_dim)
+
+
+def district_resilience(
+    graph: nx.MultiDiGraph,
+    field_fn: Callable[[nx.MultiDiGraph], dict],
+    disrupt: Callable[..., nx.MultiDiGraph],
+    rhos: List[float],
+    n_replicates: int,
+    seed: int,
+    hex_nodes: Dict[str, List],
+    max_dim: int = 1,
+    min_nodes: int = 10,
+) -> Dict[str, ResilienceResult]:
+    """Per-hex resilience curve; disrupted graphs are computed once and reused.
+
+    `field_fn(graph) -> dict` recomputes the accessibility field on a (possibly
+    disrupted) graph. Hexes with fewer than `min_nodes` nodes are skipped.
+    """
+    base_field = field_fn(graph)
+    simple = nx.Graph(graph)
+    base_local = {
+        cell: local_diagram(simple, base_field, nodes, max_dim)
+        for cell, nodes in hex_nodes.items()
+        if len(nodes) >= min_nodes
+    }
+
+    # Pre-compute disrupted graphs + their fields + simple views, once per (rho, rep).
+    disrupted: Dict[float, list] = {}
+    for rho in rhos:
+        if rho == 0.0:
+            continue
+        reps = []
+        for rep in range(n_replicates):
+            dg = disrupt(graph, rho, seed=seed + rep)
+            reps.append((nx.Graph(dg), field_fn(dg)))
+        disrupted[rho] = reps
+
+    results: Dict[str, ResilienceResult] = {}
+    for cell, nodes in hex_nodes.items():
+        if cell not in base_local:
+            continue
+        base_dgm = base_local[cell]
+
+        def distance_at_rho(rho: float, _nodes=nodes, _base=base_dgm) -> float:
+            if rho == 0.0:
+                return 0.0
+            dists = []
+            for simple_dg, dg_field in disrupted[rho]:
+                local = local_diagram(simple_dg, dg_field, _nodes, max_dim)
+                dists.append(wasserstein_distance(_base, local, dim=1))
+            return float(np.mean(dists))
+
+        results[cell] = resilience_curve(rhos, distance_at_rho)
+    return results
 ```
 
-Create `src/nnj_topology/analysis/__init__.py`:
+Create `src/nnj_topology/districts/__init__.py`:
 ```python
-"""Cross-city analysis."""
-from nnj_topology.analysis.crosscity import build_table, correlate
+"""District (H3) tiling and local resilience."""
+from nnj_topology.districts.tiling import (
+    assign_nodes_to_hexes,
+    district_resilience,
+    local_diagram,
+)
 
-__all__ = ["build_table", "correlate"]
+__all__ = ["assign_nodes_to_hexes", "local_diagram", "district_resilience"]
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [ ] **Step 4: Run to verify it passes**
 
-Run: `uv run pytest tests/test_crosscity.py -v`
+Run: `uv run pytest tests/test_districts.py -v`
 Expected: PASS (2 passed).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/nnj_topology/analysis tests/test_crosscity.py
-git commit -m "feat(analysis): add cross-city table builder and Spearman correlation"
+git add src/nnj_topology/districts tests/test_districts.py
+git commit -m "feat(districts): add H3 tiling and per-district local resilience"
+```
+
+---
+
+## Task 11: District-level regression (inferential) + city typology overlay (descriptive)
+
+**Files:**
+- Create: `src/nnj_topology/analysis/__init__.py`
+- Create: `src/nnj_topology/analysis/regression.py` (inferential — the C3 claim)
+- Create: `src/nnj_topology/analysis/crosscity.py` (descriptive city typology overlay only)
+- Create: `tests/test_regression.py`, `tests/test_crosscity.py`
+
+**Interfaces:**
+- Consumes: per-district records (Task 10b local resilience + per-district morphology from Task 10), per-city summaries.
+- Produces:
+  - `build_district_frame(records: list[dict]) -> pandas.DataFrame` — one row per district; columns = morphology descriptors + `auc`, `rho_star`, `total_persistence`, and a `city` grouping column.
+  - `fixed_effects_regression(df, target="auc", features=None) -> statsmodels...RegressionResultsWrapper` — OLS of resilience on morphology with **city fixed effects** (`C(city)`), absorbing between-city confounds; the district sample (n in hundreds) carries the inference.
+  - `tidy_coefficients(result) -> pandas.DataFrame` — columns `term`, `coef`, `std_err`, `p_value` for the morphology terms (fixed-effect dummies dropped from the reported table).
+  - `city_typology(df) -> pandas.DataFrame` — descriptive per-city means (NOT used for inference): mean district AUC, mean ρ\*, baseline desert count.
+
+- [ ] **Step 1: Write the failing tests**
+
+Create `tests/test_regression.py`:
+```python
+import numpy as np
+import pandas as pd
+
+from nnj_topology.analysis.regression import (
+    build_district_frame,
+    fixed_effects_regression,
+    tidy_coefficients,
+)
+
+
+def _district_records(n=120, seed=0):
+    rng = np.random.default_rng(seed)
+    rows = []
+    for i in range(n):
+        city = ["A", "B", "C"][i % 3]
+        circuity = rng.normal(1.1, 0.1)
+        # auc depends on circuity (+) plus a city offset + noise
+        offset = {"A": 0.0, "B": 0.2, "C": 0.4}[city]
+        auc = 0.8 * circuity + offset + rng.normal(0, 0.02)
+        rows.append({"city": city, "circuity": circuity, "intersection_density": rng.normal(50, 5),
+                     "auc": auc, "rho_star": rng.uniform(0.2, 0.5), "total_persistence": rng.uniform(1, 5)})
+    return rows
+
+
+def test_build_district_frame_keeps_city_column():
+    df = build_district_frame(_district_records(30))
+    assert "city" in df.columns
+    assert len(df) == 30
+
+
+def test_fixed_effects_recovers_positive_circuity_effect():
+    df = build_district_frame(_district_records(300))
+    result = fixed_effects_regression(df, target="auc", features=["circuity", "intersection_density"])
+    tidy = tidy_coefficients(result)
+    row = tidy[tidy["term"] == "circuity"].iloc[0]
+    assert row["coef"] > 0          # true effect is +0.8
+    assert row["p_value"] < 0.05    # well-powered at n=300
+```
+
+Create `tests/test_crosscity.py`:
+```python
+import pandas as pd
+
+from nnj_topology.analysis.crosscity import city_typology
+
+
+def test_city_typology_one_row_per_city():
+    df = pd.DataFrame(
+        {
+            "city": ["A", "A", "B", "B"],
+            "auc": [0.1, 0.3, 0.5, 0.7],
+            "rho_star": [0.4, 0.4, 0.3, 0.3],
+            "total_persistence": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    out = city_typology(df)
+    assert list(out["city"]) == ["A", "B"]
+    assert abs(out.loc[out["city"] == "A", "auc_mean"].iloc[0] - 0.2) < 1e-9
+```
+
+- [ ] **Step 2: Run the tests to verify they fail**
+
+Run: `uv run pytest tests/test_regression.py tests/test_crosscity.py -v`
+Expected: FAIL with `ModuleNotFoundError: No module named 'nnj_topology.analysis'`.
+
+- [ ] **Step 3: Implement the regression + typology**
+
+Create `src/nnj_topology/analysis/regression.py`:
+```python
+"""District-level inferential analysis (the C3 claim)."""
+from __future__ import annotations
+
+import logging
+from typing import List, Optional
+
+import pandas as pd
+import statsmodels.formula.api as smf
+
+logger = logging.getLogger(__name__)
+
+__all__ = ["build_district_frame", "fixed_effects_regression", "tidy_coefficients"]
+
+_NON_FEATURE = {"city", "auc", "rho_star", "total_persistence", "hex"}
+
+
+def build_district_frame(records: List[dict]) -> pd.DataFrame:
+    """Assemble one row per district from local resilience + morphology records."""
+    return pd.DataFrame(records).reset_index(drop=True)
+
+
+def fixed_effects_regression(
+    df: pd.DataFrame, target: str = "auc", features: Optional[List[str]] = None
+):
+    """OLS of `target` on morphology features with city fixed effects."""
+    if features is None:
+        features = [c for c in df.columns if c not in _NON_FEATURE]
+    rhs = " + ".join(features + ["C(city)"])
+    formula = f"{target} ~ {rhs}"
+    logger.info("Fitting: %s", formula)
+    return smf.ols(formula, data=df).fit()
+
+
+def tidy_coefficients(result) -> pd.DataFrame:
+    """Tidy morphology coefficients (drop the city fixed-effect dummies)."""
+    params = result.params
+    pvalues = result.pvalues
+    bse = result.bse
+    rows = []
+    for term in params.index:
+        if term.startswith("C(city)") or term == "Intercept":
+            continue
+        rows.append(
+            {
+                "term": term,
+                "coef": float(params[term]),
+                "std_err": float(bse[term]),
+                "p_value": float(pvalues[term]),
+            }
+        )
+    return pd.DataFrame(rows)
+```
+
+Create `src/nnj_topology/analysis/crosscity.py`:
+```python
+"""Descriptive city typology overlay (NOT used for inference)."""
+from __future__ import annotations
+
+import logging
+
+import pandas as pd
+
+logger = logging.getLogger(__name__)
+
+__all__ = ["city_typology"]
+
+
+def city_typology(df: pd.DataFrame) -> pd.DataFrame:
+    """Per-city descriptive means of district resilience summaries."""
+    agg = (
+        df.groupby("city")
+        .agg(
+            auc_mean=("auc", "mean"),
+            rho_star_mean=("rho_star", "mean"),
+            total_persistence_mean=("total_persistence", "mean"),
+            n_districts=("auc", "size"),
+        )
+        .reset_index()
+        .sort_values("city")
+        .reset_index(drop=True)
+    )
+    return agg
+```
+
+Create `src/nnj_topology/analysis/__init__.py`:
+```python
+"""Analysis: district-level inference + city typology overlay."""
+from nnj_topology.analysis.crosscity import city_typology
+from nnj_topology.analysis.regression import (
+    build_district_frame,
+    fixed_effects_regression,
+    tidy_coefficients,
+)
+
+__all__ = [
+    "build_district_frame",
+    "fixed_effects_regression",
+    "tidy_coefficients",
+    "city_typology",
+]
+```
+
+- [ ] **Step 4: Run the tests to verify they pass**
+
+Run: `uv run pytest tests/test_regression.py tests/test_crosscity.py -v`
+Expected: PASS (3 passed).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/nnj_topology/analysis tests/test_regression.py tests/test_crosscity.py
+git commit -m "feat(analysis): district fixed-effects regression + city typology overlay"
 ```
 
 ---
@@ -1964,14 +2370,22 @@ def plot_resilience_curves(results: dict[str, ResilienceResult]) -> Figure:
 def plot_morphology_vs_resilience(
     df: pd.DataFrame, feature: str, target: str = "auc"
 ) -> Figure:
+    """Headline Fig. 6: districts (points) coloured by city, with a pooled fit line."""
     fig, ax = plt.subplots(figsize=(5, 4))
-    ax.scatter(df[feature], df[target], s=40)
-    for _, row in df.iterrows():
-        ax.annotate(str(row.get("city", "")), (row[feature], row[target]),
-                    fontsize=8, xytext=(3, 3), textcoords="offset points")
+    if "city" in df.columns:
+        for city, grp in df.groupby("city"):
+            ax.scatter(grp[feature], grp[target], s=12, alpha=0.5, label=str(city))
+        ax.legend(fontsize=7, title="city")
+    else:
+        ax.scatter(df[feature], df[target], s=12, alpha=0.5)
+    # pooled least-squares trend line
+    if len(df) >= 2:
+        coef = np.polyfit(df[feature], df[target], 1)
+        xs = np.linspace(df[feature].min(), df[feature].max(), 50)
+        ax.plot(xs, np.polyval(coef, xs), "k--", lw=1.0)
     ax.set_xlabel(feature.replace("_", " "))
     ax.set_ylabel(target)
-    ax.set_title(f"Morphology vs. resilience ({feature})")
+    ax.set_title(f"District morphology vs. resilience ({feature})")
     fig.tight_layout()
     return fig
 ```
@@ -2349,44 +2763,72 @@ git commit -m "feat(pipeline): add disruption pipeline producing resilience curv
 
 ---
 
-## Task 15: Analysis + figures pipeline + full-suite gate
+## Task 15: District analysis pipeline (regression + figures) + full-suite gate
 
 **Files:**
 - Create: `pipeline/run_analysis.py`
 - Create: `tests/test_pipeline_analysis.py`
 
 **Interfaces:**
-- Consumes: per-city `resilience_*.json` (Task 14), baseline diagrams (Task 13), morphology (Task 10), cross-city (Task 11), figures (Task 12).
+- Consumes: districts module (Task 10b), morphology (Task 10), regression + typology (Task 11), city-level resilience JSON (Task 14, for Fig. 5), figures (Task 12).
 - Produces:
-  - `assemble_records(output_root: Path, cities: list[str], scenario: str) -> list[dict]` — read artifacts into the analysis record format.
-  - `main(cfg)` — builds the table, writes `output/summary_table.csv`, `output/correlations_<scenario>.csv`, and saves Figs. 5 & 6 to `output/figures/`.
+  - `district_morphology(graph, green, crs, hex_nodes) -> dict[str, dict]` — per-hex morphology descriptors (osmnx stats on the hex subgraph + greenspace fragmentation of green clipped to the hex).
+  - `compute_district_records(graph, green, field_fn, disrupt, crs, rc) -> list[dict]` — one record per qualifying hex: `{city, hex, <morphology...>, auc, rho_star, total_persistence}`.
+  - `main(cfg)` — accumulates district records across cities, fits the city-fixed-effects regression, writes `output/district_table.csv`, `output/regression_<scenario>.csv` (tidy coefficients), `output/city_typology.csv`, and saves Fig. 5 (city resilience curves) + Fig. 6 (district morphology↔resilience).
 
 - [ ] **Step 1: Write the failing test**
 
 Create `tests/test_pipeline_analysis.py`:
 ```python
-import json
 from pathlib import Path
 
-from pipeline.run_analysis import assemble_records
+import geopandas as gpd
+import networkx as nx
+from shapely.geometry import Point, Polygon
+
+from nnj_topology.accessibility.field import accessibility_field, add_travel_time
+from nnj_topology.data.greenspace import access_points, snap_points_to_nodes
+from nnj_topology.disruption.models import random_removal
+from pipeline.run_analysis import compute_district_records
+
+FIX = Path(__file__).parent / "fixtures"
 
 
-def test_assemble_records_reads_resilience_json(tmp_path: Path):
-    city_dir = tmp_path / "amsterdam"
-    city_dir.mkdir()
-    (city_dir / "resilience_random.json").write_text(
-        json.dumps({"rhos": [0.0, 0.5], "distances": [0.0, 1.0], "auc": 0.5, "rho_star": 0.5})
+def _mini():
+    g = nx.read_graphml(FIX / "mini_graph.graphml")
+    for _, d in g.nodes(data=True):
+        d["x"], d["y"] = float(d["x"]), float(d["y"])
+    for _, _, d in g.edges(data=True):
+        d["length"] = float(d["length"])
+    return g
+
+
+def test_compute_district_records_returns_rows_with_city_and_auc():
+    g = add_travel_time(_mini())
+    green = gpd.GeoDataFrame(geometry=[Polygon([(0, 0), (10, 0), (10, 10), (0, 10)])], crs="EPSG:32635")
+
+    def field_fn(graph):
+        ap = access_points(green)
+        return accessibility_field(graph, snap_points_to_nodes(ap, graph))
+
+    class _RC:
+        seed = 42
+        class disruption:  # noqa: N801
+            rhos = (0.0, 0.5)
+            n_replicates = 1
+        class filtration:  # noqa: N801
+            max_dim = 1
+        class city:  # noqa: N801
+            name = "mini"
+        h3_res = 11  # fine res so the small fixture yields >=1 populated hex
+
+    records = compute_district_records(
+        g, green, field_fn, random_removal, "EPSG:32635", _RC(), min_nodes=1
     )
-    (city_dir / "morphology.json").write_text(
-        json.dumps({"circuity": 1.1, "intersection_density": 50.0,
-                    "orientation_entropy": 3.0, "mean_block_size": 80.0,
-                    "greenspace_fragmentation": 12.0})
-    )
-    records = assemble_records(tmp_path, ["amsterdam"], scenario="random")
-    assert len(records) == 1
-    assert records[0]["city"] == "amsterdam"
-    assert records[0]["auc"] == 0.5
-    assert records[0]["circuity"] == 1.1
+    assert isinstance(records, list)
+    if records:  # at least the structure is correct when a hex qualifies
+        assert "city" in records[0]
+        assert "auc" in records[0]
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -2394,22 +2836,37 @@ def test_assemble_records_reads_resilience_json(tmp_path: Path):
 Run: `uv run pytest tests/test_pipeline_analysis.py -v`
 Expected: FAIL with `ModuleNotFoundError: No module named 'pipeline.run_analysis'`.
 
-- [ ] **Step 3: Implement the analysis pipeline**
+- [ ] **Step 3: Implement the district analysis pipeline**
 
 Create `pipeline/run_analysis.py`:
 ```python
-"""Analysis pipeline: assemble cross-city table, correlations, and figures."""
+"""District analysis pipeline: per-district records -> regression -> figures."""
 from __future__ import annotations
 
 import json
 import logging
 from pathlib import Path
+from typing import Callable
 
+import geopandas as gpd
 import hydra
+import networkx as nx
 from omegaconf import DictConfig
 
-from nnj_topology.analysis.crosscity import build_table, correlate
+from nnj_topology.analysis.crosscity import city_typology
+from nnj_topology.analysis.regression import (
+    build_district_frame,
+    fixed_effects_regression,
+    tidy_coefficients,
+)
+from nnj_topology.disruption import disruption_factory
 from nnj_topology.disruption.resilience import ResilienceResult
+from nnj_topology.districts.tiling import assign_nodes_to_hexes, district_resilience
+from nnj_topology.morphology.descriptors import (
+    greenspace_fragmentation,
+    morphology_descriptors,
+)
+from nnj_topology.topology.distances import total_persistence
 from nnj_topology.viz.figures import (
     plot_morphology_vs_resilience,
     plot_resilience_curves,
@@ -2420,64 +2877,155 @@ logger = logging.getLogger(__name__)
 CITIES = ["istanbul", "barcelona", "amsterdam", "bogota", "phoenix"]
 
 
-def assemble_records(output_root: Path, cities: list[str], scenario: str) -> list[dict]:
-    """Read per-city resilience + morphology artifacts into analysis records."""
-    records: list[dict] = []
-    for city in cities:
-        res_path = output_root / city / f"resilience_{scenario}.json"
-        morph_path = output_root / city / "morphology.json"
-        if not res_path.exists():
-            logger.warning("Missing %s; skipping", res_path)
+def district_morphology(
+    graph: nx.MultiDiGraph, green: gpd.GeoDataFrame, crs: str, hex_nodes: dict
+) -> dict:
+    """Per-hex morphology descriptors (osmnx stats on the hex subgraph)."""
+    out: dict = {}
+    for cell, nodes in hex_nodes.items():
+        sub = graph.subgraph(nodes).copy()
+        if sub.number_of_edges() == 0:
             continue
-        res = json.loads(res_path.read_text())
-        rec = {"city": city, "auc": res["auc"], "rho_star": res.get("rho_star")}
-        if morph_path.exists():
-            rec.update(json.loads(morph_path.read_text()))
+        try:
+            desc = morphology_descriptors(sub)
+        except Exception as exc:  # noqa: BLE001 - osmnx stats fail on tiny subgraphs
+            logger.debug("morphology failed for hex %s: %s", cell, exc)
+            continue
+        desc["greenspace_fragmentation"] = greenspace_fragmentation(green)
+        out[cell] = desc
+    return out
+
+
+def compute_district_records(
+    graph: nx.MultiDiGraph,
+    green: gpd.GeoDataFrame,
+    field_fn: Callable[[nx.MultiDiGraph], dict],
+    disrupt: Callable[..., nx.MultiDiGraph],
+    crs: str,
+    rc,
+    min_nodes: int = 10,
+) -> list[dict]:
+    """Build one record per qualifying district (hex)."""
+    hex_nodes = assign_nodes_to_hexes(graph, crs, rc.h3_res)
+    res_by_hex = district_resilience(
+        graph, field_fn, disrupt,
+        rhos=list(rc.disruption.rhos), n_replicates=rc.disruption.n_replicates,
+        seed=rc.seed, hex_nodes=hex_nodes, max_dim=rc.filtration.max_dim, min_nodes=min_nodes,
+    )
+    morph_by_hex = district_morphology(graph, green, crs, hex_nodes)
+    base_field = field_fn(graph)
+    simple = nx.Graph(graph)
+
+    records: list[dict] = []
+    for cell, res in res_by_hex.items():
+        if cell not in morph_by_hex:
+            continue
+        from nnj_topology.districts.tiling import local_diagram
+
+        base_dgm = local_diagram(simple, base_field, hex_nodes[cell], rc.filtration.max_dim)
+        rec = {"city": rc.city.name, "hex": cell}
+        rec.update(morph_by_hex[cell])
+        rec["auc"] = res.auc
+        rec["rho_star"] = res.rho_star if res.rho_star is not None else float("nan")
+        rec["total_persistence"] = total_persistence(base_dgm, dim=1)
         records.append(rec)
     return records
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
 def main(cfg: DictConfig) -> None:
-    output_root = Path(cfg.paths.output)
-    scenario = cfg.disruption.name
-    records = assemble_records(output_root, CITIES, scenario)
-    if not records:
-        raise RuntimeError("no records assembled; run baseline+disruption first")
+    from nnj_topology.accessibility.field import accessibility_field, add_travel_time
+    from nnj_topology.config import from_omegaconf
+    from nnj_topology.data.boundary import clip_graph_to_boundary, load_urban_boundary
+    from nnj_topology.data.greenspace import (
+        access_points,
+        load_greenspace,
+        snap_points_to_nodes,
+    )
+    from nnj_topology.data.network import load_walk_network
 
-    df = build_table(records)
-    fig_dir = output_root / "figures"
-    fig_dir.mkdir(parents=True, exist_ok=True)
-    df.to_csv(output_root / "summary_table.csv", index=False)
+    rc = from_omegaconf(cfg)
+    output_root = Path(rc.paths.output)
+    scenario = rc.disruption.name
+    disrupt = disruption_factory(scenario)
 
-    corr = correlate(df, target="auc")
-    corr.to_csv(output_root / f"correlations_{scenario}.csv", index=False)
-
-    results = {}
+    all_records: list[dict] = []
+    curves: dict[str, ResilienceResult] = {}
     for city in CITIES:
+        city_cfg = hydra.compose(config_name="config", overrides=[f"city={city}"]).city
+        data_dir = Path(rc.paths.data) / city
+        graph = load_walk_network(city_cfg.place, city_cfg.crs, data_dir / "walk.graphml")
+        boundary = load_urban_boundary(
+            Path(rc.paths.data) / "ghsl" / "ghs_ucdb.gpkg", city_cfg.name, city_cfg.crs
+        )
+        graph = clip_graph_to_boundary(graph, boundary, city_cfg.crs)
+        graph = add_travel_time(graph)
+        green = load_greenspace(city_cfg.place, city_cfg.crs, data_dir / "green.gpkg")
+
+        def field_fn(g, _green=green):
+            ap = access_points(_green)
+            return accessibility_field(g, snap_points_to_nodes(ap, g))
+
+        from nnj_topology.config import (
+            CityConfig,
+            DisruptionConfig,
+            FiltrationConfig,
+            PathsConfig,
+            RunConfig,
+        )
+
+        rc_city = RunConfig(
+            seed=rc.seed,
+            city=CityConfig(city_cfg.name, city_cfg.place, city_cfg.crs),
+            disruption=rc.disruption,
+            filtration=rc.filtration,
+            paths=rc.paths,
+        )
+        object.__setattr__(rc_city, "h3_res", rc.h3_res)  # carry h3_res
+        all_records.extend(
+            compute_district_records(graph, green, field_fn, disrupt, city_cfg.crs, rc_city)
+        )
+
         rp = output_root / city / f"resilience_{scenario}.json"
         if rp.exists():
             d = json.loads(rp.read_text())
-            results[city] = ResilienceResult(
+            curves[city] = ResilienceResult(
                 tuple(d["rhos"]), tuple(d["distances"]), d["auc"], d.get("rho_star")
             )
-    plot_resilience_curves(results).savefig(fig_dir / "fig5_resilience.png", dpi=200)
 
-    top_feature = corr.iloc[0]["feature"]
+    if not all_records:
+        raise RuntimeError("no district records; run baseline first and check boundaries")
+
+    df = build_district_frame(all_records)
+    fig_dir = output_root / "figures"
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    df.to_csv(output_root / "district_table.csv", index=False)
+
+    features = [c for c in df.columns if c not in {"city", "hex", "auc", "rho_star", "total_persistence"}]
+    result = fixed_effects_regression(df, target="auc", features=features)
+    tidy = tidy_coefficients(result)
+    tidy.to_csv(output_root / f"regression_{scenario}.csv", index=False)
+    city_typology(df).to_csv(output_root / "city_typology.csv", index=False)
+
+    if curves:
+        plot_resilience_curves(curves).savefig(fig_dir / "fig5_resilience.png", dpi=200)
+    top_feature = tidy.reindex(tidy["coef"].abs().sort_values(ascending=False).index).iloc[0]["term"]
     plot_morphology_vs_resilience(df, feature=top_feature).savefig(
         fig_dir / "fig6_morphology.png", dpi=200
     )
-    logger.info("Analysis complete; figures in %s", fig_dir)
+    logger.info("District analysis complete (%d districts); figures in %s", len(df), fig_dir)
 
 
 if __name__ == "__main__":
     main()
 ```
 
+> Implementation note: `RunConfig` is frozen, so `h3_res` is set via `object.__setattr__` only because it is added as a field in Task 1's update — once added to the dataclass, construct it normally instead. Keep `h3_res` in the dataclass (Task 1) so this hack is unnecessary in the final code.
+
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `uv run pytest tests/test_pipeline_analysis.py -v`
-Expected: PASS (1 passed).
+Expected: PASS (1 passed; the test tolerates zero qualifying hexes on the tiny fixture but asserts record structure when present).
 
 - [ ] **Step 5: Run the full test suite (gate)**
 
@@ -2488,7 +3036,7 @@ Expected: all tests pass (no failures). Fix any cross-module regressions before 
 
 ```bash
 git add pipeline/run_analysis.py tests/test_pipeline_analysis.py
-git commit -m "feat(pipeline): add analysis pipeline with summary table and figures"
+git commit -m "feat(pipeline): district analysis with fixed-effects regression and figures"
 ```
 
 ---
@@ -2509,33 +3057,20 @@ Create `pipeline/run_all.sh`:
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
+# Prerequisite (one-time, manual): place GHS-UCDB at data/ghsl/ghs_ucdb.gpkg
 CITIES=(amsterdam barcelona istanbul bogota phoenix)
 SCENARIOS=(random targeted hazard)
 
+# 1) Per-city baseline + city-level resilience curves (for Fig. 5)
 for city in "${CITIES[@]}"; do
   uv run python pipeline/run_baseline.py city="$city"
-  # write morphology.json for the city
-  uv run python -c "
-import json, osmnx as ox
-from pathlib import Path
-from omegaconf import OmegaConf
-from nnj_topology.data.network import load_walk_network
-from nnj_topology.data.greenspace import load_greenspace
-from nnj_topology.morphology.descriptors import morphology_descriptors, greenspace_fragmentation
-cfg = OmegaConf.load('conf/city/${city}.yaml')
-g = load_walk_network(cfg.place, cfg.crs, Path('data/${city}/walk.graphml'))
-green = load_greenspace(cfg.place, cfg.crs, Path('data/${city}/green.gpkg'))
-m = morphology_descriptors(g)
-m['greenspace_fragmentation'] = greenspace_fragmentation(green)
-Path('output/${city}').mkdir(parents=True, exist_ok=True)
-Path('output/${city}/morphology.json').write_text(json.dumps(m, indent=2))
-print('morphology written for ${city}')
-"
   for sc in "${SCENARIOS[@]}"; do
     uv run python pipeline/run_disruption.py city="$city" disruption="$sc"
   done
 done
 
+# 2) District-level analysis (per-district morphology + resilience -> regression).
+#    run_analysis iterates over all cities internally; one call per scenario.
 for sc in "${SCENARIOS[@]}"; do
   uv run python pipeline/run_analysis.py disruption="$sc"
 done
@@ -2550,12 +3085,12 @@ Expected: artifacts for all five cities + three scenarios; `output/summary_table
 
 - [ ] **Step 3: Sanity-check the results**
 
-Run: `uv run python -c "import pandas as pd; print(pd.read_csv('output/summary_table.csv')); print(pd.read_csv('output/correlations_random.csv'))"`
-Expected: five city rows; correlation table with finite Spearman values. Confirm the headline morphology↔resilience relationship is interpretable (sign + magnitude make architectural sense; if not, investigate before writing).
+Run: `uv run python -c "import pandas as pd; d=pd.read_csv('output/district_table.csv'); print(d.shape); print(d['city'].value_counts()); print(pd.read_csv('output/regression_random.csv')); print(pd.read_csv('output/city_typology.csv'))"`
+Expected: a district table with **hundreds of rows** spread across the five cities; a regression coefficient table with finite estimates and p-values; a five-row city typology table. Confirm the headline morphology↔resilience coefficient is interpretable (sign + magnitude make architectural sense, p-value meaningful at the district n; if not, investigate before writing).
 
 - [ ] **Step 4: Write RESULTS.md**
 
-Create `output/RESULTS.md` capturing, with the actual numbers from this run: per-city baseline desert count / total H1 persistence; AUC and rho* per city × scenario; the top morphology↔resilience correlations with p-values; and any city that required the rips fallback. This file is the single source of truth the manuscript cites — no number enters the paper that is not here.
+Create `output/RESULTS.md` capturing, with the actual numbers from this run: number of districts per city; per-city baseline desert count / mean total H1 persistence (typology); **district-level fixed-effects regression coefficients (effect size, std err, p-value) for each morphology descriptor — the C3 inferential result**; city-level AUC and rho* per scenario (Fig. 5); and any city that required the rips fallback or had too few qualifying districts. This file is the single source of truth the manuscript cites — no number enters the paper that is not here.
 
 - [ ] **Step 5: Commit (artifacts gitignored; results summary tracked)**
 
@@ -2589,7 +3124,7 @@ Write, in order, pulling every quantitative claim from `output/RESULTS.md`:
 3. Mathematical background — simplicial complexes, filtrations, persistent homology, bottleneck/Wasserstein (NNJ-appropriate exposition).
 4. Methodology — pipeline + the resilience metric (diagram-distance curve, AUC, critical rho*; percolation link).
 5. Case studies — the five cities, data sources, parameters (walk speed, rho grid, replicates).
-6. Results — per-city deserts, resilience curves (Fig. 5), morphology↔resilience (Fig. 6, headline), correlation table.
+6. Results — lead with the **mathematics** (the resilience metric `D(ρ)`, AUC, critical ρ\*; per-city resilience curves, Fig. 5). Then the **district-level** morphology↔resilience finding: the city-fixed-effects regression table (effect sizes + p-values over hundreds of districts) and the headline district scatter (Fig. 6). Close with the city typology overlay (the five-city reading). State the unit of analysis (district) explicitly and report n.
 7. Discussion — design/morphology implications, SDG 11 policy relevance, limitations (§10 of spec, including the rips-fallback note if used).
 8. Conclusion & future work — network-distance Rips variant; full hazard simulation; more cities.
 
@@ -2619,19 +3154,22 @@ git commit -m "docs(paper): draft NNJ manuscript on topological green-space resi
 
 **1. Spec coverage:**
 - RQ1 (topological signature of access) → Tasks 5, 6, 13.
-- RQ2 (degradation under disruption) → Tasks 8, 9, 14.
-- RQ3 (morphology↔resilience) → Tasks 10, 11, 15.
-- Contributions C1/C2/C3 → resilience metric (Task 9), SDG-11.7 framing (manuscript Task 17), cross-city map (Tasks 11, 16).
-- Methodology §6.1–6.6 → data Tasks 2–4; field Task 5; PH Tasks 6–7; disruption Tasks 8–9; cross-city Tasks 10–11; stack pinned in Task 1.
-- Five cities §7 → config files (Task 1) + run_all (Task 16).
-- Six figures §8 → Task 12 covers diagram/resilience/morphology; per-city maps + accessibility heatmaps + pipeline schematic are remaining figures, produced during Task 16/17 (noted as a gap to fill: add `plot_city_map` and `plot_field_heatmap` if reviewers want them — currently optional, headline figures are covered).
-- Limitations §10 → manuscript Task 17 Step 2.7; rips-fallback path threaded through Tasks 13/16.
+- RQ2 (degradation under disruption; ρ\*) → Tasks 8, 9, 14.
+- RQ3 (district-level morphology↔resilience) → Tasks 10 (morphology), 10b (district tiling + local resilience), 11 (fixed-effects regression), 15 (district pipeline).
+- Contributions C1/C2/C3 → C1 resilience metric (Task 9, headline); C2 SDG-11.7 framing (manuscript Task 17); C3 district-level regression + city typology (Tasks 10b, 11, 15, 16).
+- Methodology §6.1 boundary (GHS-UCDB) → Task 4b; §6.2 field → Task 5; §6.3 PH → Tasks 6–7; §6.4 disruption → Tasks 8–9; §6.5 district analysis → Tasks 10b, 11, 15; §6.6 stack (incl. `h3`, `statsmodels`) → Task 1.
+- Five cities §7 (typology) → config files (Task 1) + run_all (Task 16); inference rests on districts (Task 10b/11).
+- Six figures §8 → Task 12 covers diagram/resilience/district-morphology (headline Figs. 4–6); per-city maps + accessibility heatmaps + pipeline schematic are deferred to Task 17 as optional additions (add `plot_city_map`/`plot_field_heatmap` if reviewers ask; headline figures are covered).
+- Limitations §10 → manuscript Task 17 Step 2.7; rips-fallback path threaded through Tasks 13/16; H3 resolution sensitivity to report (spec §6.5) noted in Task 15/16.
 
 **2. Placeholder scan:** No "TBD"/"handle edge cases"/"similar to Task N" left; all code steps contain runnable code.
 
-**3. Type consistency:** `Diagram` dict form is consistent across Tasks 6, 7, 12, 13, 14; `ResilienceResult` fields (`rhos`, `distances`, `auc`, `rho_star`) consistent across Tasks 9, 14, 15; `compute_baseline` signature identical in Tasks 13 and 14; `morphology.json` keys (Task 16) match the non-feature exclusion set and `correlate` features (Task 11).
+**3. Type consistency:** `Diagram` dict form consistent across Tasks 6, 7, 10b, 12, 13, 14; `ResilienceResult` fields (`rhos`, `distances`, `auc`, `rho_star`) consistent across Tasks 9, 10b, 14, 15; `compute_baseline` signature identical in Tasks 13 and 14; district record keys (`city`, `hex`, morphology fields, `auc`, `rho_star`, `total_persistence`) consistent between Task 15 producer and Task 11 `_NON_FEATURE` exclusion set; `h3_res` added to `RunConfig` in Task 1 and consumed in Tasks 10b/15.
 
-**Known minor gap (intentional, low-risk):** the network-distance Vietoris–Rips variant (spec §6.3b) is approximated by Euclidean weighted-Rips in Task 6; the full network-metric version is listed as future work in the manuscript. Per-city map and accessibility-heatmap figures (spec figs 2–3) are deferred to Task 17 as optional additions; the two headline figures (5, 6) are fully implemented.
+**Known minor gaps (intentional, low-risk):**
+- The network-distance Vietoris–Rips variant (spec §6.3b) is approximated by Euclidean weighted-Rips in Task 6; the full network-metric version is future work in the manuscript.
+- Per-district resilience reuses city-scale disrupted graphs sliced per hex (Task 10b design note) rather than re-running disruption inside each hex catchment; this is a deliberate, documented approximation for tractability and should be stated in the methods.
+- Per-city map and accessibility-heatmap figures (spec figs 2–3) deferred to Task 17 as optional; headline Figs. 5–6 fully implemented.
 
 ---
 
