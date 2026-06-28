@@ -7,6 +7,11 @@ from nnj_topology.topology.diagrams import (
     rips_diagram,
     sublevel_diagram,
 )
+from nnj_topology.topology.distances import (
+    bottleneck_distance,
+    total_persistence,
+    wasserstein_distance,
+)
 from nnj_topology.topology.filtration import BUILTIN_FILTRATIONS
 
 _REGISTRY: Dict[str, Callable] = dict(BUILTIN_FILTRATIONS)
@@ -18,6 +23,9 @@ __all__ = [
     "essential_finite_split",
     "register_filtration",
     "filtration_factory",
+    "bottleneck_distance",
+    "wasserstein_distance",
+    "total_persistence",
 ]
 
 
