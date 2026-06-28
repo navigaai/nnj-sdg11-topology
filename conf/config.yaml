@@ -1,0 +1,11 @@
+defaults:
+  - city: istanbul
+  - disruption: random
+  - filtration: sublevel
+  - _self_
+
+seed: 42
+h3_res: 8          # district hex resolution (~0.7 km^2 cells)
+paths:
+  data: data
+  output: output
