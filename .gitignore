@@ -1,9 +1,9 @@
 __pycache__/
 *.pyc
 .venv/
-data/
-outputs/
-output/
+/data/
+/outputs/
+/output/
 paper/_build/
 .DS_Store
 *.gpkg
