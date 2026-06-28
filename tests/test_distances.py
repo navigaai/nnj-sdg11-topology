@@ -19,7 +19,8 @@ def test_bottleneck_identity_is_zero():
 def test_bottleneck_detects_shift():
     a = _d([[0.0, 1.0]])
     b = _d([[0.0, 2.0]])
-    assert abs(bottleneck_distance(a, b, dim=1) - 0.5) < 1e-6  # death moves by 1 -> half-bottleneck
+    # true bottleneck: matching [0,1]->[0,2] costs Linf = 1.0
+    assert abs(bottleneck_distance(a, b, dim=1) - 1.0) < 1e-6
 
 
 def test_wasserstein_nonnegative_and_symmetric():

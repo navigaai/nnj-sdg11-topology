@@ -22,12 +22,9 @@ def _finite(dgm: Diagram, dim: int) -> np.ndarray:
 def bottleneck_distance(dgm_a: Diagram, dgm_b: Diagram, dim: int = 1) -> float:
     """Bottleneck distance between the finite parts of two diagrams in `dim`.
 
-    Compat note: persim.bottleneck uses raw L-inf on birth-death coords, returning
-    1.0 for a death-shift of 1.  We divide by 2 to match the half-norm convention
-    where d_B = 0.5 when death moves by 1 (the 'interleaving-consistent' form).
+    Uses the L-inf metric on birth-death coordinates.
     """
-    raw = float(persim.bottleneck(_finite(dgm_a, dim), _finite(dgm_b, dim)))
-    return raw / 2.0
+    return float(persim.bottleneck(_finite(dgm_a, dim), _finite(dgm_b, dim)))
 
 
 def wasserstein_distance(
