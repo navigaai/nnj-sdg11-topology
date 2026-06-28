@@ -1,4 +1,5 @@
 """Data acquisition modules."""
+from nnj_topology.data.boundary import clip_graph_to_boundary, load_urban_boundary
 from nnj_topology.data.greenspace import (
     GREENSPACE_TAGS,
     access_points,
@@ -18,4 +19,6 @@ __all__ = [
     "snap_points_to_nodes",
     "load_population_points",
     "low_elevation_mask",
+    "load_urban_boundary",
+    "clip_graph_to_boundary",
 ]
