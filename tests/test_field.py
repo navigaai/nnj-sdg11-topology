@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import networkx as nx
+import pytest
 
 from nnj_topology.accessibility.field import accessibility_field, add_travel_time
 
@@ -26,3 +27,9 @@ def test_accessibility_field_distance_from_single_source():
     field = accessibility_field(g, source_nodes=["0"])
     assert field["0"] == 0.0
     assert abs(field["8"] - 4.0) < 1e-9
+
+
+def test_accessibility_field_raises_on_empty_sources():
+    g = add_travel_time(_mini(), speed_m_per_min=100.0)
+    with pytest.raises(ValueError):
+        accessibility_field(g, source_nodes=[])
