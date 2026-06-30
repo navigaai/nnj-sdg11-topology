@@ -1,4 +1,5 @@
 """Disruption scenarios + registry."""
+import logging
 from typing import Callable, Dict
 
 from nnj_topology.disruption.models import (
@@ -6,6 +7,8 @@ from nnj_topology.disruption.models import (
     random_removal,
     targeted_removal,
 )
+
+logger = logging.getLogger(__name__)
 
 _REGISTRY: Dict[str, Callable] = {
     "random": random_removal,
@@ -22,7 +25,7 @@ __all__ = [
 ]
 
 
-def register_disruption(name: str):
+def register_disruption(name: str) -> Callable:
     def decorator(fn: Callable) -> Callable:
         _REGISTRY[name] = fn
         return fn

@@ -31,7 +31,11 @@ def random_removal(graph: nx.MultiDiGraph, rho: float, seed: int) -> nx.MultiDiG
 
 
 def targeted_removal(graph: nx.MultiDiGraph, rho: float, seed: int = 0) -> nx.MultiDiGraph:
-    """Remove the top fraction `rho` of edges by edge betweenness (deterministic)."""
+    """Remove the top fraction `rho` of edges by edge betweenness (deterministic).
+
+    `rho` is measured against the directed edge count, matching `random_removal`,
+    so the same rho removes the same fraction of directed edges across scenarios.
+    """
     if not 0.0 <= rho <= 1.0:
         raise ValueError("rho must be in [0, 1]")
     h = graph.copy()
@@ -40,18 +44,25 @@ def targeted_removal(graph: nx.MultiDiGraph, rho: float, seed: int = 0) -> nx.Mu
         return h
     simple = nx.Graph(h)
     bc = nx.edge_betweenness_centrality(simple, weight="length")
-    ranked = sorted(bc, key=lambda e: bc[e], reverse=True)[:k]
+    ranked = sorted(bc, key=lambda e: bc[e], reverse=True)
+    removed = 0
     for u, v in ranked:
-        for key in list(h.get_edge_data(u, v, default={}).keys()):
-            h.remove_edge(u, v, key)
-        if h.has_edge(v, u):
-            for key in list(h.get_edge_data(v, u, default={}).keys()):
-                h.remove_edge(v, u, key)
+        if removed >= k:
+            break
+        for a, b in ((u, v), (v, u)):
+            if removed >= k:
+                break
+            if h.has_edge(a, b):
+                for key in list(h.get_edge_data(a, b).keys()):
+                    if removed >= k:
+                        break
+                    h.remove_edge(a, b, key)
+                    removed += 1
     return h
 
 
 def hazard_removal(
-    graph: nx.MultiDiGraph, rho: float, seed: int = 0, *, hazard_nodes: set
+    graph: nx.MultiDiGraph, rho: float, seed: int = 0, *, hazard_nodes: set[int]
 ) -> nx.MultiDiGraph:
     """Remove edges incident to hazard nodes, capped at a fraction `rho` of edges."""
     if not 0.0 <= rho <= 1.0:
