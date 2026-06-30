@@ -5,7 +5,6 @@ import logging
 
 import geopandas as gpd
 import networkx as nx
-import numpy as np
 import osmnx as ox
 
 logger = logging.getLogger(__name__)
@@ -14,7 +13,11 @@ __all__ = ["morphology_descriptors", "greenspace_fragmentation"]
 
 
 def morphology_descriptors(graph: nx.MultiDiGraph) -> dict[str, float]:
-    """Compute intersection density, circuity, orientation entropy, mean block size."""
+    """Compute intersection density, circuity, orientation entropy, mean block size.
+
+    Does not modify the input graph.
+    """
+    graph = graph.copy()
     # Ensure street_count attributes are set (required by osmnx 2.1.0)
     street_counts = ox.stats.count_streets_per_node(graph)
     for node, count in street_counts.items():
