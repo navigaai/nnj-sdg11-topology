@@ -7,6 +7,12 @@ from nnj_topology.disruption.models import (
     random_removal,
     targeted_removal,
 )
+from nnj_topology.disruption.resilience import (
+    ResilienceResult,
+    compute_auc,
+    critical_rho,
+    resilience_curve,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +28,10 @@ __all__ = [
     "hazard_removal",
     "register_disruption",
     "disruption_factory",
+    "ResilienceResult",
+    "compute_auc",
+    "critical_rho",
+    "resilience_curve",
 ]
 
 
