@@ -7,17 +7,21 @@ CITIES=(amsterdam barcelona istanbul bogota phoenix)
 # reprojected internally). Cities without a DEM are skipped for hazard automatically.
 SCENARIOS=(random targeted hazard)
 
+# Invoke via `-m` (module) so the `pipeline` package is importable — running the
+# scripts by path puts pipeline/ (not the repo root) on sys.path and breaks the
+# `from pipeline.run_baseline import ...` imports in run_disruption / run_analysis.
+
 # 1) Per-city baseline + city-level resilience curves (for Fig. 5)
 for city in "${CITIES[@]}"; do
-  uv run python pipeline/run_baseline.py city="$city"
+  uv run python -m pipeline.run_baseline city="$city"
   for sc in "${SCENARIOS[@]}"; do
-    uv run python pipeline/run_disruption.py city="$city" disruption="$sc"
+    uv run python -m pipeline.run_disruption city="$city" disruption="$sc"
   done
 done
 
 # 2) District-level analysis (per-district morphology + resilience -> regression).
 #    run_analysis iterates over all cities internally; one call per scenario.
 for sc in "${SCENARIOS[@]}"; do
-  uv run python pipeline/run_analysis.py disruption="$sc"
+  uv run python -m pipeline.run_analysis disruption="$sc"
 done
 echo "all cities + scenarios complete"

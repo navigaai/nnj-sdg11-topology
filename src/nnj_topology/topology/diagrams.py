@@ -38,18 +38,24 @@ def rips_diagram(points_xy: np.ndarray, weights: np.ndarray, max_dim: int = 1) -
 
 
 def sublevel_diagram(graph: nx.Graph, field: dict, max_dim: int = 1) -> Diagram:
-    """Sublevel-set persistence of a node field on a graph (1-skeleton + filled triangles)."""
+    """Sublevel-set persistence of a node field on a graph (1-skeleton + filled triangles).
+
+    Node ids are remapped to a compact 0..N-1 index before insertion: gudhi
+    vertices are 32-bit ints, whereas real OSM node ids exceed 2**31. The
+    remapping is label-invariant, so the persistence values are unchanged.
+    """
     st = gudhi.SimplexTree()
+    idx = {node: i for i, node in enumerate(field)}
     for node, value in field.items():
-        st.insert([int(node)], filtration=float(value))
+        st.insert([idx[node]], filtration=float(value))
     for u, v in graph.edges():
         fu, fv = float(field[u]), float(field[v])
-        st.insert([int(u), int(v)], filtration=max(fu, fv))
+        st.insert([idx[u], idx[v]], filtration=max(fu, fv))
     # fill triangles on every 3-clique so H1 reflects genuine enclosed voids
     for clique in nx.enumerate_all_cliques(nx.Graph(graph)):
         if len(clique) == 3:
             vals = [float(field[c]) for c in clique]
-            st.insert([int(c) for c in clique], filtration=max(vals))
+            st.insert([idx[c] for c in clique], filtration=max(vals))
     st.make_filtration_non_decreasing()
     st.compute_persistence()
     out: Diagram = {d: [] for d in range(max_dim + 1)}

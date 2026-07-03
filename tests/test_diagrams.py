@@ -1,3 +1,4 @@
+import networkx as nx
 import numpy as np
 
 from nnj_topology.topology.diagrams import (
@@ -6,6 +7,19 @@ from nnj_topology.topology.diagrams import (
     sublevel_diagram,
 )
 from nnj_topology.topology import filtration_factory
+
+
+def test_sublevel_diagram_handles_large_osm_node_ids():
+    # gudhi vertices are 32-bit ints; real OSM node ids exceed 2**31. The
+    # sublevel builder must remap ids to a compact index or it raises.
+    g = nx.Graph()
+    ids = [10_000_000_001, 10_000_000_002, 10_000_000_003, 10_000_000_004]
+    nx.add_path(g, ids)
+    field = {ids[0]: 0.0, ids[1]: 1.0, ids[2]: 1.0, ids[3]: 0.0}
+    dgm = sublevel_diagram(g, field, max_dim=1)
+    assert 0 in dgm
+    assert dgm[0].shape[1] == 2
+    assert dgm[0].shape[0] >= 1  # at least one H0 class
 
 
 def test_rips_diagram_circle_has_one_h1_class():
