@@ -51,6 +51,10 @@ class RunConfig:
     # fill the graph's cycles), so the resilience signal lives in H0 (merging of
     # well-served regions). See RESULTS.md / methods.
     homology_dim: int
+    # Topological-denoising threshold (walk-minutes): H0 classes with lifetime
+    # below this are dropped before the Wasserstein match. Keeps the exact metric
+    # while bounding its O(n^3) cost on city-scale diagrams. 0.0 = no denoising.
+    persistence_threshold: float
     city: CityConfig
     disruption: DisruptionConfig
     filtration: FiltrationConfig
@@ -63,6 +67,7 @@ def from_omegaconf(cfg: DictConfig) -> RunConfig:
         seed=int(cfg.seed),
         h3_res=int(cfg.h3_res),
         homology_dim=int(cfg.get("homology_dim", 0)),
+        persistence_threshold=float(cfg.get("persistence_threshold", 1.0)),
         city=CityConfig(name=cfg.city.name, place=cfg.city.place, crs=cfg.city.crs),
         disruption=DisruptionConfig(
             name=cfg.disruption.name,

@@ -9,6 +9,17 @@ from nnj_topology.topology.diagrams import (
 from nnj_topology.topology import filtration_factory
 
 
+def test_sublevel_diagram_max_dim_zero_skips_h1():
+    # A filled triangle: with max_dim=0 we must NOT compute H1 (triangle-fill
+    # skipped for speed), only H0.
+    g = nx.Graph()
+    g.add_edges_from([(0, 1), (1, 2), (0, 2)])
+    field = {0: 0.0, 1: 0.5, 2: 1.0}
+    dgm = sublevel_diagram(g, field, max_dim=0)
+    assert set(dgm.keys()) == {0}
+    assert 1 not in dgm  # H1 not computed when max_dim=0
+
+
 def test_sublevel_diagram_handles_large_osm_node_ids():
     # gudhi vertices are 32-bit ints; real OSM node ids exceed 2**31. The
     # sublevel builder must remap ids to a compact index or it raises.

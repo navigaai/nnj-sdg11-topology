@@ -19,6 +19,7 @@ def test_from_omegaconf_builds_frozen_runconfig():
             "seed": 7,
             "h3_res": 8,
             "homology_dim": 0,
+            "persistence_threshold": 1.0,
             "city": {"name": "testville", "place": "Testville, Country", "crs": "EPSG:3857"},
             "disruption": {"name": "random", "rhos": [0.0, 0.5], "n_replicates": 2},
             "filtration": {"name": "sublevel", "max_dim": 1},
@@ -32,3 +33,4 @@ def test_from_omegaconf_builds_frozen_runconfig():
     assert rc.disruption.rhos == (0.0, 0.5)  # tuple => immutable
     assert rc.h3_res == 8
     assert rc.homology_dim == 0
+    assert rc.persistence_threshold == 1.0

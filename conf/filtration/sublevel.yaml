@@ -1,2 +1,5 @@
 name: sublevel
-max_dim: 1
+# H0-only by default: the resilience metric uses H0 (homology_dim=0) and H1 is
+# near-empty on street networks. max_dim=0 skips the costly triangle-filling.
+# For an H1 sensitivity check, override: filtration.max_dim=1 homology_dim=1.
+max_dim: 0

@@ -54,6 +54,7 @@ def district_resilience(
     max_dim: int = 1,
     min_nodes: int = 10,
     dim: int = 0,
+    min_persistence: float = 0.0,
 ) -> Dict[str, ResilienceResult]:
     """Per-hex resilience curve, computed by streaming over disruptions.
 
@@ -89,7 +90,7 @@ def district_resilience(
             for cell in qualifying:
                 local = local_diagram(simple_dg, dg_field, hex_nodes[cell], max_dim)
                 dist_sum[cell][rho] += wasserstein_distance(
-                    base_local[cell], local, dim=dim
+                    base_local[cell], local, dim=dim, min_persistence=min_persistence
                 )
             del dg, simple_dg, dg_field  # release before the next (rho, rep)
 

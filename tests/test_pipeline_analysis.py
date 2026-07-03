@@ -43,6 +43,7 @@ def test_compute_district_records_returns_rows_with_city_and_auc():
             name = "mini"
         h3_res = 11  # fine res so the small fixture yields >=1 populated hex
         homology_dim = 0
+        persistence_threshold = 0.0
 
     records = compute_district_records(
         g, green, field_fn, random_removal, "EPSG:32635", _RC(), min_nodes=1

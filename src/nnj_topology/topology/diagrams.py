@@ -51,11 +51,14 @@ def sublevel_diagram(graph: nx.Graph, field: dict, max_dim: int = 1) -> Diagram:
     for u, v in graph.edges():
         fu, fv = float(field[u]), float(field[v])
         st.insert([idx[u], idx[v]], filtration=max(fu, fv))
-    # fill triangles on every 3-clique so H1 reflects genuine enclosed voids
-    for clique in nx.enumerate_all_cliques(nx.Graph(graph)):
-        if len(clique) == 3:
-            vals = [float(field[c]) for c in clique]
-            st.insert([idx[c] for c in clique], filtration=max(vals))
+    # Fill triangles on every 3-clique so H1 reflects genuine enclosed voids.
+    # Triangles do not affect H0 (connected components), so this expensive
+    # enumeration is skipped for an H0-only computation (max_dim == 0).
+    if max_dim >= 1:
+        for clique in nx.enumerate_all_cliques(nx.Graph(graph)):
+            if len(clique) == 3:
+                vals = [float(field[c]) for c in clique]
+                st.insert([idx[c] for c in clique], filtration=max(vals))
     st.make_filtration_non_decreasing()
     st.compute_persistence()
     out: Diagram = {d: [] for d in range(max_dim + 1)}

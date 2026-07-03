@@ -118,6 +118,7 @@ def compute_district_records(
         rhos=list(rc.disruption.rhos), n_replicates=rc.disruption.n_replicates,
         seed=rc.seed, hex_nodes=hex_nodes, max_dim=rc.filtration.max_dim,
         min_nodes=min_nodes, dim=rc.homology_dim,
+        min_persistence=rc.persistence_threshold,
     )
     morph_by_hex = district_morphology(graph, green, crs, hex_nodes)
     base_field = field_fn(graph)
@@ -186,6 +187,7 @@ def main(cfg: DictConfig) -> None:
             seed=rc.seed,
             h3_res=rc.h3_res,
             homology_dim=rc.homology_dim,
+            persistence_threshold=rc.persistence_threshold,
             city=CityConfig(city_cfg.name, city_cfg.place, city_cfg.crs),
             disruption=rc.disruption,
             filtration=rc.filtration,
