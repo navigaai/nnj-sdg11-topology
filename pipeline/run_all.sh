@@ -2,11 +2,10 @@
 set -euo pipefail
 # Prerequisite (one-time, manual): place GHS-UCDB at data/ghsl/ghs_ucdb.gpkg
 CITIES=(amsterdam barcelona istanbul bogota phoenix)
-# NOTE: 'hazard' scenario is disabled by default — it requires a per-city DEM
-# (data/<city>/dem.tif) and hazard_nodes wiring (low_elevation_mask -> nearest nodes).
-# Re-add 'hazard' only after that wiring is implemented; otherwise hazard_removal
-# raises TypeError (missing hazard_nodes).
-SCENARIOS=(random targeted)
+# 'hazard' runs only for cities that have a DEM at data/<city>/dem.tif
+# (e.g. Copernicus GLO-30 or SRTM clipped to the city, any CRS — it is
+# reprojected internally). Cities without a DEM are skipped for hazard automatically.
+SCENARIOS=(random targeted hazard)
 
 # 1) Per-city baseline + city-level resilience curves (for Fig. 5)
 for city in "${CITIES[@]}"; do

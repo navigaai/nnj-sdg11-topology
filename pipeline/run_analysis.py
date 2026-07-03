@@ -104,6 +104,13 @@ def compute_district_records(
     if disrupt_name == "targeted":
         _ranking = betweenness_ranking(graph)
         disrupt = functools.partial(targeted_removal, ranking=_ranking)
+    elif disrupt_name == "hazard":
+        from nnj_topology.data.hazard import hazard_nodes_from_dem
+        from nnj_topology.disruption.models import hazard_removal
+
+        dem_path = Path(rc.paths.data) / rc.city.name / "dem.tif"
+        _hazard_nodes = hazard_nodes_from_dem(graph, dem_path, crs)
+        disrupt = functools.partial(hazard_removal, hazard_nodes=_hazard_nodes)
 
     hex_nodes = assign_nodes_to_hexes(graph, crs, rc.h3_res)
     res_by_hex = district_resilience(
@@ -155,6 +162,11 @@ def main(cfg: DictConfig) -> None:
     for city in CITIES:
         city_cfg = hydra.compose(config_name="config", overrides=[f"city={city}"]).city
         data_dir = Path(rc.paths.data) / city
+        if scenario == "hazard" and not (data_dir / "dem.tif").exists():
+            logger.warning(
+                "skipping hazard for %s: no DEM at %s/dem.tif", city, data_dir
+            )
+            continue
         graph = load_walk_network(city_cfg.place, city_cfg.crs, data_dir / "walk.graphml")
         boundary = load_urban_boundary(
             Path(rc.paths.data) / "ghsl" / "ghs_ucdb.gpkg", city_cfg.name, city_cfg.crs

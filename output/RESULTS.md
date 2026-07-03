@@ -16,7 +16,13 @@
    each city's urban-centre polygon by name (`UC_NM_MN`); confirm the five
    cities resolve (Istanbul, Barcelona, Amsterdam, Bogotá, Phoenix — accents
    are substring-matched).
-3. **Compute/RAM** — sublevel-set persistence at city scale can be heavy. If a
+3. **DEM (for the `hazard` scenario, optional per city)** — place a per-city
+   digital elevation model at `data/<city>/dem.tif` (e.g. Copernicus GLO-30 or
+   SRTM, clipped to the city; any CRS — it is reprojected internally). The
+   hazard scenario removes network edges incident to the lowest-elevation
+   (flood-prone) nodes. Cities **without** a DEM are skipped for hazard
+   automatically (no crash); `random` and `targeted` always run.
+4. **Compute/RAM** — sublevel-set persistence at city scale can be heavy. If a
    city OOMs, rerun that city with `filtration=rips` and record the switch in
    the "Construction notes" section below and in the paper's methods/limitations.
 

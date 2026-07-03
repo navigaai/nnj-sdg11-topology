@@ -41,6 +41,13 @@ def resilience_for_city(
     if rc.disruption.name == "targeted":
         _ranking = betweenness_ranking(graph)
         disrupt = functools.partial(targeted_removal, ranking=_ranking)
+    elif rc.disruption.name == "hazard":
+        from nnj_topology.data.hazard import hazard_nodes_from_dem
+        from nnj_topology.disruption.models import hazard_removal
+
+        dem_path = Path(rc.paths.data) / rc.city.name / "dem.tif"
+        _hazard_nodes = hazard_nodes_from_dem(graph, dem_path, crs)
+        disrupt = functools.partial(hazard_removal, hazard_nodes=_hazard_nodes)
 
     def distance_at_rho(rho: float) -> float:
         if rho == 0.0:
@@ -69,6 +76,14 @@ def main(cfg: DictConfig) -> None:
     data_dir = Path(rc.paths.data) / rc.city.name
     out_dir = Path(rc.paths.output) / rc.city.name
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if rc.disruption.name == "hazard" and not (data_dir / "dem.tif").exists():
+        logger.warning(
+            "skipping hazard for %s: no DEM at %s/dem.tif",
+            rc.city.name,
+            data_dir,
+        )
+        return
 
     graph = load_walk_network(rc.city.place, rc.city.crs, data_dir / "walk.graphml")
     green = load_greenspace(rc.city.place, rc.city.crs, data_dir / "green.gpkg")
