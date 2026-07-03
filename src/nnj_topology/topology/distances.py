@@ -28,9 +28,9 @@ def bottleneck_distance(dgm_a: Diagram, dgm_b: Diagram, dim: int = 1) -> float:
 
 
 def wasserstein_distance(
-    dgm_a: Diagram, dgm_b: Diagram, dim: int = 1, order: int = 2
+    dgm_a: Diagram, dgm_b: Diagram, dim: int = 1
 ) -> float:
-    """p-Wasserstein distance (default p=2) between finite parts of two diagrams."""
+    """1-Wasserstein distance (optimal matching, Euclidean ground metric) between the finite parts of two diagrams, via persim.wasserstein."""
     return float(persim.wasserstein(_finite(dgm_a, dim), _finite(dgm_b, dim)))
 
 

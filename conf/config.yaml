@@ -9,3 +9,12 @@ h3_res: 8          # district hex resolution (~0.7 km^2 cells)
 paths:
   data: data
   output: output
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .

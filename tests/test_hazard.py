@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import numpy as np
 
 from nnj_topology.data.hazard import low_elevation_mask
 

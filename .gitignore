@@ -8,3 +8,4 @@ paper/_build/
 .DS_Store
 *.gpkg
 *.tif
+cache/

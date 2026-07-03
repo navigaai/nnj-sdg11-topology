@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 from nnj_topology.analysis.regression import (
     build_district_frame,

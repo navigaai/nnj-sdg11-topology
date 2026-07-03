@@ -39,7 +39,7 @@ def morphology_descriptors(graph: nx.MultiDiGraph) -> dict[str, float]:
         / max(float(stats.get("edge_length_total", 1.0)) / 1000.0, 1e-9),
         "circuity": float(stats.get("circuity_avg", float("nan"))),
         "orientation_entropy": entropy,
-        "mean_block_size": float(stats.get("street_length_avg", float("nan"))),
+        "mean_street_length": float(stats.get("street_length_avg", float("nan"))),
     }
 
 

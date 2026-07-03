@@ -67,7 +67,7 @@ From `output/regression_random.csv` (and per scenario):
 | intersection_density | `<...>` | `<...>` | `<...>` | random |
 | circuity             | `<...>` | `<...>` | `<...>` | random |
 | orientation_entropy  | `<...>` | `<...>` | `<...>` | random |
-| mean_block_size      | `<...>` | `<...>` | `<...>` | random |
+| mean_street_length   | `<...>` | `<...>` | `<...>` | random |
 | greenspace_fragmentation | `<...>` | `<...>` | `<...>` | random |
 
 Repeat the block for `targeted` and `hazard`. Note sign + magnitude and whether

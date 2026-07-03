@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import logging
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import pandas as pd
 import statsmodels.formula.api as smf
+
+if TYPE_CHECKING:
+    import statsmodels.regression.linear_model
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +24,7 @@ def build_district_frame(records: List[dict]) -> pd.DataFrame:
 
 def fixed_effects_regression(
     df: pd.DataFrame, target: str = "auc", features: Optional[List[str]] = None
-):
+) -> "statsmodels.regression.linear_model.RegressionResultsWrapper":
     """OLS of `target` on morphology features with city fixed effects."""
     if features is None:
         features = [c for c in df.columns if c not in _NON_FEATURE]
@@ -31,7 +34,7 @@ def fixed_effects_regression(
     return smf.ols(formula, data=df).fit()
 
 
-def tidy_coefficients(result) -> pd.DataFrame:
+def tidy_coefficients(result: "statsmodels.regression.linear_model.RegressionResultsWrapper") -> pd.DataFrame:
     """Tidy morphology coefficients (drop the city fixed-effect dummies)."""
     params = result.params
     pvalues = result.pvalues

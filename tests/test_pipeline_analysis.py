@@ -2,7 +2,7 @@ from pathlib import Path
 
 import geopandas as gpd
 import networkx as nx
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 
 from nnj_topology.accessibility.field import accessibility_field, add_travel_time
 from nnj_topology.data.greenspace import access_points, snap_points_to_nodes

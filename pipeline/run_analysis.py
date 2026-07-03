@@ -19,7 +19,7 @@ from nnj_topology.analysis.regression import (
 )
 from nnj_topology.disruption import disruption_factory
 from nnj_topology.disruption.resilience import ResilienceResult
-from nnj_topology.districts.tiling import assign_nodes_to_hexes, district_resilience
+from nnj_topology.districts.tiling import assign_nodes_to_hexes, district_resilience, local_diagram
 from nnj_topology.morphology.descriptors import (
     greenspace_fragmentation,
     morphology_descriptors,
@@ -78,8 +78,6 @@ def compute_district_records(
     for cell, res in res_by_hex.items():
         if cell not in morph_by_hex:
             continue
-        from nnj_topology.districts.tiling import local_diagram
-
         base_dgm = local_diagram(simple, base_field, hex_nodes[cell], rc.filtration.max_dim)
         rec = {"city": rc.city.name, "hex": cell}
         rec.update(morph_by_hex[cell])
@@ -95,9 +93,6 @@ def main(cfg: DictConfig) -> None:
     from nnj_topology.accessibility.field import accessibility_field, add_travel_time
     from nnj_topology.config import (
         CityConfig,
-        DisruptionConfig,
-        FiltrationConfig,
-        PathsConfig,
         RunConfig,
         from_omegaconf,
     )
@@ -168,7 +163,7 @@ def main(cfg: DictConfig) -> None:
 
     if curves:
         plot_resilience_curves(curves).savefig(fig_dir / "fig5_resilience.png", dpi=200)
-    top_feature = tidy.reindex(tidy["coef"].abs().sort_values(ascending=False).index).iloc[0]["term"]
+    top_feature = tidy.sort_values("p_value").iloc[0]["term"]
     plot_morphology_vs_resilience(df, feature=top_feature).savefig(
         fig_dir / "fig6_morphology.png", dpi=200
     )

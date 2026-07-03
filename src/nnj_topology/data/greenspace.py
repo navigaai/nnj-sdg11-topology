@@ -31,7 +31,7 @@ def load_greenspace(
 
     logger.info("Downloading greenspace for %s", place)
     gdf = ox.features_from_place(place, tags=GREENSPACE_TAGS)
-    gdf = gdf[gdf.geometry.type.isin(["Polygon", "MultiPolygon"])].to_crs(crs)
+    gdf = gdf[gdf.geometry.geom_type.isin(["Polygon", "MultiPolygon"])].to_crs(crs)
     gdf = gdf.reset_index(drop=True)[["geometry"]]
 
     if cache_path is not None:

@@ -25,7 +25,6 @@ def rips_diagram(points_xy: np.ndarray, weights: np.ndarray, max_dim: int = 1) -
     """
     if points_xy.ndim != 2 or points_xy.shape[1] != 2:
         raise ValueError("points_xy must have shape (n, 2)")
-    n = len(points_xy)
     diff = points_xy[:, None, :] - points_xy[None, :, :]
     dist = np.sqrt((diff**2).sum(axis=-1))
     w = weights / (weights.max() + 1e-12)
