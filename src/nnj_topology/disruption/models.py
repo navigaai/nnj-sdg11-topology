@@ -8,7 +8,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["random_removal", "targeted_removal", "hazard_removal"]
+__all__ = ["random_removal", "targeted_removal", "hazard_removal", "betweenness_ranking"]
 
 
 def _n_to_remove(graph: nx.MultiDiGraph, rho: float) -> int:
@@ -30,11 +30,31 @@ def random_removal(graph: nx.MultiDiGraph, rho: float, seed: int) -> nx.MultiDiG
     return h
 
 
-def targeted_removal(graph: nx.MultiDiGraph, rho: float, seed: int = 0) -> nx.MultiDiGraph:
+def betweenness_ranking(graph: nx.MultiDiGraph) -> list:
+    """Return undirected edges sorted by edge betweenness centrality, highest first.
+
+    Callers can precompute this once and pass it to repeated ``targeted_removal``
+    calls at different rho values to avoid recomputing betweenness every time.
+    """
+    simple = nx.Graph(graph)
+    bc = nx.edge_betweenness_centrality(simple, weight="length")
+    return sorted(bc, key=lambda e: bc[e], reverse=True)
+
+
+def targeted_removal(
+    graph: nx.MultiDiGraph, rho: float, seed: int = 0, ranking: list | None = None
+) -> nx.MultiDiGraph:
     """Remove the top fraction `rho` of edges by edge betweenness (deterministic).
 
     `rho` is measured against the directed edge count, matching `random_removal`,
     so the same rho removes the same fraction of directed edges across scenarios.
+
+    Parameters
+    ----------
+    ranking:
+        Optional precomputed edge ranking (list of (u, v) tuples, high→low
+        betweenness).  When provided the expensive betweenness computation is
+        skipped; results are identical to computing it fresh on the same graph.
     """
     if not 0.0 <= rho <= 1.0:
         raise ValueError("rho must be in [0, 1]")
@@ -42,9 +62,9 @@ def targeted_removal(graph: nx.MultiDiGraph, rho: float, seed: int = 0) -> nx.Mu
     k = _n_to_remove(h, rho)
     if k == 0:
         return h
-    simple = nx.Graph(h)
-    bc = nx.edge_betweenness_centrality(simple, weight="length")
-    ranked = sorted(bc, key=lambda e: bc[e], reverse=True)
+    if ranking is None:
+        ranking = betweenness_ranking(graph)
+    ranked = ranking
     removed = 0
     for u, v in ranked:
         if removed >= k:

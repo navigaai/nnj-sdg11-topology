@@ -80,3 +80,15 @@ def test_hazard_removal_coverage():
 def test_factory_unknown_raises_keyerror():
     with pytest.raises(KeyError):
         disruption_factory("nope")
+
+
+def test_targeted_removal_ranking_reuse_matches():
+    """Precomputed ranking must produce identical edge removal as the default path."""
+    from nnj_topology.disruption.models import betweenness_ranking
+
+    g = _mini()
+    a = targeted_removal(g, 0.3)
+    b = targeted_removal(g, 0.3, ranking=betweenness_ranking(g))
+    assert set(a.edges(keys=True)) == set(b.edges(keys=True)), (
+        "targeted_removal with precomputed ranking removed different edges than default"
+    )

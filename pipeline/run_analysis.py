@@ -1,15 +1,18 @@
 """District analysis pipeline: per-district records -> regression -> figures."""
 from __future__ import annotations
 
+import functools
 import json
 import logging
 from pathlib import Path
 from typing import Callable
 
 import geopandas as gpd
+import h3
 import hydra
 import networkx as nx
 from omegaconf import DictConfig
+from shapely.geometry import Polygon
 
 from nnj_topology.analysis.crosscity import city_typology
 from nnj_topology.analysis.regression import (
@@ -18,6 +21,7 @@ from nnj_topology.analysis.regression import (
     tidy_coefficients,
 )
 from nnj_topology.disruption import disruption_factory
+from nnj_topology.disruption.models import betweenness_ranking, targeted_removal
 from nnj_topology.disruption.resilience import ResilienceResult
 from nnj_topology.districts.tiling import assign_nodes_to_hexes, district_resilience, local_diagram
 from nnj_topology.morphology.descriptors import (
@@ -35,10 +39,27 @@ logger = logging.getLogger(__name__)
 CITIES = ["istanbul", "barcelona", "amsterdam", "bogota", "phoenix"]
 
 
+def _hex_polygon(cell: str, crs: str):
+    """Return the H3 hex cell boundary as a shapely geometry in the given CRS.
+
+    H3 v4 ``cell_to_boundary`` returns a list of (lat, lng) pairs.  We convert
+    to shapely (x=lng, y=lat) order, wrap in a GeoSeries in EPSG:4326, then
+    reproject to the local metric ``crs``.
+    """
+    ring = h3.cell_to_boundary(cell)
+    poly = Polygon([(lng, lat) for lat, lng in ring])
+    return gpd.GeoSeries([poly], crs="EPSG:4326").to_crs(crs).iloc[0]
+
+
 def district_morphology(
     graph: nx.MultiDiGraph, green: gpd.GeoDataFrame, crs: str, hex_nodes: dict
 ) -> dict:
-    """Per-hex morphology descriptors (osmnx stats on the hex subgraph)."""
+    """Per-hex morphology descriptors (osmnx stats on the hex subgraph).
+
+    Greenspace fragmentation is computed on the green space CLIPPED to each
+    individual hex cell so the metric varies between districts rather than being
+    a per-city constant that is collinear with city fixed effects.
+    """
     out: dict = {}
     for cell, nodes in hex_nodes.items():
         sub = graph.subgraph(nodes).copy()
@@ -49,7 +70,20 @@ def district_morphology(
         except Exception as exc:  # noqa: BLE001 - osmnx stats fail on tiny subgraphs
             logger.debug("morphology failed for hex %s: %s", cell, exc)
             continue
-        desc["greenspace_fragmentation"] = greenspace_fragmentation(green)
+        # Clip green space to this hex so fragmentation varies per district.
+        hexpoly = _hex_polygon(cell, crs)
+        candidates = green[green.intersects(hexpoly)]
+        if len(candidates) == 0:
+            local_green = gpd.GeoDataFrame(
+                geometry=gpd.GeoSeries([], crs=green.crs), crs=green.crs
+            )
+        else:
+            clipped = candidates.geometry.intersection(hexpoly)
+            local_green = gpd.GeoDataFrame(
+                geometry=clipped[~clipped.is_empty].reset_index(drop=True),
+                crs=green.crs,
+            )
+        desc["greenspace_fragmentation"] = greenspace_fragmentation(local_green)
         out[cell] = desc
     return out
 
@@ -64,6 +98,13 @@ def compute_district_records(
     min_nodes: int = 10,
 ) -> list[dict]:
     """Build one record per qualifying district (hex)."""
+    # Precompute betweenness ranking once for targeted scenario so the expensive
+    # O(V*E) computation is not repeated across every (rho, replicate) call.
+    disrupt_name = getattr(rc.disruption, "name", None)
+    if disrupt_name == "targeted":
+        _ranking = betweenness_ranking(graph)
+        disrupt = functools.partial(targeted_removal, ranking=_ranking)
+
     hex_nodes = assign_nodes_to_hexes(graph, crs, rc.h3_res)
     res_by_hex = district_resilience(
         graph, field_fn, disrupt,

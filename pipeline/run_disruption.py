@@ -1,6 +1,7 @@
 """Disruption pipeline: resilience curves per city and scenario."""
 from __future__ import annotations
 
+import functools
 import json
 import logging
 from dataclasses import asdict
@@ -14,6 +15,7 @@ from omegaconf import DictConfig
 
 from nnj_topology.config import RunConfig, from_omegaconf
 from nnj_topology.disruption import disruption_factory
+from nnj_topology.disruption.models import betweenness_ranking, targeted_removal
 from nnj_topology.disruption.resilience import ResilienceResult, resilience_curve
 from nnj_topology.seeding import set_seed
 from nnj_topology.topology.distances import wasserstein_distance
@@ -34,6 +36,11 @@ def resilience_for_city(
         graph, green, population, crs, rc.filtration.name, rc.filtration.max_dim
     )
     disrupt = disruption_factory(rc.disruption.name)
+    # Precompute betweenness ranking once so targeted_removal does not recompute
+    # the O(V*E) edge betweenness on every (rho, replicate) call.
+    if rc.disruption.name == "targeted":
+        _ranking = betweenness_ranking(graph)
+        disrupt = functools.partial(targeted_removal, ranking=_ranking)
 
     def distance_at_rho(rho: float) -> float:
         if rho == 0.0:
