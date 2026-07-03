@@ -27,16 +27,26 @@ def load_urban_boundary(
 ) -> BaseGeometry:
     """Return the GHS-UCDB urban-centre polygon matching `city_name_match`.
 
-    Matching is case-insensitive substring on the UCDB name column (`UC_NM_MN`).
-    Diacritics are folded so that e.g. "bogota" matches "Bogotá".
+    Matching is case-insensitive substring on the UCDB name column (`UC_NM_MN`),
+    with diacritics folded so that e.g. "bogota" matches "Bogotá". When several
+    urban centres share the name (e.g. Barcelona ES and Barcelona VE), the
+    single largest-area centre is selected — the intended major city — rather
+    than unioning distant homonyms into one geometry.
     """
     gdf = gpd.read_file(ucdb_path)
     name_col = "UC_NM_MN" if "UC_NM_MN" in gdf.columns else gdf.columns[0]
     needle = _fold(city_name_match)
-    hit = gdf[gdf[name_col].map(_fold).str.contains(needle, na=False)]
+    hit = gdf[gdf[name_col].map(_fold).str.contains(needle, na=False)].to_crs(crs)
     if hit.empty:
         raise ValueError(f"no UCDB urban centre matching '{city_name_match}'")
-    return hit.to_crs(crs).union_all()
+    if len(hit) > 1:
+        hit = hit.loc[[hit.geometry.area.idxmax()]]
+        ctr_col = next((c for c in ("CTR_MN_NM", "CTR_MN_ISO") if c in hit.columns), None)
+        where = f" ({hit.iloc[0][ctr_col]})" if ctr_col else ""
+        logger.info(
+            "Multiple UCDB matches for '%s'; picked largest%s", city_name_match, where
+        )
+    return hit.geometry.iloc[0]
 
 
 def clip_graph_to_boundary(

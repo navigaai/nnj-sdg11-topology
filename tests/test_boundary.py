@@ -45,3 +45,21 @@ def test_load_urban_boundary_matches_accented_name(tmp_path):
     # Must NOT contain the Barcelona centroid
     barcelona_centroid = barcelona_poly.centroid
     assert not result.contains(barcelona_centroid)
+
+
+def test_load_urban_boundary_disambiguates_homonyms_by_area(tmp_path):
+    """Two 'Barcelona' centres (ES big, VE small) must not be unioned; pick the largest."""
+    big = Polygon([(0, 0), (10, 0), (10, 10), (0, 10)])  # "Spain" — large
+    small = Polygon([(100, 100), (101, 100), (101, 101), (100, 101)])  # "Venezuela" — tiny, far
+    gdf = gpd.GeoDataFrame(
+        {"UC_NM_MN": ["Barcelona", "Barcelona"], "CTR_MN_NM": ["Spain", "Venezuela"]},
+        geometry=[big, small],
+        crs="EPSG:4326",
+    )
+    gpkg = tmp_path / "homonyms.gpkg"
+    gdf.to_file(gpkg, driver="GPKG")
+
+    result = load_urban_boundary(gpkg, "barcelona", "EPSG:4326")
+    # Picked the large one; the distant small centre is excluded (no transcontinental union).
+    assert result.covers(big.centroid)
+    assert not result.covers(small.centroid)
