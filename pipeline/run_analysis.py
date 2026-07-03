@@ -178,9 +178,13 @@ def main(cfg: DictConfig) -> None:
         graph = add_travel_time(graph)
         green = load_greenspace(city_cfg.place, city_cfg.crs, data_dir / "green.gpkg")
 
-        def field_fn(g, _green=green):
-            ap = access_points(_green)
-            return accessibility_field(g, snap_points_to_nodes(ap, g))
+        # Snap green access points to nodes ONCE: nearest-node is geometric and
+        # invariant under edge-only disruption, so we reuse the same sources on
+        # every (disrupted) graph instead of re-snapping ~10^4 points per call.
+        _sources = snap_points_to_nodes(access_points(green), graph)
+
+        def field_fn(g, _src=_sources):
+            return accessibility_field(g, _src)
 
         # h3_res is a real field on RunConfig (added Task 1); construct directly,
         # no object.__setattr__ hack needed.
