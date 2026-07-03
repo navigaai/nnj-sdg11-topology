@@ -7,7 +7,6 @@ from typing import Callable, Dict, List
 import geopandas as gpd
 import h3
 import networkx as nx
-import numpy as np
 from shapely.geometry import Point
 
 from nnj_topology.disruption.resilience import ResilienceResult, resilience_curve
@@ -55,44 +54,51 @@ def district_resilience(
     max_dim: int = 1,
     min_nodes: int = 10,
 ) -> Dict[str, ResilienceResult]:
-    """Per-hex resilience curve; disrupted graphs are computed once and reused.
+    """Per-hex resilience curve, computed by streaming over disruptions.
+
+    Each disrupted graph is built exactly once per ``(rho, replicate)`` and its
+    per-hex distance contributions are accumulated immediately, so only ONE
+    disrupted graph + field is resident in memory at a time (avoids holding all
+    ``len(rhos) * n_replicates`` full-city copies simultaneously). Results are
+    identical to averaging the replicates directly.
 
     `field_fn(graph) -> dict` recomputes the accessibility field on a (possibly
     disrupted) graph. Hexes with fewer than `min_nodes` nodes are skipped.
     """
     base_field = field_fn(graph)
     simple = nx.Graph(graph)
+    qualifying = [cell for cell, nodes in hex_nodes.items() if len(nodes) >= min_nodes]
     base_local = {
-        cell: local_diagram(simple, base_field, nodes, max_dim)
-        for cell, nodes in hex_nodes.items()
-        if len(nodes) >= min_nodes
+        cell: local_diagram(simple, base_field, hex_nodes[cell], max_dim)
+        for cell in qualifying
     }
 
-    # Pre-compute disrupted graphs + their fields + simple views, once per (rho, rep).
-    disrupted: Dict[float, list] = {}
-    for rho in rhos:
-        if rho == 0.0:
-            continue
-        reps = []
+    nonzero_rhos = [rho for rho in rhos if rho != 0.0]
+    # Per-hex running sum of Wasserstein distances, keyed by rho.
+    dist_sum: Dict[str, Dict[float, float]] = {
+        cell: {rho: 0.0 for rho in nonzero_rhos} for cell in qualifying
+    }
+
+    # Stream: one disrupted graph resident at a time; score every hex, then drop it.
+    for rho in nonzero_rhos:
         for rep in range(n_replicates):
             dg = disrupt(graph, rho, seed=seed + rep)
-            reps.append((nx.Graph(dg), field_fn(dg)))
-        disrupted[rho] = reps
+            simple_dg = nx.Graph(dg)
+            dg_field = field_fn(dg)
+            for cell in qualifying:
+                local = local_diagram(simple_dg, dg_field, hex_nodes[cell], max_dim)
+                dist_sum[cell][rho] += wasserstein_distance(
+                    base_local[cell], local, dim=1
+                )
+            del dg, simple_dg, dg_field  # release before the next (rho, rep)
 
+    denom = float(n_replicates) if n_replicates else 1.0
     results: Dict[str, ResilienceResult] = {}
-    for cell, nodes in hex_nodes.items():
-        if cell not in base_local:
-            continue
-        base_dgm = base_local[cell]
+    for cell in qualifying:
+        means = {rho: dist_sum[cell][rho] / denom for rho in nonzero_rhos}
 
-        def distance_at_rho(rho: float, _nodes=nodes, _base=base_dgm) -> float:
-            if rho == 0.0:
-                return 0.0
-            dists = []
-            for simple_dg, dg_field in disrupted[rho]:
-                local = local_diagram(simple_dg, dg_field, _nodes, max_dim)
-                dists.append(wasserstein_distance(_base, local, dim=1))
-            return float(np.mean(dists))
+        def distance_at_rho(rho: float, _means=means) -> float:
+            return 0.0 if rho == 0.0 else float(_means[rho])
 
         results[cell] = resilience_curve(rhos, distance_at_rho)
     return results
