@@ -9,3 +9,5 @@ paper/_build/
 *.gpkg
 *.tif
 cache/
+.hydra/
+*.log
