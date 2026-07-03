@@ -159,9 +159,10 @@ def main(cfg: DictConfig) -> None:
     scenario = rc.disruption.name
     disrupt = disruption_factory(scenario)
 
+    cities = list(cfg.get("cities", CITIES))  # override with cities=[amsterdam] to run a subset
     all_records: list[dict] = []
     curves: dict[str, ResilienceResult] = {}
-    for city in CITIES:
+    for city in cities:
         city_cfg = hydra.compose(config_name="config", overrides=[f"city={city}"]).city
         data_dir = Path(rc.paths.data) / city
         if scenario == "hazard" and not (data_dir / "dem.tif").exists():
