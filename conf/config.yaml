@@ -6,6 +6,7 @@ defaults:
 
 seed: 42
 h3_res: 8          # district hex resolution (~0.7 km^2 cells)
+homology_dim: 0    # resilience distance homology dim: 0=H0 (signal on real nets), 1=H1
 paths:
   data: data
   output: output

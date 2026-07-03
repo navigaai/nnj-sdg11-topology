@@ -46,6 +46,11 @@ class PathsConfig:
 class RunConfig:
     seed: int
     h3_res: int
+    # Homology dimension for the resilience distance. Default 0 (H0): on real
+    # street networks the sublevel filtration's H1 is near-empty (few triangles
+    # fill the graph's cycles), so the resilience signal lives in H0 (merging of
+    # well-served regions). See RESULTS.md / methods.
+    homology_dim: int
     city: CityConfig
     disruption: DisruptionConfig
     filtration: FiltrationConfig
@@ -57,6 +62,7 @@ def from_omegaconf(cfg: DictConfig) -> RunConfig:
     return RunConfig(
         seed=int(cfg.seed),
         h3_res=int(cfg.h3_res),
+        homology_dim=int(cfg.get("homology_dim", 0)),
         city=CityConfig(name=cfg.city.name, place=cfg.city.place, crs=cfg.city.crs),
         disruption=DisruptionConfig(
             name=cfg.disruption.name,

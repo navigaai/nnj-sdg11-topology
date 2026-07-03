@@ -116,7 +116,8 @@ def compute_district_records(
     res_by_hex = district_resilience(
         graph, field_fn, disrupt,
         rhos=list(rc.disruption.rhos), n_replicates=rc.disruption.n_replicates,
-        seed=rc.seed, hex_nodes=hex_nodes, max_dim=rc.filtration.max_dim, min_nodes=min_nodes,
+        seed=rc.seed, hex_nodes=hex_nodes, max_dim=rc.filtration.max_dim,
+        min_nodes=min_nodes, dim=rc.homology_dim,
     )
     morph_by_hex = district_morphology(graph, green, crs, hex_nodes)
     base_field = field_fn(graph)
@@ -131,7 +132,7 @@ def compute_district_records(
         rec.update(morph_by_hex[cell])
         rec["auc"] = res.auc
         rec["rho_star"] = res.rho_star if res.rho_star is not None else float("nan")
-        rec["total_persistence"] = total_persistence(base_dgm, dim=1)
+        rec["total_persistence"] = total_persistence(base_dgm, dim=rc.homology_dim)
         records.append(rec)
     return records
 
@@ -184,6 +185,7 @@ def main(cfg: DictConfig) -> None:
         rc_city = RunConfig(
             seed=rc.seed,
             h3_res=rc.h3_res,
+            homology_dim=rc.homology_dim,
             city=CityConfig(city_cfg.name, city_cfg.place, city_cfg.crs),
             disruption=rc.disruption,
             filtration=rc.filtration,

@@ -59,7 +59,7 @@ def resilience_for_city(
             dgm, _ = compute_baseline(
                 dg, green, population, crs, rc.filtration.name, rc.filtration.max_dim
             )
-            dists.append(wasserstein_distance(base_dgm, dgm, dim=1))
+            dists.append(wasserstein_distance(base_dgm, dgm, dim=rc.homology_dim))
         return float(np.mean(dists))
 
     return resilience_curve(rc.disruption.rhos, distance_at_rho)

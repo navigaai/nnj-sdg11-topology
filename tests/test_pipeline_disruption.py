@@ -29,6 +29,7 @@ def _rc():
     return RunConfig(
         seed=42,
         h3_res=8,
+        homology_dim=0,
         city=CityConfig("mini", "Mini", "EPSG:32635"),
         disruption=DisruptionConfig("random", (0.0, 0.5), 2),
         filtration=FiltrationConfig("sublevel", 1),
