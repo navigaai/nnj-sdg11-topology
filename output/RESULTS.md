@@ -7,8 +7,9 @@
 
 ## Run configuration (what produced these numbers)
 
-- **Scenario:** `random` edge removal (percolation-style). `targeted` and
-  `hazard` **not yet run** (see §6).
+- **Scenarios:** `random` (percolation-style) and `targeted` (high-betweenness,
+  k=500 sampled) both run; signs agree across both (§3). `hazard` needs per-city
+  DEMs and is **not yet run** (see §6).
 - **Disruption grid:** ρ ∈ {0.0, 0.1, 0.2, 0.3, 0.5}, `n_replicates = 3`.
   (Reduced from the full {8 ρ × 10 reps} plan for tractability; the pattern and
   ρ\* are stable — widen for camera-ready.)
@@ -101,6 +102,22 @@ Model: `auc ~ intersection_density + circuity + orientation_entropy + mean_stree
 Four of five morphology descriptors are significant (three at p<0.001) at n=2603
 with city fixed effects — a defensible cross-city morphology↔resilience result.
 
+**Robustness — targeted scenario** (`regression_targeted.csv`, high-betweenness
+removal, k=500 sampled). Every sign matches random; all four remain significant:
+
+| descriptor | coef (targeted) | p (targeted) | sign vs random |
+|---|---|---|---|
+| circuity | −5.766 | 4.6×10⁻¹⁰ | same (−) |
+| orientation_entropy | +0.500 | 1.6×10⁻³ | same (+) |
+| mean_street_length | −0.0337 | 2.7×10⁻¹³ | same (−) |
+| intersection_density | −0.135 | 2.2×10⁻² | same (−) |
+| greenspace_fragmentation | −1.8×10⁻⁶ | 0.54 | same (ns) |
+
+Targeted AUC magnitudes are lower (fewer, more critical edges removed): targeted
+city mean AUC = Amsterdam 2.03, Barcelona 3.53, Phoenix 4.12, Bogotá 4.56,
+İstanbul 4.78 — same ranking as random. The morphology↔resilience result is not
+an artefact of the disruption model.
+
 ## 4. City-level resilience curves (Fig. 5 — `resilience_<scenario>.json`)
 
 Only **Amsterdam** has a city-level curve so far (city-level requires
@@ -126,14 +143,17 @@ Only **Amsterdam** has a city-level curve so far (city-level requires
 
 ## 6. Outstanding before camera-ready
 
-- Run `targeted` and `hazard` scenarios (hazard needs per-city DEMs); check
-  coefficient signs are stable across scenarios.
+- `hazard` scenario: acquire per-city DEMs (`data/<city>/dem.tif`, Copernicus
+  GLO-30 / SRTM) and run; the wiring is in place and skips cities without a DEM.
 - Run `run_disruption` per city to complete the Fig. 5 city-level curves (§4).
 - H3 resolution sensitivity (res 7 and 9).
 - Restore the full disruption grid (8 ρ × 10 reps) and confirm the coefficients
   and ρ\* are unchanged vs the reduced grid used here.
 - Consider reporting un-thresholded exact D for a small subsample to bound the
   denoising bias.
+
+*Done: `random` and `targeted` scenarios; all coefficient signs stable across
+both (a key robustness check).*
 
 ---
 
