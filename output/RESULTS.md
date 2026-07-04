@@ -161,7 +161,12 @@ earlier Fig 5 (unclipped) vs districts (clipped) spatial-unit mismatch.
   cities (streaming district resilience bounds memory).
 - **No city dropped** for too-few districts; smallest is Barcelona (147).
 - **Bogotá OSM coverage** adequate (538 districts); accent handled by folding.
-- **H3 resolution sensitivity** (one coarser + one finer level): **not yet run**.
+- **H3 resolution sensitivity**: re-ran at res 7 (485 districts) and res 9
+  (13,782 districts). circuity, orientation_entropy, mean_street_length stay
+  significant at p<0.001 with the same sign at all three resolutions (res 7/8/9);
+  intersection_density keeps its sign (significant only at res 8);
+  greenspace_fragmentation non-significant throughout. Magnitudes scale with cell
+  size. Result is robust to resolution across a 28× district-count range.
 
 ## 6. Outstanding before camera-ready
 
@@ -170,7 +175,6 @@ earlier Fig 5 (unclipped) vs districts (clipped) spatial-unit mismatch.
   scenario actually stresses the network. DEMs are already in place (AWS Terrain
   Tiles, `data/<city>/dem.tif`, fetched via `scripts/fetch_dem.py`).
 - Run `run_disruption` per city to complete the Fig. 5 city-level curves (§4).
-- H3 resolution sensitivity (res 7 and 9).
 - Restore the full disruption grid (8 ρ × 10 reps) and confirm the coefficients
   and ρ\* are unchanged vs the reduced grid used here.
 - Consider reporting un-thresholded exact D for a small subsample to bound the
