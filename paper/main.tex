@@ -278,15 +278,22 @@ access topology degrades more under disruption (less resilient).}
 \label{fig:morphology}
 \end{figure}
 
-At the city scale, the Amsterdam degradation curve is monotone and smooth
-(Fig.~\ref{fig:resilience}): $\Drho = (0,\,279.5,\,1276.1,\,1766.1)$ at
-$\rho=(0,0.1,0.3,0.5)$, with $\mathrm{AUC}=947.5$ and $\rhostar=0.30$, confirming
-that the metric responds meaningfully to disruption on real data.
+At the whole-city scale (computed on the same UCDB-clipped networks), the
+degradation curves $\Drho$ rise smoothly and rank the cities consistently with
+the district typology (Fig.~\ref{fig:resilience}): city-level
+$\mathrm{AUC}$ is lowest---most resilient---for Barcelona ($620$) and Amsterdam
+($898$), and highest for İstanbul ($2440$) and Bogotá ($2828$), with Phoenix in
+between ($2053$). The compact, walkable cities keep their access topology intact
+under disruption; the large, sprawling or polycentric ones lose it fastest. Under
+extreme removal ($\rho=0.5$) the İstanbul and Phoenix curves turn down as the
+network fragments so heavily that unreachable nodes drop out of the finite
+diagram, a signature of near-total collapse rather than of recovered access.
 
 \begin{figure}[t]\centering
-\includegraphics[width=0.6\linewidth]{figures/fig5_resilience.png}
-\caption{City-level resilience curve $\Drho$ for Amsterdam (random-disruption
-scenario). The dotted vertical line marks the critical transition $\rhostar$.}
+\includegraphics[width=0.72\linewidth]{figures/fig5_resilience.png}
+\caption{City-level resilience curves $\Drho$ for all five cities (random-disruption
+scenario), computed on the UCDB-clipped networks. Dotted vertical lines mark each
+city's critical transition $\rhostar$.}
 \label{fig:resilience}
 \end{figure}
 
@@ -335,9 +342,8 @@ Targeted betweenness is approximated from $k{=}500$ sampled pivots, as exact
 $O(V\lvert E\rvert)$ betweenness is intractable at city scale. (iii) Results use a
 persistence-thresholded $H_0$ metric and a reduced disruption grid; magnitudes are
 therefore denoised estimates, though ranking, signs and $\rhostar$ are stable.
-(iv) City-level degradation curves (Fig.~5) are so far computed for Amsterdam
-only. (v) OSM completeness varies by city, and the network-distance
-Vietoris--Rips variant of the filtration is left to future work. None of these undermines the core finding: at the scale
+(iv) OSM completeness varies by city, and the network-distance Vietoris--Rips
+variant of the filtration is left to future work. None of these undermines the core finding: at the scale
 of thousands of districts, street-network morphology significantly predicts the
 resilience of green-space access.
 

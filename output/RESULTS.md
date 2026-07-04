@@ -130,14 +130,24 @@ have near-zero, non-significant coefficients (apparent sign flips are noise on
 ~zero-variance AUC). Read as a limitation of the mild ρ-capped proxy, not a
 contradiction of random/targeted. Motivates a full flood-zone edge-removal model.
 
-## 4. City-level resilience curves (Fig. 5 — `resilience_<scenario>.json`)
+## 4. City-level resilience curves (Fig. 5 — `resilience_random.json`)
 
-Only **Amsterdam** has a city-level curve so far (city-level requires
-`pipeline/run_disruption.py` per city; the other four still need it — see §6):
+All five cities, computed on the **UCDB-clipped** networks (same spatial unit as
+the district analysis), random scenario, ρ ∈ {0, 0.1, 0.2, 0.3, 0.5}, 3 reps.
+Lower AUC = more resilient. Ranking matches the district typology (§2).
 
-| City | scenario | ρ grid | D(ρ) | AUC | ρ* |
-|------|----------|--------|------|-----|----|
-| Amsterdam | random | 0.0/0.1/0.3/0.5 | 0.0 / 279.5 / 1276.1 / 1766.1 | 947.5 | 0.30 |
+| City | AUC | ρ* | D(ρ) |
+|------|-----|----|------|
+| Barcelona | 619.8 | 0.30 | 0, 145, 381, 826, 1333 |
+| Amsterdam | 897.8 | 0.30 | 0, 294, 666, 1205, 1722 |
+| Phoenix | 2053.2 | 0.20 | 0, 730, 2023, 3574, 2152 |
+| İstanbul | 2439.9 | 0.20 | 0, 909, 2157, 3969, 3180 |
+| Bogotá | 2828.0 | 0.30 | 0, 968, 2191, 3862, 5188 |
+
+İstanbul and Phoenix curves turn down at ρ=0.5: heavy fragmentation drops
+unreachable nodes out of the finite H0 diagram (near-total collapse, not
+recovery). NOTE: `run_disruption` now clips to the UCDB boundary, resolving the
+earlier Fig 5 (unclipped) vs districts (clipped) spatial-unit mismatch.
 
 ## 5. Method notes / findings from the real run
 
