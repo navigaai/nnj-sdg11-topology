@@ -7,9 +7,10 @@
 
 ## Run configuration (what produced these numbers)
 
-- **Scenarios:** `random` (percolation-style) and `targeted` (high-betweenness,
-  k=500 sampled) both run; signs agree across both (§3). `hazard` needs per-city
-  DEMs and is **not yet run** (see §6).
+- **Scenarios:** all three run. `random` (percolation) and `targeted`
+  (high-betweenness, k=500 sampled) agree on every sign (§3). `hazard`
+  (low-elevation removal, AWS Terrain Tiles DEMs) is topography-dependent and too
+  mild to test the morphology signal — reported honestly in §3.
 - **Disruption grid:** ρ ∈ {0.0, 0.1, 0.2, 0.3, 0.5}, `n_replicates = 3`.
   (Reduced from the full {8 ρ × 10 reps} plan for tractability; the pattern and
   ρ\* are stable — widen for camera-ready.)
@@ -118,6 +119,17 @@ city mean AUC = Amsterdam 2.03, Barcelona 3.53, Phoenix 4.12, Bogotá 4.56,
 İstanbul 4.78 — same ranking as random. The morphology↔resilience result is not
 an artefact of the disruption model.
 
+**Hazard scenario (`regression_hazard.csv`) — honest negative/weak result.**
+Low-elevation removal is topography-dependent: hazard nodes = Amsterdam 361,
+Phoenix 4810 (flat), but İstanbul 22, Barcelona 17, Bogotá 10 (hilly/high, lowest
+cells at the waterfront). Resulting mean AUC is near-zero (Phoenix 0.31, Amsterdam
+0.09, others ≤0.01) — this localized disruption barely moves the city-wide H0
+topology. The regression does **not** resolve the morphology signal: only
+orientation_entropy is significant (+0.10, p=0.014); circuity and mean_street_length
+have near-zero, non-significant coefficients (apparent sign flips are noise on
+~zero-variance AUC). Read as a limitation of the mild ρ-capped proxy, not a
+contradiction of random/targeted. Motivates a full flood-zone edge-removal model.
+
 ## 4. City-level resilience curves (Fig. 5 — `resilience_<scenario>.json`)
 
 Only **Amsterdam** has a city-level curve so far (city-level requires
@@ -143,8 +155,10 @@ Only **Amsterdam** has a city-level curve so far (city-level requires
 
 ## 6. Outstanding before camera-ready
 
-- `hazard` scenario: acquire per-city DEMs (`data/<city>/dem.tif`, Copernicus
-  GLO-30 / SRTM) and run; the wiring is in place and skips cities without a DEM.
+- Strengthen the `hazard` model: replace the mild ρ-capped low-elevation removal
+  with full inundation (remove all edges below a flood-depth threshold), so the
+  scenario actually stresses the network. DEMs are already in place (AWS Terrain
+  Tiles, `data/<city>/dem.tif`, fetched via `scripts/fetch_dem.py`).
 - Run `run_disruption` per city to complete the Fig. 5 city-level curves (§4).
 - H3 resolution sensitivity (res 7 and 9).
 - Restore the full disruption grid (8 ρ × 10 reps) and confirm the coefficients

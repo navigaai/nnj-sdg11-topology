@@ -300,8 +300,20 @@ intersection density $-0.135$ ($p=0.022$), and green-space fragmentation again
 not significant. Targeted disruption removes fewer but more critical edges, so
 absolute AUC values are lower (e.g.\ Amsterdam mean AUC $2.03$ vs.\ $4.25$ under
 random), but the morphology$\leftrightarrow$resilience relationship and the city
-ranking are unchanged. The finding is therefore not an artefact of the
+ranking are unchanged. The finding is therefore not an artefact of the random
 disruption model.
+
+A third, \emph{hazard} scenario (removing edges near the lowest-elevation
+$10\%$ of nodes, from AWS Terrain Tiles DEMs) is topography-dependent and much
+milder: substantial only in the two flattest cities (Amsterdam and the Phoenix
+basin, mean AUC $0.09$ and $0.31$) and near-zero in the hilly or high-altitude
+ones (İstanbul, Barcelona, Bogotá; mean AUC $\le0.01$), where the lowest cells
+sit at the waterfront and disconnect only a shoreline fringe. This localized
+perturbation barely moves the city-wide $H_0$ topology, so it does not resolve a
+morphology signal (only orientation entropy remains significant, $+0.10$,
+$p=0.01$); we read this as a limitation of the mild, $\rho$-capped low-elevation
+proxy rather than a contradiction, and it motivates a stronger flood model that
+removes \emph{all} inundated edges.
 
 \section{Discussion}
 The results give an interpretable, architecture-facing reading of resilience.
@@ -315,9 +327,10 @@ green-dense cities the structure that matters is not isolated ``deserts''
 surrounded by served land but the connectivity of the served regions themselves,
 and that connectivity is what disruption erodes.
 
-\paragraph{Limitations.} (i) We report the random and targeted scenarios, which
-agree on every sign; the hazard (low-elevation) scenario is implemented but
-requires per-city digital elevation models and is left for future work. (ii)
+\paragraph{Limitations.} (i) The morphology result is established under the random
+and targeted scenarios, which agree on every sign; the hazard scenario, using a
+$\rho$-capped low-elevation proxy, is too mild and topography-dependent to test
+it and should be replaced by a full flood-zone edge removal. (ii)
 Targeted betweenness is approximated from $k{=}500$ sampled pivots, as exact
 $O(V\lvert E\rvert)$ betweenness is intractable at city scale. (iii) Results use a
 persistence-thresholded $H_0$ metric and a reduced disruption grid; magnitudes are
@@ -335,9 +348,10 @@ disruption---and showed, across $2{,}603$ districts in five contrasting cities,
 that urban morphology significantly predicts how robustly a city keeps its
 population close to nature. The result is robust: random and targeted disruption
 agree on every coefficient sign. The mathematics of persistence turns a static
-SDG~11.7 indicator into a dynamic, form-aware one. Future work will add the
-hazard scenario, a network-metric filtration, and resolution-sensitivity tests,
-toward a resilience-aware accessibility standard for sustainable cities.
+SDG~11.7 indicator into a dynamic, form-aware one. Future work will strengthen the
+hazard model to a full flood-zone removal, add a network-metric filtration, and
+test resolution sensitivity, toward a resilience-aware accessibility standard for
+sustainable cities.
 
 \paragraph{Reproducibility.} All data are open (OpenStreetMap, GHS-UCDB) and the
 pipeline is open-source Python (OSMnx, NetworkX, GeoPandas, GUDHI/\texttt{persim},
