@@ -30,14 +30,28 @@ def random_removal(graph: nx.MultiDiGraph, rho: float, seed: int) -> nx.MultiDiG
     return h
 
 
-def betweenness_ranking(graph: nx.MultiDiGraph) -> list:
+def betweenness_ranking(
+    graph: nx.MultiDiGraph, k: int | None = None, seed: int = 42, sample_above: int = 1000
+) -> list:
     """Return undirected edges sorted by edge betweenness centrality, highest first.
+
+    Exact edge betweenness is O(V*E) and intractable at city scale (Amsterdam's
+    clipped network takes >12 min). For graphs larger than ``sample_above`` nodes
+    we approximate with ``k`` pivot sources (default: min(500, V)); the sampled
+    ranking is a stable, reproducible approximation (fixed ``seed``). Pass an
+    explicit ``k`` to override, or ``k=0`` to force the exact computation.
 
     Callers can precompute this once and pass it to repeated ``targeted_removal``
     calls at different rho values to avoid recomputing betweenness every time.
     """
     simple = nx.Graph(graph)
-    bc = nx.edge_betweenness_centrality(simple, weight="length")
+    n = simple.number_of_nodes()
+    if k is None:
+        k = min(500, n) if n > sample_above else 0
+    kwargs = {"weight": "length"}
+    if k and k < n:
+        kwargs.update({"k": k, "seed": seed})
+    bc = nx.edge_betweenness_centrality(simple, **kwargs)
     return sorted(bc, key=lambda e: bc[e], reverse=True)
 
 
