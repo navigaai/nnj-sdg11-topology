@@ -18,3 +18,5 @@ paper/*.log
 paper/*.out
 paper/build*.log
 paper/bib.log
+/output_res7/
+/output_res9/
