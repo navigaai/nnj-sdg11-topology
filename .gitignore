@@ -11,3 +11,10 @@ paper/_build/
 cache/
 .hydra/
 *.log
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/build*.log
+paper/bib.log
