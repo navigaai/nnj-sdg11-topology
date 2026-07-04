@@ -72,6 +72,7 @@ def resilience_for_city(
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
 def main(cfg: DictConfig) -> None:
+    from nnj_topology.data.boundary import clip_graph_to_boundary, load_urban_boundary
     from nnj_topology.data.greenspace import load_greenspace
     from nnj_topology.data.network import load_walk_network
     from nnj_topology.data.population import load_population_points
@@ -91,6 +92,13 @@ def main(cfg: DictConfig) -> None:
         return
 
     graph = load_walk_network(rc.city.place, rc.city.crs, data_dir / "walk.graphml")
+    # Clip to the GHS-UCDB urban centre so city-level curves share the district
+    # analysis's spatial unit (falls back to the full graph if no UCDB file).
+    ucdb = Path(rc.paths.data) / "ghsl" / "ghs_ucdb.gpkg"
+    if ucdb.exists():
+        graph = clip_graph_to_boundary(
+            graph, load_urban_boundary(ucdb, rc.city.name, rc.city.crs), rc.city.crs
+        )
     green = load_greenspace(rc.city.place, rc.city.crs, data_dir / "green.gpkg")
     pop_raster = data_dir / "population.tif"
     population = (
