@@ -124,9 +124,9 @@ complex $K_t = \{\,\sigma : \max_{v\in\sigma} f(v)\le t\,\}$. As the threshold
 $t$ (walk-minutes) rises, well-served regions appear and merge. Persistent
 homology records, for each topological feature, a birth $b$ and death $d$; the
 multiset of points $(b,d)$ is the \emph{persistence diagram} $\mathrm{Dgm}_k(f)$
-in homological dimension $k$. Dimension~0 tracks connected components (the
-merging of well-served regions); dimension~1 tracks loops (enclosed voids, i.e.\
-access ``deserts'').
+in homological dimension $k$ \citep{edelsbrunner2000persistence}. Dimension~0
+tracks connected components (the merging of well-served regions); dimension~1
+tracks loops (enclosed voids, i.e.\ access ``deserts'').
 
 The distance between two diagrams is measured by an optimal matching. The
 $1$-Wasserstein distance is
@@ -266,10 +266,26 @@ green-space fragmentation & $-1.5\times10^{-6}$ & $3.8\times10^{-6}$ & $0.70$\\
 \end{tabular}
 \end{table}
 
-At the city scale, the Amsterdam degradation curve is monotone and smooth:
-$\Drho = (0,\,279.5,\,1276.1,\,1766.1)$ at $\rho=(0,0.1,0.3,0.5)$, with
-$\mathrm{AUC}=947.5$ and $\rhostar=0.30$, confirming that the metric responds
-meaningfully to disruption on real data.
+\begin{figure}[t]\centering
+\includegraphics[width=0.72\linewidth]{figures/fig6_morphology.png}
+\caption{Headline morphology$\leftrightarrow$resilience relationship. Each point
+is one of the $2{,}603$ districts, coloured by city; the dashed line is the
+pooled least-squares fit. Higher AUC indicates a district whose green-space
+access topology degrades more under disruption (less resilient).}
+\label{fig:morphology}
+\end{figure}
+
+At the city scale, the Amsterdam degradation curve is monotone and smooth
+(Fig.~\ref{fig:resilience}): $\Drho = (0,\,279.5,\,1276.1,\,1766.1)$ at
+$\rho=(0,0.1,0.3,0.5)$, with $\mathrm{AUC}=947.5$ and $\rhostar=0.30$, confirming
+that the metric responds meaningfully to disruption on real data.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.6\linewidth]{figures/fig5_resilience.png}
+\caption{City-level resilience curve $\Drho$ for Amsterdam (random-disruption
+scenario). The dotted vertical line marks the critical transition $\rhostar$.}
+\label{fig:resilience}
+\end{figure}
 
 \section{Discussion}
 The results give an interpretable, architecture-facing reading of resilience.
