@@ -268,6 +268,16 @@ $p=0.01$); we read this as a limitation of the mild, $\rho$-capped low-elevation
 proxy rather than a contradiction, and it motivates a stronger flood model that
 removes \emph{all} inundated edges.
 
+\paragraph{Disruption-grid sensitivity.} Re-running the full analysis at the
+complete disruption grid ($8$ intensities $\times\,10$ replicates, against the
+$5\times3$ grid used above) confirms the headline result: circuity ($-10.2$),
+orientation entropy ($+1.01$) and mean street length ($-0.048$, essentially
+identical to the reduced grid's $-0.0478$) stay significant at $p<10^{-3}$ with
+the same signs, and the city AUC ranking and $\rhostar$ values are preserved
+(within $\approx0.02$). The one exception is intersection density, already
+marginal ($p=8.6\times10^{-3}$), which becomes non-significant at the full grid
+($p=0.25$); we therefore treat it as the weakest of the four effects.
+
 \paragraph{Resolution sensitivity.} Re-running the analysis at H3 resolutions~$7$
 (coarse, $485$ districts) and~$9$ (fine, $13{,}782$ districts) leaves the result
 unchanged in sign and significance for the three strongest descriptors: circuity,
@@ -295,8 +305,9 @@ $\rho$-capped low-elevation proxy, is too mild and topography-dependent to test
 it and should be replaced by a full flood-zone edge removal. (ii)
 Targeted betweenness is approximated from $k{=}500$ sampled pivots, as exact
 $O(V\lvert E\rvert)$ betweenness is intractable at city scale. (iii) Results use a
-persistence-thresholded $H_0$ metric and a reduced disruption grid; magnitudes are
-therefore denoised estimates, though ranking, signs and $\rhostar$ are stable.
+persistence-thresholded $H_0$ metric; reported magnitudes are therefore denoised
+estimates, though the full disruption grid confirms the coefficient signs,
+significance of the three strongest descriptors, ranking and $\rhostar$.
 (iv) OSM completeness varies by city, and the network-distance Vietoris--Rips
 variant of the filtration is left to future work. None of these undermines the core finding: at the scale
 of thousands of districts, street-network morphology significantly predicts the

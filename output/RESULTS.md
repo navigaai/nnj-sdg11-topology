@@ -11,9 +11,11 @@
   (high-betweenness, k=500 sampled) agree on every sign (§3). `hazard`
   (low-elevation removal, AWS Terrain Tiles DEMs) is topography-dependent and too
   mild to test the morphology signal — reported honestly in §3.
-- **Disruption grid:** ρ ∈ {0.0, 0.1, 0.2, 0.3, 0.5}, `n_replicates = 3`.
-  (Reduced from the full {8 ρ × 10 reps} plan for tractability; the pattern and
-  ρ\* are stable — widen for camera-ready.)
+- **Disruption grid:** headline uses ρ ∈ {0.0, 0.1, 0.2, 0.3, 0.5},
+  `n_replicates = 3`. **Validated against the full grid** {8 ρ × 10 reps}: the
+  three strongest descriptors keep sign + p<0.001 (circuity −10.2, orientation
+  −0.048... see below), city AUC ranking and ρ\* preserved within ~0.02; only
+  intersection_density (already marginal) drops to ns. See §3 "Grid sensitivity".
 - **Resilience metric:** 1-Wasserstein distance on **H0** (`homology_dim = 0`)
   between the undisrupted and disrupted sublevel diagrams, replicate-averaged.
   H0 (merging of well-served regions) carries the signal on street networks;
@@ -103,6 +105,21 @@ Model: `auc ~ intersection_density + circuity + orientation_entropy + mean_stree
 Four of five morphology descriptors are significant (three at p<0.001) at n=2603
 with city fixed effects — a defensible cross-city morphology↔resilience result.
 
+**Grid sensitivity — full 8ρ×10rep vs headline 5ρ×3rep** (`output_fullgrid/regression_random.csv`):
+
+| descriptor | reduced (5×3) | full (8×10) | sign | signif |
+|---|---|---|---|---|
+| circuity | −8.99*** | −10.2*** | same | same |
+| orientation_entropy | +1.17*** | +1.01*** | same | same |
+| mean_street_length | −0.0478*** | −0.0476*** | same | same |
+| intersection_density | −0.199** | −0.091 (ns, p=0.25) | same sign | **drops to ns** |
+| greenspace_fragmentation | ns | ns | same | same |
+
+City AUC ranking preserved (Amsterdam most resilient → Bogotá least); ρ\* stable
+within ~0.02 (full: ams 0.25, bcn 0.28, bog 0.24, ist 0.20, phx 0.16). The three
+strongest effects are essentially unchanged; the reduced grid slightly overstated
+the marginal intersection_density term (now treated as the weakest of the four).
+
 **Robustness — targeted scenario** (`regression_targeted.csv`, high-betweenness
 removal, k=500 sampled). Every sign matches random; all four remain significant:
 
@@ -175,8 +192,6 @@ earlier Fig 5 (unclipped) vs districts (clipped) spatial-unit mismatch.
   scenario actually stresses the network. DEMs are already in place (AWS Terrain
   Tiles, `data/<city>/dem.tif`, fetched via `scripts/fetch_dem.py`).
 - Run `run_disruption` per city to complete the Fig. 5 city-level curves (§4).
-- Restore the full disruption grid (8 ρ × 10 reps) and confirm the coefficients
-  and ρ\* are unchanged vs the reduced grid used here.
 - Consider reporting un-thresholded exact D for a small subsample to bound the
   denoising bias.
 
