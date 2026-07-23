@@ -1,0 +1,3 @@
+name: istanbul
+place: "İstanbul, Turkey"
+crs: "EPSG:32635"   # UTM 35N (metric, for distances)

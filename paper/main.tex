@@ -1,0 +1,41 @@
+% ============================================================================
+% The Topology of Reachable Nature  —  PORTABLE (article) build
+% Compiles anywhere (pdflatex + bibtex). Shares abstract.tex + body.tex with the
+% Springer build (main-springer.tex). For NNJ submission use main-springer.tex
+% with the sn-jnl class (see README-springer.md).
+% ============================================================================
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage{xspace}
+
+\newcommand{\Drho}{D(\rho)\xspace}
+\newcommand{\rhostar}{\rho^{*}\xspace}
+
+\title{The Topology of Reachable Nature: Persistent Homology and the\\
+Resilience of Green-Space Access in Cities of Contrasting Morphology}
+\author{Seyda Emekci\\
+\small Department of Architecture, Ankara Y{\i}ld{\i}r{\i}m Beyaz{\i}t University}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\input{body}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

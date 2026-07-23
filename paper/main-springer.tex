@@ -1,0 +1,49 @@
+% ============================================================================
+% The Topology of Reachable Nature  —  SPRINGER (Nexus Network Journal) build
+% Uses the Springer Nature unified class `sn-jnl`.
+%
+% The sn-jnl class is NOT bundled here (CTAN/Overleaf provide it). To build:
+%   - Overleaf: New Project -> Templates -> "Springer Nature LaTeX Template",
+%     then drop in abstract.tex, body.tex, references.bib, figures/; OR
+%   - Local: install the class (`tlmgr install sn-jnl`, or unzip the Springer
+%     template's sn-jnl.cls + bst into this folder), then `latexmk -pdf main-springer.tex`.
+%
+% Reference-style option below selects Vancouver/numbered maths-physics style,
+% which fits NNJ. Switch to `sn-basic` (author-year) if the editor prefers it.
+% ============================================================================
+\documentclass[sn-mathphys-num,pdflatex]{sn-jnl}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+
+\newcommand{\Drho}{D(\rho)}
+\newcommand{\rhostar}{\rho^{*}}
+
+\begin{document}
+
+\title[Topology of Reachable Nature]{The Topology of Reachable Nature:
+Persistent Homology and the Resilience of Green-Space Access in Cities of
+Contrasting Morphology}
+
+% ORCID 0000-0002-5470-6485. The official sn-jnl template attaches ORCID via
+% \author[1]{...}\orcid{0000-0002-5470-6485}; add that on Overleaf where the
+% class provides the macro. (Also stated in the Declarations section.)
+\author[1]{\fnm{Seyda} \sur{Emekci}}\email{semekci@aybu.edu.tr}
+
+\affil[1]{\orgdiv{Department of Architecture},
+\orgname{Ankara Y{\i}ld{\i}r{\i}m Beyaz{\i}t University},
+\city{Ankara}, \country{Turkey}}
+
+\abstract{\input{abstract}}
+
+\keywords{persistent homology, topological data analysis, green-space accessibility,
+urban resilience, street-network morphology, SDG 11}
+
+\maketitle
+
+\input{body}
+
+\bibliography{references}
+
+\end{document}
