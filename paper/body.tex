@@ -97,7 +97,16 @@ the access points.
 
 \paragraph{Accessibility field.} We assign each node its network walking time (at
 $4.8$~km/h) to the nearest green-space access point by multi-source Dijkstra,
-giving the field $f$.
+giving the field $f$ (Fig.~\ref{fig:accessfield}).
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.72\linewidth]{figures/fig_accessfield.pdf}
+\caption{Green-space accessibility field for Amsterdam: each of the $49{,}202$
+pedestrian-network nodes inside the GHS-UCDB urban centre, coloured by network
+walking time to the nearest green space. Green marks well-served locations,
+red the access-poor pockets whose merging structure the resilience metric tracks.}
+\label{fig:accessfield}
+\end{figure}
 
 \paragraph{Resilience metric.} Let $\mathrm{Dgm}(f)$ be the baseline diagram. A
 disruption of intensity $\rho\in[0,1]$ removes a fraction $\rho$ of network
@@ -123,12 +132,22 @@ sublevel filtration's finite $H_1$ is nearly empty: a street graph contains few
 triangles, so the network's cycles are never filled and almost all $H_1$ classes
 are essential (infinite) and carry no finite persistence. In Amsterdam, for
 example, the baseline diagram has $6{,}449$ finite $H_0$ classes but only a single
-finite $H_1$ class. The resilience signal therefore lives in \emph{dimension~0}:
-the merging structure of well-served regions. We consequently compute $\Drho$ on
-$H_0$. To keep the exact Wasserstein matching tractable on city-scale diagrams we
-apply persistence thresholding, discarding $H_0$ classes with lifetime below
-$1$~walk-minute (topological noise); this preserves the ranking and $\rhostar$
-while reducing reported magnitudes by roughly $10$--$15\%$.
+finite $H_1$ class (Fig.~\ref{fig:persistence}). The resilience signal therefore
+lives in \emph{dimension~0}: the merging structure of well-served regions. We
+consequently compute $\Drho$ on $H_0$. To keep the exact Wasserstein matching
+tractable on city-scale diagrams we apply persistence thresholding, discarding
+$H_0$ classes with lifetime below $1$~walk-minute (topological noise); this
+preserves the ranking and $\rhostar$ while reducing reported magnitudes by roughly
+$10$--$15\%$.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.55\linewidth]{figures/fig_persistence.pdf}
+\caption{Persistence diagram of the Amsterdam baseline accessibility field. The
+finite part is carried almost entirely by $H_0$ ($6{,}449$ classes---the merging
+of well-served regions as the walk-time threshold rises) with only a single finite
+$H_1$ class, motivating an $H_0$-based resilience metric.}
+\label{fig:persistence}
+\end{figure}
 
 \paragraph{Districts and inference.} Statistical inference rests not on five
 cities but on intra-urban \emph{districts}: we tile each urban-centre boundary
@@ -286,6 +305,19 @@ the same signs across all three resolutions, a $28\times$ range of district
 counts. Coefficient magnitudes scale with cell size (larger cells yield larger
 per-district AUC), but the direction of every effect is stable; only
 green-space fragmentation, non-significant throughout, varies.
+Figure~\ref{fig:robustness} summarises both robustness axes.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{figures/fig_robustness.pdf}
+\caption{Robustness of the morphology$\rightarrow$resilience relationship.
+\textbf{(a)} Regression coefficients (with $95\%$ confidence intervals) for each
+morphology descriptor under the three disruption scenarios at H3 resolution~8;
+signs and significance agree across scenarios. \textbf{(b)} Sign and significance
+of each coefficient across H3 resolutions $7$/$8$/$9$: the three strongest
+descriptors stay significant with a constant sign, while intersection density
+(already marginal) is significant only at resolution~8.}
+\label{fig:robustness}
+\end{figure}
 
 \section{Discussion}
 The results give an interpretable, architecture-facing reading of resilience.
