@@ -50,11 +50,13 @@ that PH can \emph{locate} coverage holes. We differ on the object of study: we d
 not report where the deserts are, but how the whole access topology
 \emph{degrades} under disruption, and we regress that degradation on morphology.
 
-\emph{Accessibility and equity.} The proximity/catchment tradition measures
-green-space access as a static field. Our accessibility field
-(Section~\ref{sec:method}) is built the same way---network walking time to the
-nearest green space---but is then read topologically and stress-tested, rather
-than thresholded once.
+\emph{Accessibility and equity.} A large body of work measures green-space access
+as a static field, whether by simple footpath proximity \citep{carthy2020greenspace}
+or by catchment methods such as the Gaussian two-step floating catchment area
+\citep{sun2023catchment}, often to diagnose inequities in who lives close to nature
+\citep{asibey2026equity}. Our accessibility field (Section~\ref{sec:method}) is
+built the same way---network walking time to the nearest green space---but is then
+read topologically and stress-tested, rather than thresholded once.
 
 \emph{Street-network morphology.} We characterise form with standard descriptors
 computed from OpenStreetMap via OSMnx \citep{boeing2017osmnx}: intersection
@@ -245,10 +247,12 @@ access topology degrades more under disruption (less resilient).}
 
 At the whole-city scale (computed on the same UCDB-clipped networks), the
 degradation curves $\Drho$ rise smoothly and rank the cities consistently with
-the district typology (Fig.~\ref{fig:resilience}): city-level
-$\mathrm{AUC}$ is lowest---most resilient---for Barcelona ($620$) and Amsterdam
-($898$), and highest for İstanbul ($2440$) and Bogotá ($2828$), with Phoenix in
-between ($2053$). The compact, walkable cities keep their access topology intact
+the district typology (Fig.~\ref{fig:resilience}). City-level AUC is computed on
+the full-city diagram (thousands of $H_0$ classes) and is therefore two to three
+orders of magnitude larger than the per-district means of Table~\ref{tab:typology};
+only the relative ordering is comparable across the two scales. City-level AUC is
+lowest---most resilient---for Barcelona ($620$) and Amsterdam ($898$), and highest
+for İstanbul ($2440$) and Bogotá ($2828$), with Phoenix in between ($2053$). The compact, walkable cities keep their access topology intact
 under disruption; the large, sprawling or polycentric ones lose it fastest. Under
 extreme removal ($\rho=0.5$) the İstanbul and Phoenix curves turn down as the
 network fragments so heavily that unreachable nodes drop out of the finite
@@ -351,10 +355,11 @@ Wasserstein degradation curve of persistent-homology diagrams under network
 disruption---and showed, across $2{,}603$ districts in five contrasting cities,
 that urban morphology significantly predicts how robustly a city keeps its
 population close to nature. The result is robust: random and targeted disruption
-agree on every coefficient sign. The mathematics of persistence turns a static
-SDG~11.7 indicator into a dynamic, form-aware one. Future work will strengthen the
-hazard model to a full flood-zone removal, add a network-metric filtration, and
-test resolution sensitivity, toward a resilience-aware accessibility standard for
+agree on every coefficient sign, and it is stable across H3 district resolutions
+spanning a $28\times$ range of unit counts. The mathematics of persistence turns a
+static SDG~11.7 indicator into a dynamic, form-aware one. Future work will
+strengthen the hazard model to a full flood-zone removal and add a network-metric
+Vietoris--Rips filtration, toward a resilience-aware accessibility standard for
 sustainable cities.
 
 \paragraph{Reproducibility.} All data are open (OpenStreetMap, GHS-UCDB) and the
