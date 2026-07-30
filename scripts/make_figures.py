@@ -71,7 +71,9 @@ def robustness():
         "circuity":            {7: (-1, 3), 8: (-1, 3), 9: (-1, 3)},
         "orientation_entropy": {7: (+1, 3), 8: (+1, 3), 9: (+1, 3)},
         "mean_street_length":  {7: (-1, 3), 8: (-1, 3), 9: (-1, 3)},
-        "intersection_density":{7: (-1, 0), 8: (-1, 2), 9: (-1, 0)},
+        # Intersection density is the weakest, grid-sensitive effect: not
+        # significant at the headline full 8x10 grid (res 8, p=0.22); shown ns.
+        "intersection_density":{7: (-1, 0), 8: (-1, 0), 9: (-1, 0)},
     }
     cols = [7, 8, 9]
     for i, d in enumerate(DESC):

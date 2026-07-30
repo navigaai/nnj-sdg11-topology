@@ -33,8 +33,9 @@ topology} and to \emph{linking that resilience to urban form}.
   \item \textbf{First topological treatment of SDG~11.7 green-space access} in an
     architecture--mathematics framing.
   \item \textbf{A district-level morphology$\leftrightarrow$resilience result}
-    across $2{,}603$ districts in five cities, with city fixed effects, showing
-    that street-network morphology significantly predicts access resilience
+    across $2{,}603$ districts in five cities, with city fixed effects, showing a
+    consistent association between street-network morphology and access resilience
+    whose sign is stable across disruption models and district resolutions
     (Section~\ref{sec:results}).
 \end{itemize}
 
@@ -83,9 +84,15 @@ W_1(X,Y)=\min_{\gamma}\sum_{x\in X}\lVert x-\gamma(x)\rVert,
 \]
 minimised over bijections $\gamma$ between the diagrams (with matching to the
 diagonal allowed). Wasserstein and bottleneck distances are stable to
-perturbations of $f$ \citep{cohensteiner2007stability}, which is what makes them a
-sound basis for a resilience metric. We compute PH with GUDHI
-\citep{gudhi} and diagram distances with \texttt{persim}.
+perturbations of $f$ \citep{cohensteiner2007stability}: a small change in the
+field produces a small change in the distance. Stability is a mathematical
+well-posedness property, not a validation that diagram distance measures
+\emph{urban} resilience; we use it only to justify that $\Drho$ responds
+continuously and monotonically to progressive network damage, and we treat the
+metric throughout as a \emph{proposed proxy} for how the access topology holds up,
+to be validated against independent resilience evidence in future work rather than
+as ground truth. We compute PH with GUDHI \citep{gudhi} and diagram distances with
+\texttt{persim}.
 
 \section{Methodology}\label{sec:method}
 \paragraph{Data.} For each city we take the pedestrian network and green/public
@@ -95,11 +102,23 @@ Centre Database \citep{ghsl2019ucdb} so that extents are comparable across
 countries. Green spaces are the OSM classes \texttt{leisure=park|garden|recreation\_ground},
 \texttt{landuse=grass|recreation\_ground}, \texttt{place=square} and
 \texttt{natural=wood}; their centroids, snapped to the nearest network node, are
-the access points.
+the access points. This is a deliberately inclusive definition: it merges spaces
+of very different type, size and usability (a pocket garden, a city square and a
+large wood all count equally), and it takes the centroid as a single access point
+rather than modelling entrances or area. We treat every green space as an
+equivalent point source; distinguishing quality, size, or public/private status
+is left to future work (see Limitations).
 
 \paragraph{Accessibility field.} We assign each node its network walking time (at
 $4.8$~km/h) to the nearest green-space access point by multi-source Dijkstra,
-giving the field $f$ (Fig.~\ref{fig:accessfield}).
+giving the field $f$ (Fig.~\ref{fig:accessfield}). The field is defined over
+\emph{network nodes}, each weighted equally; it is a property of the pedestrian
+network's spatial reach to green space, not a population-weighted or
+distributional measure. Our metric therefore speaks to one facet of SDG~11.7---the
+network's capacity to keep locations close to green and public space, and how that
+capacity degrades under disruption---and not to the target's population-coverage or
+inclusivity dimensions, which would require census and land-use data we do not use
+here.
 
 \begin{figure}[t]\centering
 \includegraphics[width=0.72\linewidth]{figures/fig_accessfield.pdf}
@@ -156,7 +175,10 @@ cities but on intra-urban \emph{districts}: we tile each urban-centre boundary
 with a uniform H3 hexagonal grid (resolution~8, $\approx0.7$~km$^2$ cells) and
 compute, per district, its local resilience summaries and its local morphology
 (intersection density, circuity, orientation entropy, mean segment length, and a
-green-space fragmentation index). We then fit
+green-space fragmentation index---the number of distinct green-space patches per
+square kilometre of green area within the district, computed on the green space
+clipped to each hex so that it varies between districts rather than being a
+per-city constant collinear with the fixed effects). We then fit
 \[
 \mathrm{AUC}_i = \beta^\top \mathbf{m}_i + \alpha_{c(i)} + \varepsilon_i,
 \]
@@ -177,8 +199,12 @@ sprawl). Boundaries are the GHS-UCDB urban-centre polygons; homonymous centres
 \section{Results}\label{sec:results}
 The random-disruption analysis yields $2{,}603$ qualifying districts
 (Table~\ref{tab:coverage}); only $2.6\%$ have zero AUC. District mean AUC ranks
-Amsterdam as the most resilient and Bogotá/İstanbul as the least
-(Table~\ref{tab:typology}); Phoenix has the earliest breakdown ($\rhostar=0.18$).
+Amsterdam as the most resilient and İstanbul/Bogotá as the least
+(Table~\ref{tab:typology}); Phoenix has the earliest breakdown ($\rhostar=0.16$).
+The district-mean ranking and the whole-city ranking below agree at the extremes
+(Amsterdam most resilient, Bogotá least) but not in the middle---Barcelona is
+mid-ranked by district mean yet most resilient at the whole-city scale---a
+reminder that AUC is comparable across cities only in broad ordering, not level.
 
 \begin{table}[t]\centering
 \caption{District coverage (H3 resolution~8). Inference rests on $n=2{,}603$.}
@@ -200,38 +226,90 @@ topology changes more under disruption $\Rightarrow$ \emph{less} resilient.}
 \toprule
 City & mean AUC & mean $\rhostar$ & mean $H_0$ total persistence\\
 \midrule
-Amsterdam & 4.25 & 0.27 & 13.11\\
-Barcelona & 6.54 & 0.29 & 13.63\\
-Phoenix   & 6.58 & 0.18 & 8.08\\
-İstanbul  & 7.44 & 0.21 & 12.84\\
-Bogotá    & 7.54 & 0.24 & 16.90\\
+Amsterdam & 4.46 & 0.25 & 13.11\\
+Phoenix   & 6.68 & 0.16 & 8.08\\
+Barcelona & 7.67 & 0.28 & 13.63\\
+İstanbul  & 7.75 & 0.20 & 12.84\\
+Bogotá    & 8.02 & 0.24 & 16.90\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The headline result is the district-level regression (Table~\ref{tab:regression}).
-With city fixed effects and $n=2{,}603$, four of five morphology descriptors are
-significant, three at $p<10^{-8}$. Because the coefficient sign is on AUC (higher
-AUC = less resilient), a negative coefficient means the descriptor is associated
-with \emph{greater} resilience. More circuitous networks (coef $-8.99$), longer
-street segments ($-0.048$) and denser intersections ($-0.199$) are associated
-with more resilient green-space access, whereas higher orientation entropy
-($+1.17$) is associated with less. Green-space fragmentation is not significant
-once it varies within cities and city fixed effects are included.
+The headline result is the district-level regression (Table~\ref{tab:regression}),
+fit over the full disruption grid ($8$ intensities $\times\,10$ replicates).
+With city fixed effects and $n=2{,}603$, three of five morphology descriptors are
+significant, two of them at $p<10^{-15}$. Because the coefficient sign is on AUC
+(higher AUC = less resilient), a negative coefficient means the descriptor is
+associated with \emph{greater} resilience. More circuitous networks (coef $-10.16$)
+and longer street segments ($-0.048$) are associated with more resilient
+green-space access, whereas higher orientation entropy ($+1.01$) is associated with
+less. Intersection density is negatively signed, consistent with local redundancy
+aiding resilience, but is not significant ($p=0.22$), so we treat it as at most
+suggestive. Green-space fragmentation is likewise not significant once it varies
+within cities and city fixed effects are included. Because districts nest within
+five cities, we also report city-clustered standard errors
+(Table~\ref{tab:clustered}) and a spatial-autocorrelation diagnostic
+(Table~\ref{tab:moran}); we return to their implications in the Limitations.
 
 \begin{table}[t]\centering
 \caption{District fixed-effects regression, $\mathrm{AUC}\sim\text{morphology}+C(\text{city})$,
-$n=2{,}603$, random-disruption scenario. Sig.: $^{***}p<0.001$, $^{**}p<0.01$.}
+$n=2{,}603$, random-disruption scenario at the full disruption grid
+($8\times10$). Classical OLS standard errors; see Table~\ref{tab:clustered} for
+city-clustered inference. Sig.: $^{***}p<0.001$.}
 \label{tab:regression}
 \begin{tabular}{lrrr}
 \toprule
 Morphology descriptor & coef & std.\ err. & $p$-value\\
 \midrule
-circuity & $-8.991$ & $1.185$ & $4.5\times10^{-14}$ $^{***}$\\
-orientation entropy & $+1.172$ & $0.203$ & $9.4\times10^{-9}$ $^{***}$\\
-mean street length & $-0.0478$ & $0.0059$ & $7.2\times10^{-16}$ $^{***}$\\
-intersection density & $-0.199$ & $0.076$ & $8.6\times10^{-3}$ $^{**}$\\
-green-space fragmentation & $-1.5\times10^{-6}$ & $3.8\times10^{-6}$ & $0.70$\\
+circuity & $-10.156$ & $1.167$ & $5.5\times10^{-18}$ $^{***}$\\
+mean street length & $-0.0476$ & $0.0058$ & $3.7\times10^{-16}$ $^{***}$\\
+orientation entropy & $+1.015$ & $0.200$ & $4.4\times10^{-7}$ $^{***}$\\
+intersection density & $-0.091$ & $0.074$ & $0.22$\\
+green-space fragmentation & $-2.0\times10^{-6}$ & $4.2\times10^{-6}$ & $0.64$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]\centering
+\caption{Sensitivity of the regression inference to how standard errors treat the
+nesting of districts within cities. Coefficients are unchanged; only the standard
+errors and $p$-values differ. HC3 is heteroskedasticity-robust; the last two
+columns cluster by city (five clusters). Circuity and mean street length stay
+significant under city clustering; orientation entropy does not.}
+\label{tab:clustered}
+\begin{tabular}{lrrrr}
+\toprule
+Morphology descriptor & coef & SE (HC3) & SE (cluster) & $p$ (cluster)\\
+\midrule
+circuity & $-10.156$ & $1.397$ & $2.946$ & $5.7\times10^{-4}$ $^{***}$\\
+mean street length & $-0.0476$ & $0.0066$ & $0.0089$ & $7.7\times10^{-8}$ $^{***}$\\
+orientation entropy & $+1.015$ & $0.220$ & $0.894$ & $0.26$\\
+intersection density & $-0.091$ & $0.092$ & $0.214$ & $0.67$\\
+green-space fragmentation$^{\dagger}$ & $-2.0\times10^{-6}$ & $5.9\times10^{-6}$ & $6.1\times10^{-7}$ & $<10^{-2}$\\
+\bottomrule
+\end{tabular}
+
+\footnotesize$^{\dagger}$The apparent clustered significance of green-space
+fragmentation is a five-cluster artefact of the cluster-robust variance around a
+coefficient that is effectively zero ($|\text{coef}|<10^{-5}$); it is not a
+substantive effect.
+\end{table}
+
+\begin{table}[t]\centering
+\caption{Global Moran's~$I$ of the fixed-effects regression residuals within each
+city, using first-ring H3 adjacency as the spatial weights ($999$ permutations).
+Residuals show weak but significant positive spatial autocorrelation in every city,
+motivating an explicit spatial specification in future work.}
+\label{tab:moran}
+\begin{tabular}{lccc}
+\toprule
+City & districts & Moran's $I$ & $p$ (perm.)\\
+\midrule
+Amsterdam & 226 & $0.080$ & $0.031$\\
+Barcelona & 147 & $0.178$ & $0.001$\\
+Bogotá    & 538 & $0.142$ & $0.001$\\
+İstanbul  & 729 & $0.112$ & $0.001$\\
+Phoenix   & 962 & $0.058$ & $0.003$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -252,8 +330,11 @@ the full-city diagram (thousands of $H_0$ classes) and is therefore two to three
 orders of magnitude larger than the per-district means of Table~\ref{tab:typology};
 only the relative ordering is comparable across the two scales. City-level AUC is
 lowest---most resilient---for Barcelona ($620$) and Amsterdam ($898$), and highest
-for İstanbul ($2440$) and Bogotá ($2828$), with Phoenix in between ($2053$). The compact, walkable cities keep their access topology intact
-under disruption; the large, sprawling or polycentric ones lose it fastest. Under
+for İstanbul ($2440$) and Bogotá ($2828$), with Phoenix in between ($2053$). The
+cities we would informally call compact---Barcelona and Amsterdam---retain more of
+their access topology under disruption than the large, sprawling or polycentric
+ones; we describe this pattern with the measured morphology descriptors rather
+than with ``walkability,'' which we do not model directly. Under
 extreme removal ($\rho=0.5$) the İstanbul and Phoenix curves turn down as the
 network fragments so heavily that unreachable nodes drop out of the finite
 diagram, a signature of near-total collapse rather than of recovered access.
@@ -268,14 +349,16 @@ city's critical transition $\rhostar$.}
 
 \paragraph{Robustness across disruption scenarios.} Repeating the analysis under
 \emph{targeted} disruption (removal of high-betweenness edges, ranked by
-$k{=}500$-sampled betweenness) reproduces every sign in
-Table~\ref{tab:regression} and keeps all four significant descriptors significant:
-circuity $-5.77$ ($p=4.6\times10^{-10}$), orientation entropy $+0.50$
-($p=1.6\times10^{-3}$), mean street length $-0.034$ ($p=2.7\times10^{-13}$),
-intersection density $-0.135$ ($p=0.022$), and green-space fragmentation again
-not significant. Targeted disruption removes fewer but more critical edges, so
-absolute AUC values are lower (e.g.\ Amsterdam mean AUC $2.03$ vs.\ $4.25$ under
-random), but the morphology$\leftrightarrow$resilience relationship and the city
+$k{=}500$-sampled betweenness) reproduces every coefficient sign in
+Table~\ref{tab:regression}. The three descriptors significant under random
+disruption stay significant---circuity $-5.77$ ($p=4.6\times10^{-10}$), mean street
+length $-0.034$ ($p=2.7\times10^{-13}$), orientation entropy $+0.50$
+($p=1.6\times10^{-3}$)---and intersection density, not significant under the full
+random grid, reaches $p=0.022$ here ($-0.135$), consistent with our reading of it
+as the weakest, grid-sensitive effect; green-space fragmentation is again not
+significant. Targeted disruption removes fewer but more critical edges, so absolute
+AUC values are lower (e.g.\ Amsterdam mean AUC $2.03$ vs.\ $4.46$ under random), but
+the morphology$\leftrightarrow$resilience relationship and the city
 ranking are unchanged. The finding is therefore not an artefact of the random
 disruption model.
 
@@ -291,15 +374,16 @@ $p=0.01$); we read this as a limitation of the mild, $\rho$-capped low-elevation
 proxy rather than a contradiction, and it motivates a stronger flood model that
 removes \emph{all} inundated edges.
 
-\paragraph{Disruption-grid sensitivity.} Re-running the full analysis at the
-complete disruption grid ($8$ intensities $\times\,10$ replicates, against the
-$5\times3$ grid used above) confirms the headline result: circuity ($-10.2$),
-orientation entropy ($+1.01$) and mean street length ($-0.048$, essentially
-identical to the reduced grid's $-0.0478$) stay significant at $p<10^{-3}$ with
-the same signs, and the city AUC ranking and $\rhostar$ values are preserved
-(within $\approx0.02$). The one exception is intersection density, already
-marginal ($p=8.6\times10^{-3}$), which becomes non-significant at the full grid
-($p=0.25$); we therefore treat it as the weakest of the four effects.
+\paragraph{Disruption-grid sensitivity.} The headline regression uses the full
+$8\times10$ disruption grid. A coarser $5\times3$ grid (fewer intensities and
+replicates) leaves every coefficient sign unchanged and keeps the three headline
+descriptors significant at $p<10^{-3}$ (circuity $-8.99$, mean street length
+$-0.0478$---essentially identical to the full grid's $-0.0476$---and orientation
+entropy $+1.17$), while the city AUC ranking and $\rhostar$ values agree within
+$\approx0.02$. The one descriptor that moves across grids is intersection density:
+significant on the coarse grid ($-0.199$, $p=8.6\times10^{-3}$) but not on the full
+grid ($p=0.22$). We therefore report the more demanding full grid as the headline
+and treat intersection density as the weakest, grid-sensitive effect.
 
 \paragraph{Resolution sensitivity.} Re-running the analysis at H3 resolutions~$7$
 (coarse, $485$ districts) and~$9$ (fine, $13{,}782$ districts) leaves the result
@@ -313,50 +397,104 @@ Figure~\ref{fig:robustness} summarises both robustness axes.
 
 \begin{figure}[t]\centering
 \includegraphics[width=\linewidth]{figures/fig_robustness.pdf}
-\caption{Robustness of the morphology$\rightarrow$resilience relationship.
+\caption{Robustness of the morphology$\leftrightarrow$resilience relationship.
 \textbf{(a)} Regression coefficients (with $95\%$ confidence intervals) for each
 morphology descriptor under the three disruption scenarios at H3 resolution~8;
-signs and significance agree across scenarios. \textbf{(b)} Sign and significance
-of each coefficient across H3 resolutions $7$/$8$/$9$: the three strongest
-descriptors stay significant with a constant sign, while intersection density
-(already marginal) is significant only at resolution~8.}
+the coefficient signs agree across scenarios, and the three headline descriptors
+(circuity, mean street length, orientation entropy) stay significant, while
+intersection density crosses zero under random disruption. \textbf{(b)} Sign and
+significance of each coefficient across H3 resolutions $7$/$8$/$9$: the three
+headline descriptors stay significant with a constant sign, while intersection
+density---the weakest, grid-sensitive effect---is not significant at the headline
+full-grid specification.}
 \label{fig:robustness}
 \end{figure}
 
 \section{Discussion}
 The results give an interpretable, architecture-facing reading of resilience.
-Locally redundant networks (those with denser intersections and, perhaps
-surprisingly, more circuitous routing) retain more of their well-served structure
-when edges are removed, because alternative short paths to green space survive.
-Highly ordered, low orientation-entropy districts are more brittle: a regular grid
-offers fewer topologically distinct detours once key links fail. That the signal
+The robust effects are circuity and segment length: districts with more circuitous
+routing and longer segments retain more of their well-served structure when edges
+are removed, because alternative paths to green space survive the loss of any one
+link. Denser intersections point the same way (locally redundant networks should
+be more resilient) but the effect is not statistically robust here, so we do not
+lean on it. Districts with more disordered street orientation (higher entropy) are
+more brittle. That the signal That the signal
 is carried by $H_0$ rather than $H_1$ has a concrete planning meaning. In
 green-dense cities the structure that matters is not isolated ``deserts''
 surrounded by served land but the connectivity of the served regions themselves,
 and that connectivity is what disruption erodes.
 
-\paragraph{Limitations.} (i) The morphology result is established under the random
-and targeted scenarios, which agree on every sign; the hazard scenario, using a
-$\rho$-capped low-elevation proxy, is too mild and topography-dependent to test
-it and should be replaced by a full flood-zone edge removal. (ii)
+\paragraph{Limitations.} We group the caveats by the kind of claim they qualify.
+
+\emph{Inference and spatial dependence.} The design is cross-sectional and
+observational, so the regression identifies \emph{associations} between morphology
+and topological resilience, not causal effects. Districts are also not independent:
+they nest within five cities and are spatially contiguous. City fixed effects
+absorb between-city confounds, but two residual problems remain. First, the $2{,}603$
+districts furnish only five clusters for cross-city inference; clustering the
+standard errors by city (the level at which disruption is applied) widens the
+intervals substantially (Table~\ref{tab:clustered}). Under this conservative
+treatment the two strongest effects---circuity ($p=6\times10^{-4}$) and mean
+street length ($p=8\times10^{-8}$)---remain significant, but orientation entropy,
+significant at the district level, does not ($p=0.26$); with only five clusters
+even cluster-robust inference is underpowered, so the classical $p$-values in
+Table~\ref{tab:regression} understate uncertainty and are best read as
+within-sample descriptive strength rather than as a precise cross-city
+significance claim.
+Second, the residuals retain weak but statistically significant positive spatial
+autocorrelation within \emph{every} city (global Moran's~$I$ on the first-ring H3
+adjacency runs from $0.06$ in Phoenix to $0.18$ in Barcelona, all with permutation
+$p\le0.03$; Table~\ref{tab:moran}), so an explicit spatial-error or spatial-lag
+specification, and richer geographic replication beyond five cities, are natural
+next steps.
+
+\emph{Omitted variables.} Morphology is only one of many district attributes that
+could drive resilience. Population and built density, land-use mix, total
+green-space area and park size, slope, socioeconomic status and pedestrian-network
+quality are all uncontrolled; city fixed effects remove their between-city
+component but not their within-city variation, so the coefficients may absorb
+correlated omitted factors.
+
+\emph{What the metric measures.} $\Drho$ is a \emph{proposed proxy}: diagram
+stability makes it well-posed, but it has not been validated against independent
+resilience outcomes (observed service loss after real disruptions). AUC depends on
+network and district size and on the number of $H_0$ classes, so it is comparable
+across cities only in relative ranking, not in absolute level; $\rhostar$ likewise
+depends on the chosen disruption range. The down-turn of the İstanbul and Phoenix
+curves at $\rho=0.5$ reflects finite nodes dropping out of the diagram under
+near-total fragmentation, not recovered access, and marks the upper edge of the
+metric's useful range. Green spaces are treated as equivalent point sources,
+ignoring size, quality and public/private status.
+
+\emph{Disruption and data.} Random removal is spatially uniform and does not
+reproduce the clustered failures of a real flood or earthquake; targeted removal
+addresses criticality but not spatial correlation, and the hazard scenario, a
+$\rho$-capped low-elevation proxy, is too mild and topography-dependent to test the
+morphology signal and should be replaced by a full flood-zone edge removal.
 Targeted betweenness is approximated from $k{=}500$ sampled pivots, as exact
-$O(V\lvert E\rvert)$ betweenness is intractable at city scale. (iii) Results use a
-persistence-thresholded $H_0$ metric; reported magnitudes are therefore denoised
+$O(V\lvert E\rvert)$ betweenness is intractable at city scale. Results use a
+persistence-thresholded $H_0$ metric, so reported magnitudes are denoised
 estimates, though the full disruption grid confirms the coefficient signs,
-significance of the three strongest descriptors, ranking and $\rhostar$.
-(iv) OSM completeness varies by city, and the network-distance Vietoris--Rips
-variant of the filtration is left to future work. None of these undermines the core finding: at the scale
-of thousands of districts, street-network morphology significantly predicts the
-resilience of green-space access.
+the significance of the three strongest descriptors, the ranking and $\rhostar$.
+OSM completeness varies by city and is not quantified here, and the
+network-distance Vietoris--Rips variant of the filtration is left to future work.
+
+Read together, these caveats narrow the claim: within these five cities, and under
+synthetic edge-removal disruption, street-network morphology is a consistent
+descriptive correlate of green-space access resilience---robust in sign across
+disruption models and district resolutions---rather than a causally identified or
+cross-city-generalisable driver.
 
 \section{Conclusion}
 We defined a topological resilience metric for green-space accessibility---the
 Wasserstein degradation curve of persistent-homology diagrams under network
 disruption---and showed, across $2{,}603$ districts in five contrasting cities,
-that urban morphology significantly predicts how robustly a city keeps its
-population close to nature. The result is robust: random and targeted disruption
-agree on every coefficient sign, and it is stable across H3 district resolutions
-spanning a $28\times$ range of unit counts. The mathematics of persistence turns a
+that street-network morphology is associated with how robustly a city's
+pedestrian network keeps its \emph{locations} close to nature. The association is
+consistent rather than proven causal: random and targeted disruption agree on
+every coefficient sign, and the signs are stable across H3 district resolutions
+spanning a $28\times$ range of unit counts, but the study is cross-sectional and
+rests on five cities (see Limitations). The mathematics of persistence turns a
 static SDG~11.7 indicator into a dynamic, form-aware one. Future work will
 strengthen the hazard model to a full flood-zone removal and add a network-metric
 Vietoris--Rips filtration, toward a resilience-aware accessibility standard for
@@ -381,11 +519,14 @@ R2019A, European Commission Joint Research Centre); and elevation data from the
 public AWS Terrain Tiles service. No new data were collected. The derived
 artifacts underlying every reported figure and table (per-district resilience and
 morphology tables, regression outputs, and city-level resilience curves) are
-recorded in the project's results log.
+recorded in the project's results log, released with the code at
+\url{https://github.com/navigaai/nnj-sdg11-topology}.
 
-\paragraph{Code availability.} The analysis pipeline is implemented in open-source
-Python (OSMnx, NetworkX, GeoPandas, GUDHI, \texttt{persim}, H3, \texttt{statsmodels})
-and is available from the author on reasonable request.
+\paragraph{Code availability.} The complete analysis pipeline is implemented in
+open-source Python (OSMnx, NetworkX, GeoPandas, GUDHI, \texttt{persim}, H3,
+\texttt{statsmodels}) and is publicly available at
+\url{https://github.com/navigaai/nnj-sdg11-topology}, together with the
+configuration files and the results log that reproduce every reported number.
 
 \paragraph{Author contributions.} S.\ Emekci (ORCID 0000-0002-5470-6485) conceived
 the study, developed the method and software, performed the analysis, and wrote

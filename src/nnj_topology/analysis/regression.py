@@ -12,7 +12,12 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["build_district_frame", "fixed_effects_regression", "tidy_coefficients"]
+__all__ = [
+    "build_district_frame",
+    "fixed_effects_regression",
+    "tidy_coefficients",
+    "city_clustered_regression",
+]
 
 _NON_FEATURE = {"city", "auc", "rho_star", "total_persistence", "hex"}
 
@@ -32,6 +37,27 @@ def fixed_effects_regression(
     formula = f"{target} ~ {rhs}"
     logger.info("Fitting: %s", formula)
     return smf.ols(formula, data=df).fit()
+
+
+def city_clustered_regression(
+    df: pd.DataFrame, target: str = "auc", features: Optional[List[str]] = None
+) -> "statsmodels.regression.linear_model.RegressionResultsWrapper":
+    """Same fixed-effects OLS, but with standard errors clustered by city.
+
+    Districts within a city are not independent draws: they share the same
+    street network, climate and planning regime, so classical OLS standard
+    errors understate uncertainty. Clustering by city (the level at which the
+    disruption is applied) yields inference that is honest about the fact that
+    the design has five clusters, not 2,603 independent units.
+    """
+    if features is None:
+        features = [c for c in df.columns if c not in _NON_FEATURE]
+    rhs = " + ".join(features + ["C(city)"])
+    formula = f"{target} ~ {rhs}"
+    logger.info("Fitting (city-clustered SE): %s", formula)
+    return smf.ols(formula, data=df).fit(
+        cov_type="cluster", cov_kwds={"groups": df["city"]}
+    )
 
 
 def tidy_coefficients(result: "statsmodels.regression.linear_model.RegressionResultsWrapper") -> pd.DataFrame:
