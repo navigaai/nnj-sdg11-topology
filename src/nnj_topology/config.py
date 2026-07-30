@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Optional, Tuple
 
 from omegaconf import DictConfig
 
@@ -59,6 +59,9 @@ class RunConfig:
     disruption: DisruptionConfig
     filtration: FiltrationConfig
     paths: PathsConfig
+    # Number of pivot sources for sampled edge-betweenness in the targeted
+    # scenario. None -> default min(500, V). Exposed for k-sensitivity analysis.
+    k_pivots: Optional[int] = None
 
 
 def from_omegaconf(cfg: DictConfig) -> RunConfig:
@@ -76,4 +79,5 @@ def from_omegaconf(cfg: DictConfig) -> RunConfig:
         ),
         filtration=FiltrationConfig(name=cfg.filtration.name, max_dim=int(cfg.filtration.max_dim)),
         paths=PathsConfig(data=cfg.paths.data, output=cfg.paths.output),
+        k_pivots=(int(cfg.k_pivots) if cfg.get("k_pivots", None) is not None else None),
     )

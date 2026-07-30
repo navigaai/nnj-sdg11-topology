@@ -102,7 +102,7 @@ def compute_district_records(
     # O(V*E) computation is not repeated across every (rho, replicate) call.
     disrupt_name = getattr(rc.disruption, "name", None)
     if disrupt_name == "targeted":
-        _ranking = betweenness_ranking(graph)
+        _ranking = betweenness_ranking(graph, k=getattr(rc, "k_pivots", None))
         disrupt = functools.partial(targeted_removal, ranking=_ranking)
     elif disrupt_name == "hazard":
         from nnj_topology.data.hazard import hazard_nodes_from_dem
@@ -197,6 +197,7 @@ def main(cfg: DictConfig) -> None:
             disruption=rc.disruption,
             filtration=rc.filtration,
             paths=rc.paths,
+            k_pivots=rc.k_pivots,
         )
         all_records.extend(
             compute_district_records(graph, green, field_fn, disrupt, city_cfg.crs, rc_city)

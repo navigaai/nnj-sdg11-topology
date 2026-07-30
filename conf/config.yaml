@@ -8,6 +8,7 @@ seed: 42
 h3_res: 8          # district hex resolution (~0.7 km^2 cells)
 homology_dim: 0    # resilience distance homology dim: 0=H0 (signal on real nets), 1=H1
 persistence_threshold: 1.0  # walk-min; drop shorter-lived H0 noise before Wasserstein (0=exact, slow at city scale)
+k_pivots: null     # targeted-scenario betweenness pivots; null -> min(500,V). Set for k-sensitivity.
 paths:
   data: data
   output: output
