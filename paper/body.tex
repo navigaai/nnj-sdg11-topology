@@ -370,12 +370,17 @@ access topology degrades more under disruption (less resilient).}
 \label{fig:morphology}
 \end{figure}
 
-At the whole-city scale (computed on the same UCDB-clipped networks), the
-degradation curves $\Drho$ rise smoothly and rank the cities consistently with
-the district typology (Fig.~\ref{fig:resilience}). City-level AUC is computed on
-the full-city diagram (thousands of $H_0$ classes) and is therefore two to three
-orders of magnitude larger than the per-district means of Table~\ref{tab:typology};
-only the relative ordering is comparable across the two scales. City-level AUC is
+The whole-city scale gives an \emph{illustrative} typology, not a second
+inferential result: with only five cities it carries no statistical weight, and we
+report it to visualise the district-level signal, not to rank cities definitively.
+Computed on the same UCDB-clipped networks, the degradation curves $\Drho$ rise
+smoothly and order the cities consistently with the district means
+(Fig.~\ref{fig:resilience}). Because city-level AUC is computed on the full-city
+diagram (thousands of $H_0$ classes) it is two to three orders of magnitude larger
+than the per-district means of Table~\ref{tab:typology} and scales with network
+size; it is \emph{not} normalised, so only the relative ordering---never the
+level---should be read, and a size-normalised cross-city AUC is left to future work.
+On that ordering, city-level AUC is
 lowest---most resilient---for Barcelona ($620$) and Amsterdam ($898$), and highest
 for İstanbul ($2440$) and Bogotá ($2828$), with Phoenix in between ($2053$). The
 cities we would informally call compact---Barcelona and Amsterdam---retain more of
@@ -495,6 +500,28 @@ centre distance (km) & --- & $-0.107$ $^{***}$\\
 \end{tabular}
 \end{table}
 
+\paragraph{Benchmark against non-topological baselines.} A topological metric should
+earn its complexity. We therefore compare it, per district, against two
+non-topological baselines computed under the same random disruption but without
+persistent homology: a \emph{distance-based} degradation (the increase in mean
+walk-time to green space) and a \emph{connectivity} degradation (the increase in the
+fraction of nodes left unable to reach any green space). The latter is the natural
+non-persistent counterpart, since $H_0$ of a sublevel filtration is exactly
+single-linkage connectivity. Two findings follow, one reassuring and one cautionary.
+First, the topological AUC is \emph{not} redundant with either baseline: controlling
+for both (and city fixed effects), the three headline morphology descriptors remain
+significant ($p<10^{-6}$), so the metric carries configurational information the
+simple measures miss. Second, its \emph{convergent} validity is weak---Spearman
+$\rho=+0.07$ with distance degradation (right sign, negligible magnitude) and, more
+tellingly, $\rho=-0.29$ with connectivity degradation, the \emph{wrong} sign. This
+negative correlation is the finite-diagram effect seen for Phoenix operating
+district-wide: when severe damage disconnects nodes, they leave the finite diagram,
+so the Wasserstein distance can fall precisely when access loss is worst. We read
+this as genuine evidence that the metric captures a distinct, configuration-sensitive
+notion of resilience, but that it is \emph{not} a validated substitute for a
+disconnection-aware access measure---a bound we make explicit in the Limitations and
+a target for the extended-persistence variant we propose there.
+
 \begin{figure}[t]\centering
 \includegraphics[width=\linewidth]{figures/fig_robustness.pdf}
 \caption{Robustness of the morphology$\leftrightarrow$resilience relationship.
@@ -523,6 +550,17 @@ is carried by $H_0$ rather than $H_1$ has a concrete planning meaning. In
 green-dense cities the structure that matters is not isolated ``deserts''
 surrounded by served land but the connectivity of the served regions themselves,
 and that connectivity is what disruption erodes.
+
+For design, the reading is that \emph{path redundancy}, not raw proximity, is what
+protects access to nature under stress: the descriptors that predict resilience
+(circuitous routing, longer segments) are hallmarks of networks offering several
+comparable ways to reach the same green space, so that losing one link rarely
+isolates a served region. This reframes an SDG~11.7 design brief from ``put a park
+within $x$ metres'' toward ``ensure the walk to it survives the loss of individual
+streets''---a morphological, architecture-scale lever (block structure, connectivity,
+detour availability) rather than a purely land-use one. It also cautions against
+reading a tidy grid as automatically resilient: in our sample it is the less ordered,
+more redundant fabrics that degrade most gracefully.
 
 \paragraph{Limitations.} We group the caveats by the kind of claim they qualify.
 
@@ -564,19 +602,40 @@ require external data (e.g.\ census and GHSL built-up layers) and remain
 uncontrolled; city fixed effects remove their between-city component but not their
 within-city variation, so some residual omitted-variable bias may persist.
 
+\emph{Shared origin of predictor and outcome.} Both the morphology descriptors and
+the resilience outcome are computed from the \emph{same} street network, so part of
+the association is structural rather than a clean independent-variable/dependent-
+variable relationship: a district cannot have, say, low circuity and a routing
+topology that behaves as if it were highly circuitous. We therefore read the
+regression as characterising \emph{which} formal properties co-vary with resilient
+access, not as an external cause acting on an independent outcome. Two observations
+temper the concern: the morphology descriptors explain only a modest share of the
+variance ($R^2\approx0.21$ with controls), so the outcome is far from a
+deterministic re-encoding of the predictors; and the accessibility field also
+depends on the green-space configuration, which is exogenous to street form. Still,
+a design that predicted one city's resilience from another's morphology would be
+needed to break the shared-origin coupling entirely.
+
 \emph{What the metric measures, and how far it is validated.} $\Drho$ is a
 \emph{proposed proxy} for access resilience. We offer evidence of two kinds. Its
 \emph{construct validity} is supported by its behaviour---it rises monotonically
 with disruption, is stable to field perturbations \citep{cohensteiner2007stability},
 and yields a morphology relationship that survives disruption model, district
 resolution, denoising threshold, pivot count, spatial-error/lag modelling and four
-omitted-variable controls. What we do \emph{not} yet provide is external
-(\emph{criterion}) validation: a head-to-head benchmark against an established
-accessibility or resilience measure---for example the degradation of a
-population-weighted two-step floating catchment score, or observed service loss
-after a real disruption---to show the topological signal adds information beyond a
-simpler distance-based one. That comparison is the most important next step and we
-frame the metric as a candidate indicator until it is done. Two further caveats:
+omitted-variable controls. On \emph{criterion} validity the evidence is more mixed
+and we report it plainly. Benchmarked against two non-topological baselines
+(distance and connectivity degradation, above), the metric is not redundant---the
+morphology signal survives controlling for them---but its convergent correlation
+with a simple distance-based ground truth is weak, and with connectivity degradation
+it even carries the wrong sign because disconnected nodes leave the finite diagram.
+The metric is therefore best understood as capturing a distinct,
+configuration-sensitive aspect of resilience rather than as a validated substitute
+for a disconnection-aware access measure; a full head-to-head against an established
+measure (e.g.\ the degradation of a population-weighted two-step floating catchment
+score, or observed post-disruption service loss), and an \emph{extended-persistence}
+formulation that keeps disconnected components in the diagram, are the two most
+important next steps. We frame the metric as a candidate indicator until they are
+done. Two further caveats:
 AUC depends on network and district size and on the number of $H_0$ classes, so it
 is comparable across cities only in relative ranking, not in absolute level (city
 fixed effects absorb this scale in the regression), and $\rhostar$ depends on the

@@ -180,6 +180,30 @@ themselves significant (real confounders) yet morphology survives. Still uncontr
 (need external data): population/built density, land-use mix, socioeconomic,
 pedestrian infra.
 
+### 3e. Benchmark / convergent validation (reviewer M1 + M2, `scripts/benchmark_validation.py`)
+
+Two non-topological baselines per district under the same random disruption
+(reduced grid, no PH/Wasserstein): **distance-degradation** (mean walk-time-to-green
+increase) and **connectivity-degradation** (unreachable-fraction increase).
+
+**Convergent validity — Spearman(topological AUC, baseline):**
+- distance-degradation: ρ = **+0.071** (p=3e-4) — correct sign, but very weak
+- connectivity-degradation: ρ = **−0.285** (p=6e-50) — **wrong sign**
+- static baseline access: ρ = −0.109 (p=2e-8)
+
+The negative connectivity correlation is the **finite-node-dropout artefact**
+operating district-wide (not just Phoenix at ρ=0.5): when severe damage disconnects
+nodes they leave the finite diagram, so Wasserstein/AUC can *fall* exactly when
+access loss is worst. This is an honest, important limitation of the metric.
+
+**Added value (discriminant):** controlling for BOTH baselines + city FE, the 3
+headline morphology descriptors stay significant (circuity −5.87 p=3e-7, mean_str_len
+−0.051 p=1e-19, orient_ent +0.98 p=3e-7); both baselines are themselves strong
+(degrad_unreach p=8e-61). R²=0.253. → topological AUC is **not redundant** with simple
+degradation (captures distinct configurational info), but its convergent validity
+with a distance-based ground truth is weak → criterion validation only partially met;
+the metric is a distinct indicator, not yet a validated substitute.
+
 ### 3c. Phase 2 sensitivity (reviewer response)
 
 **Persistence-threshold sensitivity** (random full grid; `output/sens_thresh*.csv`):
