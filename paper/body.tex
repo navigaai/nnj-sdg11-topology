@@ -247,9 +247,14 @@ less. Intersection density is negatively signed, consistent with local redundanc
 aiding resilience, but is not significant ($p=0.22$), so we treat it as at most
 suggestive. Green-space fragmentation is likewise not significant once it varies
 within cities and city fixed effects are included. Because districts nest within
-five cities, we also report city-clustered standard errors
-(Table~\ref{tab:clustered}) and a spatial-autocorrelation diagnostic
-(Table~\ref{tab:moran}); we return to their implications in the Limitations.
+five cities and are spatially contiguous, we further report city-clustered standard
+errors (Table~\ref{tab:clustered}), a spatial-autocorrelation diagnostic
+(Table~\ref{tab:moran}), and---since that diagnostic is positive---two
+\emph{estimated} spatial models (Table~\ref{tab:spatial}). The three headline
+descriptors keep their sign and stay strongly significant ($|z|\ge5$) under both a
+spatial-error and a spatial-lag specification, even though both absorb a large
+amount of spatial dependence ($\hat\lambda=0.55$, $\hat\rho=0.53$); we return to the
+implications in the Limitations.
 
 \begin{table}[t]\centering
 \caption{District fixed-effects regression, $\mathrm{AUC}\sim\text{morphology}+C(\text{city})$,
@@ -299,7 +304,7 @@ substantive effect.
 \caption{Global Moran's~$I$ of the fixed-effects regression residuals within each
 city, using first-ring H3 adjacency as the spatial weights ($999$ permutations).
 Residuals show weak but significant positive spatial autocorrelation in every city,
-motivating an explicit spatial specification in future work.}
+motivating the estimated spatial models in Table~\ref{tab:spatial}.}
 \label{tab:moran}
 \begin{tabular}{lccc}
 \toprule
@@ -310,6 +315,30 @@ Barcelona & 147 & $0.178$ & $0.001$\\
 Bogotá    & 538 & $0.142$ & $0.001$\\
 İstanbul  & 729 & $0.112$ & $0.001$\\
 Phoenix   & 962 & $0.058$ & $0.003$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]\centering
+\caption{Estimated spatial models (maximum likelihood, \texttt{spreg}) with city
+fixed effects, on a block-diagonal within-city first-ring H3 weights matrix
+($n=2{,}602$ after dropping one island). Coefficients on AUC with $z$-statistics.
+The three headline descriptors keep their sign and remain strongly significant
+under both the spatial-error and spatial-lag specifications, despite substantial
+estimated spatial dependence ($\hat\lambda,\hat\rho\approx0.5$).}
+\label{tab:spatial}
+\begin{tabular}{lrrr}
+\toprule
+& OLS (FE) & Spatial error & Spatial lag\\
+Morphology descriptor & coef ($z$) & coef ($z$) & coef ($z$)\\
+\midrule
+circuity & $-10.15$ ($-8.7$) & $-5.38$ ($-5.0$) & $-6.88$ ($-6.7$)\\
+mean street length & $-0.048$ ($-8.2$) & $-0.033$ ($-5.8$) & $-0.034$ ($-6.5$)\\
+orientation entropy & $+1.01$ ($+5.1$) & $+1.25$ ($+5.9$) & $+0.92$ ($+5.2$)\\
+intersection density & $-0.09$ ($-1.2$) & $-0.21$ ($-2.9$) & $-0.16$ ($-2.5$)\\
+green-space fragmentation & \multicolumn{3}{c}{not significant in any model}\\
+\midrule
+spatial parameter & --- & $\hat\lambda=0.55$ & $\hat\rho=0.53$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -431,7 +460,7 @@ are removed, because alternative paths to green space survive the loss of any on
 link. Denser intersections point the same way (locally redundant networks should
 be more resilient) but the effect is not statistically robust here, so we do not
 lean on it. Districts with more disordered street orientation (higher entropy) are
-more brittle. That the signal That the signal
+more brittle. That the signal
 is carried by $H_0$ rather than $H_1$ has a concrete planning meaning. In
 green-dense cities the structure that matters is not isolated ``deserts''
 surrounded by served land but the connectivity of the served regions themselves,
@@ -457,9 +486,15 @@ significance claim.
 Second, the residuals retain weak but statistically significant positive spatial
 autocorrelation within \emph{every} city (global Moran's~$I$ on the first-ring H3
 adjacency runs from $0.06$ in Phoenix to $0.18$ in Barcelona, all with permutation
-$p\le0.03$; Table~\ref{tab:moran}), so an explicit spatial-error or spatial-lag
-specification, and richer geographic replication beyond five cities, are natural
-next steps.
+$p\le0.03$; Table~\ref{tab:moran}). We addressed this directly by estimating
+spatial-error and spatial-lag models on a within-city weights matrix
+(Table~\ref{tab:spatial}): both absorb strong spatial dependence
+($\hat\lambda=0.55$, $\hat\rho=0.53$), yet the three headline descriptors keep
+their sign and remain significant at $|z|\ge5$, and intersection density in fact
+turns significant. The morphology signal is therefore not an artefact of spatial
+autocorrelation; what remains is genuinely a matter of external validity---richer
+geographic replication beyond five cities---rather than of within-sample spatial
+confounding.
 
 \emph{Omitted variables.} Morphology is only one of many district attributes that
 could drive resilience. Population and built density, land-use mix, total

@@ -139,7 +139,24 @@ inference is underpowered → classical p-values understate uncertainty.
 `output/moran_residuals.csv`): weak but significant positive spatial autocorrelation
 in **every** city — Amsterdam 0.080 (p=0.031), Barcelona 0.178 (p=0.001),
 Bogotá 0.142 (p=0.001), İstanbul 0.112 (p=0.001), Phoenix 0.058 (p=0.003).
-→ residuals are spatially dependent; explicit spatial model = future work.
+→ residuals are spatially dependent → estimated spatial models below.
+
+**Estimated spatial models** (`scripts/spatial_regression.py`, `spreg` ML, city FE,
+block-diagonal within-city H3 weights, n=2602 after 1 island; `output/spatial_regression.csv`):
+
+| descriptor | OLS-FE coef (z) | Spatial Error (z) | Spatial Lag (z) |
+|---|---|---|---|
+| circuity | −10.15 (−8.7) | −5.38 (−5.0) | −6.88 (−6.7) |
+| mean_street_length | −0.048 (−8.2) | −0.033 (−5.8) | −0.034 (−6.5) |
+| orientation_entropy | +1.01 (+5.1) | +1.25 (+5.9) | +0.92 (+5.2) |
+| intersection_density | −0.09 (−1.2 ns) | −0.21 (−2.9) | −0.16 (−2.5) |
+| greenspace_frag | ns | ns | ns |
+| **spatial param** | — | λ=0.55 | ρ=0.53 |
+
+Pooled Moran's I (spreg) = 0.258 (z=21.5, p=2e-102). **Both spatial models absorb
+strong dependence (λ,ρ≈0.5) yet the 3 headline descriptors keep sign + |z|≥5**;
+intersection_density even turns significant. → morphology signal is NOT a spatial-
+autocorrelation artefact; remaining caveat is external validity (only 5 cities).
 
 ### 3c. Phase 2 sensitivity (reviewer response)
 
