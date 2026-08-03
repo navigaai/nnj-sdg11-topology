@@ -158,6 +158,28 @@ strong dependence (λ,ρ≈0.5) yet the 3 headline descriptors keep sign + |z|�
 intersection_density even turns significant. → morphology signal is NOT a spatial-
 autocorrelation artefact; remaining caveat is external validity (only 5 cities).
 
+### 3d. Omitted-variable controls (reviewer response, `scripts/omitted_controls.py`)
+
+Added 4 district controls computable from existing data (no resilience recompute;
+AUC reused). `output/regression_controls.csv`, `output/district_controls.csv`:
+
+| variable | base coef (p) | +controls coef (p) |
+|---|---|---|
+| circuity | −10.16 (5.5e-18) | **−9.55 (3.0e-16)** |
+| mean_street_length | −0.0476 (3.7e-16) | **−0.0395 (9.7e-12)** |
+| orientation_entropy | +1.015 (4.4e-7) | **+1.107 (1.1e-7)** |
+| intersection_density | −0.091 (0.22 ns) | −0.098 (0.18 ns) |
+| green_area_km2 | — | −2.25 (1.7e-3) |
+| major_road_share | — | +4.21 (7.1e-8) |
+| relief_m (topography) | — | −0.008 (0.40 ns) |
+| centre_dist_km | — | −0.107 (6.2e-20) |
+
+R² 0.171 → 0.206. **3 headline descriptors keep sign + significance (p<1e-11)** after
+adding green quantity, road hierarchy, topography, centre proximity; 3 controls are
+themselves significant (real confounders) yet morphology survives. Still uncontrolled
+(need external data): population/built density, land-use mix, socioeconomic,
+pedestrian infra.
+
 ### 3c. Phase 2 sensitivity (reviewer response)
 
 **Persistence-threshold sensitivity** (random full grid; `output/sens_thresh*.csv`):
