@@ -16,22 +16,25 @@ cp "$OUT/regression_targeted.csv" "$BK/" 2>/dev/null || true
 cp "$OUT/district_table.csv" "$BK/" 2>/dev/null || true
 cp "$OUT/city_typology.csv" "$BK/" 2>/dev/null || true
 
-run () {  # $1 = label ; rest = hydra overrides
-  local label="$1"; shift
-  echo "=== [$label] uv run python -m pipeline.run_analysis $* ==="
-  uv run python -m pipeline.run_analysis "$@" > "/tmp/phase2_${label}.log" 2>&1
-  cp "$OUT/regression_random.csv" "$OUT/sens_${label}.csv" 2>/dev/null || \
-    cp "$OUT/regression_targeted.csv" "$OUT/sens_${label}.csv"
+run () {  # $1 = label ; $2 = scenario (random|targeted) ; rest = hydra overrides
+  local label="$1" scenario="$2"; shift 2
+  echo "=== [$label] uv run python -m pipeline.run_analysis disruption=$scenario $* ==="
+  uv run python -m pipeline.run_analysis "disruption=$scenario" "$@" > "/tmp/phase2_${label}.log" 2>&1
+  # Copy the scenario-specific regression output (NOT whichever file happens to
+  # exist -- a previous bug copied the stale regression_random.csv for targeted).
+  cp "$OUT/regression_${scenario}.csv" "$OUT/sens_${label}.csv"
   echo "    wrote $OUT/sens_${label}.csv"
 }
 
 # Threshold sensitivity (random full grid)
-run "thresh0.5" disruption=random h3_res=8 persistence_threshold=0.5
-run "thresh2.0" disruption=random h3_res=8 persistence_threshold=2.0
+run "thresh0.5" random h3_res=8 persistence_threshold=0.5
+run "thresh2.0" random h3_res=8 persistence_threshold=2.0
 
-# k sensitivity (targeted)
-run "k250"  disruption=targeted h3_res=8 +k_pivots=250
-run "k1000" disruption=targeted h3_res=8 +k_pivots=1000
+# k sensitivity (targeted). NOTE: full-run k sensitivity is very slow; the
+# manuscript instead uses scripts/k_sensitivity.py (betweenness ranking stability),
+# which is cheaper and answers the reviewer question directly. Kept for completeness.
+run "k250"  targeted h3_res=8 +k_pivots=250
+run "k1000" targeted h3_res=8 +k_pivots=1000
 
 echo "restore headline artifacts from $BK"
 cp "$BK/regression_random.csv" "$OUT/" 2>/dev/null || true

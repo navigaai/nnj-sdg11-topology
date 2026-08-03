@@ -141,6 +141,32 @@ in **every** city — Amsterdam 0.080 (p=0.031), Barcelona 0.178 (p=0.001),
 Bogotá 0.142 (p=0.001), İstanbul 0.112 (p=0.001), Phoenix 0.058 (p=0.003).
 → residuals are spatially dependent; explicit spatial model = future work.
 
+### 3c. Phase 2 sensitivity (reviewer response)
+
+**Persistence-threshold sensitivity** (random full grid; `output/sens_thresh*.csv`):
+
+| descriptor | thresh 0.5 | thresh 1.0 (headline) | thresh 2.0 |
+|---|---|---|---|
+| circuity | −11.20 (2e-19) | −10.16 (5.5e-18) | −8.03 (1.9e-14) |
+| mean_street_length | −0.0502 (4e-16) | −0.0476 (3.7e-16) | −0.0422 (6e-16) |
+| orientation_entropy | +1.096 (2.5e-7) | +1.015 (4.4e-7) | +0.929 (2.2e-7) |
+| intersection_density | −0.044 (0.57 ns) | −0.091 (0.22 ns) | −0.138 (0.038 \*) |
+| greenspace_fragmentation | ns | ns | ns |
+
+Three headline descriptors keep sign + significance (p<1e-6) across the 4× threshold
+range; magnitudes shrink smoothly with more denoising, never flip sign. int_dens
+stays weakest (ns except marginal at heaviest denoising). → 1.0-min choice not a driver.
+
+**Betweenness-k sensitivity** (`scripts/k_sensitivity.py`, `output/k_sensitivity.csv`,
+Amsterdam network, 68 031 undirected edges): betweenness ranking is highly stable in
+the pivot count k. Vs headline k=500: **k=250 → Spearman ρ=0.985, top-decile Jaccard
+0.77; k=1000 → ρ=0.985, Jaccard 0.90.** Halving/doubling k barely changes the edge
+ordering → targeted scenario is not an artefact of the pivot count.
+
+Note: the Phase-2 driver `scripts/phase2_sensitivity.sh` had a file-copy bug that
+mislabelled the k full-run outputs; the k question is answered instead by the
+ranking-stability check above (cheaper and more direct). Threshold outputs are valid.
+
 **Robustness — targeted scenario** (`regression_targeted.csv`, high-betweenness
 removal, k=500 sampled). Every sign matches the random headline; the three headline
 descriptors stay significant, and intersection_density (ns at the full random grid)

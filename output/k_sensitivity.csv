@@ -1,0 +1,3 @@
+city,k_vs_500,n_edges,spearman,jaccard_top10pct
+amsterdam,250,68031,0.9853,0.7725
+amsterdam,1000,68031,0.9849,0.9005

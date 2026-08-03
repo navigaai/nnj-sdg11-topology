@@ -140,7 +140,6 @@ def persistence():
 def accessfield():
     """Accessibility field heatmap: Amsterdam walk network nodes coloured by
     walk-time to the nearest green space (clipped to the GHS-UCDB urban centre)."""
-    import networkx as nx
     from nnj_topology.accessibility.field import accessibility_field, add_travel_time
     from nnj_topology.data.boundary import clip_graph_to_boundary, load_urban_boundary
     from nnj_topology.data.greenspace import access_points, load_greenspace, snap_points_to_nodes
@@ -166,7 +165,8 @@ def accessfield():
     cb = fig.colorbar(sc, ax=ax, shrink=0.8)
     cb.set_label("walk-time to nearest green space (min)")
     ax.set_aspect("equal")
-    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xticks([])
+    ax.set_yticks([])
     ax.set_title("Amsterdam: green-space accessibility field\n"
                  f"({finite.sum():,} network nodes, GHS-UCDB urban centre)", fontsize=10)
     _save(fig, "fig_accessfield")

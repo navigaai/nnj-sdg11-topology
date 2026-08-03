@@ -395,6 +395,19 @@ per-district AUC), but the direction of every effect is stable; only
 green-space fragmentation, non-significant throughout, varies.
 Figure~\ref{fig:robustness} summarises both robustness axes.
 
+\paragraph{Persistence-threshold sensitivity.} The metric denoises the $H_0$
+diagram by discarding classes with lifetime below a threshold (headline
+$1.0$~walk-minute). Varying this threshold over a $4\times$ range leaves the
+headline unchanged: at $0.5$, $1.0$ and $2.0$~minutes the three significant
+descriptors keep their sign and stay significant at $p<10^{-6}$ (circuity
+$-11.20/-10.16/-8.03$; mean street length $-0.050/-0.048/-0.042$; orientation
+entropy $+1.10/+1.01/+0.93$). Coefficient magnitudes shrink smoothly as more
+denoising is applied---as expected, since stronger denoising removes the
+shortest-lived features---but never change sign, and intersection density stays the
+weakest, at most marginal effect (ns at $0.5$ and $1.0$, $p=0.04$ at $2.0$). The
+$1.0$-minute choice is therefore a denoising convenience, not a driver of the
+result.
+
 \begin{figure}[t]\centering
 \includegraphics[width=\linewidth]{figures/fig_robustness.pdf}
 \caption{Robustness of the morphology$\leftrightarrow$resilience relationship.
@@ -472,12 +485,18 @@ addresses criticality but not spatial correlation, and the hazard scenario, a
 $\rho$-capped low-elevation proxy, is too mild and topography-dependent to test the
 morphology signal and should be replaced by a full flood-zone edge removal.
 Targeted betweenness is approximated from $k{=}500$ sampled pivots, as exact
-$O(V\lvert E\rvert)$ betweenness is intractable at city scale. Results use a
-persistence-thresholded $H_0$ metric, so reported magnitudes are denoised
-estimates, though the full disruption grid confirms the coefficient signs,
-the significance of the three strongest descriptors, the ranking and $\rhostar$.
-OSM completeness varies by city and is not quantified here, and the
-network-distance Vietoris--Rips variant of the filtration is left to future work.
+$O(V\lvert E\rvert)$ betweenness is intractable at city scale; the ranking is
+nonetheless stable in the pivot count---on the Amsterdam network, halving or
+doubling $k$ (to $250$ or $1{,}000$) leaves the edge ranking essentially unchanged
+(Spearman $\rho=0.985$ against $k{=}500$, with $77\%$/$90\%$ overlap of the
+top-decile edges)---so the targeted scenario is not an artefact of the pivot
+count. Results use a persistence-thresholded $H_0$ metric, so reported magnitudes
+are denoised estimates; varying the threshold over a $4\times$ range ($0.5$--$2.0$
+walk-minutes) preserves every coefficient sign and keeps the three headline
+descriptors significant at $p<10^{-6}$, and the full disruption grid confirms the
+signs, significances, ranking and $\rhostar$. OSM completeness varies by city and
+is not quantified here, and the network-distance Vietoris--Rips variant of the
+filtration is left to future work.
 
 Read together, these caveats narrow the claim: within these five cities, and under
 synthetic edge-removal disruption, street-network morphology is a consistent
