@@ -94,6 +94,18 @@ def main() -> None:
     sem = ML_Error(y, X, w=w, name_x=names, name_y="auc")
     sar = ML_Lag(y, X, w=w, name_x=names, name_y="auc")
 
+    # Spatial-model selection diagnostics (Anselin LM tests on the OLS residuals).
+    print("\n=== Spatial diagnostics on OLS residuals (model selection) ===")
+    for attr, lbl in [("lm_error", "LM error"), ("lm_lag", "LM lag"),
+                      ("rlm_error", "robust LM error"), ("rlm_lag", "robust LM lag"),
+                      ("lm_sarma", "LM SARMA")]:
+        v = getattr(ols, attr, None)
+        if v is not None:
+            print(f"  {lbl:16s}: stat={v[0]:.2f}, p={v[1]:.3g}")
+    print(f"  AIC: OLS={getattr(ols, 'aic', float('nan')):.1f}  "
+          f"SEM={getattr(sem, 'aic', float('nan')):.1f}  "
+          f"SAR={getattr(sar, 'aic', float('nan')):.1f}")
+
     rows = []
     for label, m in [("OLS_FE", ols), ("SpatialError", sem), ("SpatialLag", sar)]:
         b = np.asarray(m.betas).flatten()

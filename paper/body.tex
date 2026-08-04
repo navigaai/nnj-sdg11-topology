@@ -21,7 +21,13 @@ for amenities such as polling sites \citep{hickok2022polling} and healthcare
 \citep{rodriguez2025displacement}. What is \emph{not} novel is using PH to find
 accessibility ``holes'' for an amenity. Our contribution is to move from
 \emph{detecting} coverage gaps to \emph{measuring the resilience of the access
-topology} and to \emph{linking that resilience to urban form}.
+topology} and to \emph{linking that resilience to urban form}. One scope note is
+worth stating at the outset: we measure \emph{network} accessibility---the
+pedestrian graph's spatial reach to green space, with every network node weighted
+equally---rather than \emph{population} accessibility, which would weight locations
+by the residents they serve. The two coincide only where population is uniform; our
+claims concern the network's structural capacity to keep places near nature, not how
+many people retain access, and should be read in that sense throughout.
 
 \paragraph{Contributions.}
 \begin{itemize}
@@ -138,7 +144,14 @@ degradation
 \]
 averaged over $r$ replicate disruptions. We consider three disruption families:
 uniformly random edge removal (percolation-style), targeted removal of
-high-betweenness edges, and hazard removal of edges in low-elevation zones. Exact
+high-betweenness edges, and hazard removal of edges in low-elevation zones. These
+are deliberately \emph{stylised stress tests}, not simulations of specific
+disasters: random removal probes generic structural robustness (and, being spatially
+uniform, does \emph{not} reproduce the spatially clustered damage of a real flood or
+earthquake), targeted removal probes the worst case of losing critical links, and
+the hazard proxy adds a first, mild topographic signal. We use them to compare
+places under a common, reproducible perturbation, and we are correspondingly
+cautious in reading the results as real-disaster resilience (Limitations). Exact
 edge betweenness is $O(V\lvert E\rvert)$ and intractable at city scale, so the
 targeted scenario ranks edges by betweenness approximated from $k=500$ sampled
 pivot sources. The
@@ -200,7 +213,13 @@ per-city constant collinear with the fixed effects). We then fit
 an ordinary-least-squares regression of district AUC on morphology
 $\mathbf{m}_i$ with \emph{city fixed effects} $\alpha_{c(i)}$ absorbing all
 between-city confounds. The five cities serve as a typological overlay, not as
-the inferential sample.
+the inferential sample. Crucially, this design sidesteps the cross-city
+comparability problem of AUC: because $\alpha_{c(i)}$ absorbs each city's overall
+AUC level---which scales with network and diagram size---the morphology
+coefficients are identified purely from \emph{within-city} variation, so the
+inference never rests on comparing absolute AUC across cities (it is only the
+descriptive city typology, not the regression, that would require a size
+normalisation).
 
 \section{Case studies}
 We study five cities chosen to span street morphology, planning regime and
@@ -268,11 +287,15 @@ to how the remaining patches are split, and because the inclusive patch definiti
 five cities and are spatially contiguous, we further report city-clustered standard
 errors (Table~\ref{tab:clustered}), a spatial-autocorrelation diagnostic
 (Table~\ref{tab:moran}), and---since that diagnostic is positive---two
-\emph{estimated} spatial models (Table~\ref{tab:spatial}). The three headline
-descriptors keep their sign and stay strongly significant ($|z|\ge5$) under both a
-spatial-error and a spatial-lag specification, even though both absorb a large
-amount of spatial dependence ($\hat\lambda=0.55$, $\hat\rho=0.53$); we return to the
-implications in the Limitations.
+\emph{estimated} spatial models (Table~\ref{tab:spatial}). Anselin Lagrange-
+multiplier tests on the OLS residuals decisively reject the non-spatial model
+(LM-error $p<10^{-99}$, LM-lag $p<10^{-125}$; the robust LM statistics favour the
+lag form, $146$ vs.\ $26$), and both spatial models cut the AIC by more than $400$
+relative to OLS ($14{,}351\to13{,}925$ for the error model, $13{,}877$ for the lag
+model). Despite this---both specifications absorb a large amount of dependence
+($\hat\lambda=0.55$, $\hat\rho=0.53$)---the three headline descriptors keep their
+sign and stay strongly significant ($|z|\ge5$); we return to the implications in
+the Limitations.
 
 \begin{table}[t]\centering
 \caption{District fixed-effects regression, $\mathrm{AUC}\sim\text{morphology}+C(\text{city})$,
@@ -467,8 +490,9 @@ trunk/primary/secondary/tertiary road hierarchy, within-district relief (elevati
 standard deviation, a topography control), and distance from the district to the
 urban-centre centroid (city-centre proximity)---and refit
 (Table~\ref{tab:controls}). Three of the four controls are themselves
-significant---more green area and greater centre distance predict greater
-resilience, more major-road edges less---so they are genuine correlates of AUC, yet
+significant---more green area and greater centre distance are associated with
+greater resilience, more major-road edges with less---so they are genuine
+correlates of AUC, yet
 the three headline morphology descriptors keep their sign and stay significant at
 $p<10^{-11}$ (circuity $-9.55$, mean street length $-0.039$, orientation entropy
 $+1.11$). The morphology signal is thus not a proxy for green quantity, road
@@ -552,7 +576,7 @@ surrounded by served land but the connectivity of the served regions themselves,
 and that connectivity is what disruption erodes.
 
 For design, the reading is that \emph{path redundancy}, not raw proximity, is what
-protects access to nature under stress: the descriptors that predict resilience
+protects access to nature under stress: the descriptors associated with resilience
 (circuitous routing, longer segments) are hallmarks of networks offering several
 comparable ways to reach the same green space, so that losing one link rarely
 isolates a served region. This reframes an SDG~11.7 design brief from ``put a park
@@ -593,7 +617,8 @@ geographic replication beyond five cities---rather than of within-sample spatial
 confounding.
 
 \emph{Omitted variables.} Morphology is only one of many district attributes that
-could drive resilience. We control for the four that our data support---green-space
+could be associated with resilience. We control for the four that our data
+support---green-space
 area, road hierarchy, relief and city-centre distance (Table~\ref{tab:controls})---
 and the headline morphology effects survive their inclusion, which rules those four
 out as the drivers. But population and built density, land-use mix, park-level size
@@ -630,12 +655,21 @@ with a simple distance-based ground truth is weak, and with connectivity degrada
 it even carries the wrong sign because disconnected nodes leave the finite diagram.
 The metric is therefore best understood as capturing a distinct,
 configuration-sensitive aspect of resilience rather than as a validated substitute
-for a disconnection-aware access measure; a full head-to-head against an established
+for a disconnection-aware access measure. To confirm that the wrong-sign result is
+indeed the disconnection mechanism, we ran a diagnostic \emph{finite-cap} variant
+that keeps unreachable nodes in the diagram at a large finite birth
+($\tau=60$~min) instead of dropping them at infinity. The cap flips the correlation
+with connectivity degradation from negative to (weakly) positive
+($-0.10\to+0.02$ on a two-city reduced-grid check), confirming the diagnosis---but
+it simultaneously erodes the correlation with graded distance degradation
+($+0.41\to+0.06$), because the many capped classes swamp the graded signal. A naive
+cap thus trades one artefact for another; a principled \emph{extended-persistence}
+formulation---which records disconnection as a distinct essential feature rather
+than collapsing it to a constant---is the right fix and the most important
+methodological next step, alongside a full head-to-head against an established
 measure (e.g.\ the degradation of a population-weighted two-step floating catchment
-score, or observed post-disruption service loss), and an \emph{extended-persistence}
-formulation that keeps disconnected components in the diagram, are the two most
-important next steps. We frame the metric as a candidate indicator until they are
-done. Two further caveats:
+score, or observed post-disruption service loss). We frame the metric as a
+candidate indicator until these are done. Two further caveats:
 AUC depends on network and district size and on the number of $H_0$ classes, so it
 is comparable across cities only in relative ranking, not in absolute level (city
 fixed effects absorb this scale in the regression), and $\rhostar$ depends on the

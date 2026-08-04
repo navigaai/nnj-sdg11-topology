@@ -158,6 +158,11 @@ strong dependence (λ,ρ≈0.5) yet the 3 headline descriptors keep sign + |z|�
 intersection_density even turns significant. → morphology signal is NOT a spatial-
 autocorrelation artefact; remaining caveat is external validity (only 5 cities).
 
+**Spatial model selection (Anselin LM tests on OLS residuals):** LM-error 448.9
+(p=1e-99), LM-lag 569.3 (p=8e-126); robust LM-error 25.7, **robust LM-lag 146.1**
+→ lag form favoured. AIC: OLS 14350.6 → SEM 13924.6 → **SAR 13876.9** (both spatial
+models beat OLS by >400). → formally justifies the spatial specification.
+
 ### 3d. Omitted-variable controls (reviewer response, `scripts/omitted_controls.py`)
 
 Added 4 district controls computable from existing data (no resilience recompute;
@@ -203,6 +208,23 @@ headline morphology descriptors stay significant (circuity −5.87 p=3e-7, mean_
 degradation (captures distinct configurational info), but its convergent validity
 with a distance-based ground truth is weak → criterion validation only partially met;
 the metric is a distinct indicator, not yet a validated substitute.
+
+### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
+
+Test whether the wrong-sign connectivity result is the disconnection mechanism: cap
+unreachable field at τ=60 min (keep disconnected nodes in the diagram) vs original
+(inf, drops them). Amsterdam+Bogotá, reduced grid, n=765:
+
+| metric | vs connectivity-degrad | vs distance-degrad |
+|---|---|---|
+| original (inf) | −0.100 | +0.406 |
+| capped (τ=60) | **+0.018** | +0.059 |
+
+Cap **flips the connectivity sign** (−0.10→+0.02) → confirms the artefact is the
+disconnection mechanism. BUT it **erodes** the distance-degradation correlation
+(+0.41→+0.06) → naive finite cap trades one artefact for another. → a principled
+extended-persistence (disconnection as a distinct essential feature) is the right
+fix; reported honestly as future methodological work, not a solution.
 
 ### 3c. Phase 2 sensitivity (reviewer response)
 
