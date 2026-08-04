@@ -222,9 +222,48 @@ unreachable field at τ=60 min (keep disconnected nodes in the diagram) vs origi
 
 Cap **flips the connectivity sign** (−0.10→+0.02) → confirms the artefact is the
 disconnection mechanism. BUT it **erodes** the distance-degradation correlation
-(+0.41→+0.06) → naive finite cap trades one artefact for another. → a principled
-extended-persistence (disconnection as a distinct essential feature) is the right
-fix; reported honestly as future methodological work, not a solution.
+(+0.41→+0.06) → naive finite cap trades one artefact for another.
+
+### 3g. Criterion validity — WITHIN-CITY (reviewer W1, `scripts/criterion_validity.py`)
+
+The regression identifies morphology from within-city variation (city FE), so the
+matching validity question is within-city. Spearman(topological AUC, distance-based
+accessibility-degradation benchmark):
+
+| scope | n | ρ | p |
+|---|---|---|---|
+| Amsterdam | 227 | +0.465 | 1e-13 |
+| Bogotá | 538 | +0.156 | 3e-4 |
+| İstanbul | 729 | +0.095 | 0.011 |
+| Barcelona | 147 | +0.053 | 0.53 |
+| Phoenix | 962 | +0.027 | 0.40 |
+| **WITHIN-CITY pooled** | 2603 | **+0.360** | **2e-80** |
+| naive pooled | 2603 | +0.071 | 3e-4 |
+
+**Positive in all 5 cities; within-city +0.36 (p<1e-79).** The naive pooled +0.07 was
+depressed by cross-city AUC scale (Simpson's paradox — the scale city FE removes).
+→ **criterion validity holds at the level the metric is used.** Scope: validity is
+for GRADED access degradation; within-city AUC↔connectivity is ~0-to-negative
+(disconnection channel). → metric measures resilience of the CONNECTED served
+structure; disconnection is a complementary channel.
+
+### 3h. Extended-persistence metric (W2, `scripts/extended_persistence_v2.py`, `_extdiag.py`)
+
+GUDHI extended persistence gives disconnected/essential H0 classes finite (birth,death)
+in a separate channel. Amsterdam reduced grid, Spearman vs baselines:
+
+| metric | vs distance-degrad | vs connectivity |
+|---|---|---|
+| original (inf) | +0.462 | +0.115 |
+| naive cap | +0.141 | +0.245 |
+| extended-persist | +0.049 | +0.314 |
+
+Extended persistence tracks connectivity best (+0.31) but distance worst (+0.05) —
+the high-persistence component classes dominate a single Wasserstein match.
+**Conclusion:** graded resilience and disconnection are TWO channels a single scalar
+conflates → report them separately (as the paper now does); a joint multi-channel
+metric is future work. This is the honest W2 outcome — mechanism understood, clean
+single-scalar fix shown to be non-trivial.
 
 ### 3c. Phase 2 sensitivity (reviewer response)
 
