@@ -21,13 +21,12 @@ for amenities such as polling sites \citep{hickok2022polling} and healthcare
 \citep{rodriguez2025displacement}. What is \emph{not} novel is using PH to find
 accessibility ``holes'' for an amenity. Our contribution is to move from
 \emph{detecting} coverage gaps to \emph{measuring the resilience of the access
-topology} and to \emph{linking that resilience to urban form}. One scope note is
-worth stating at the outset: we measure \emph{network} accessibility---the
-pedestrian graph's spatial reach to green space, with every network node weighted
-equally---rather than \emph{population} accessibility, which would weight locations
-by the residents they serve. The two coincide only where population is uniform; our
-claims concern the network's structural capacity to keep places near nature, not how
-many people retain access, and should be read in that sense throughout.
+topology} and to \emph{linking that resilience to urban form}. A scope note up
+front: we measure \emph{network} accessibility, the pedestrian graph's spatial reach
+to green space with every network node weighted equally, and not \emph{population}
+accessibility, which would weight locations by the residents they serve. The two
+coincide only where population is uniform. Our claims concern the network's
+structural capacity to keep places near nature, not how many people retain access.
 
 \paragraph{Contributions.}
 \begin{itemize}
@@ -62,7 +61,7 @@ as a static field, whether by simple footpath proximity \citep{carthy2020greensp
 or by catchment methods such as the Gaussian two-step floating catchment area
 \citep{sun2023catchment}, often to diagnose inequities in who lives close to nature
 \citep{asibey2026equity}. Our accessibility field (Section~\ref{sec:method}) is
-built the same way---network walking time to the nearest green space---but is then
+built the same way (network walking time to the nearest green space) but is then
 read topologically and stress-tested, rather than thresholded once.
 
 \emph{Street-network morphology.} We characterise form with standard descriptors
@@ -171,16 +170,16 @@ sublevel filtration's finite $H_1$ is nearly empty: a street graph is close to
 planar and contains few triangles, so the network's cycles are never filled and
 almost all $H_1$ classes are essential (infinite) and carry no finite persistence.
 In Amsterdam, for example, the baseline diagram has $6{,}449$ finite $H_0$ classes
-but only a single finite $H_1$ class (Fig.~\ref{fig:persistence}). We are explicit
-that this is a joint property of our \emph{representation} (a node-valued walk-time
-field on the near-planar pedestrian graph) and the \emph{sublevel filtration}, not
-a universal fact about green-space access: a different construction---for instance a
-Vietoris--Rips filtration on straight-line distances, or a $2$-complex that fills
-faces---would populate $H_1$ and could shift the signal into loops. Under our
-construction, however, the finite information lives in $H_0$ (the merging of
-well-served regions), so we compute $\Drho$ on $H_0$ and treat the $H_1$ scarcity as
-a modelling consequence to revisit with alternative filtrations, not as evidence
-that access ``deserts'' are absent. To keep the exact Wasserstein matching tractable
+but only a single finite $H_1$ class (Fig.~\ref{fig:persistence}). This is a joint
+property of our \emph{representation} (a node-valued walk-time field on the
+near-planar pedestrian graph) and the \emph{sublevel filtration}, not a universal
+fact about green-space access. A different construction, for instance a
+Vietoris--Rips filtration on straight-line distances or a $2$-complex that fills
+faces, would populate $H_1$ and could shift the signal into loops. Under our
+construction the finite information lives in $H_0$ (the merging of well-served
+regions), so we compute $\Drho$ on $H_0$ and treat the $H_1$ scarcity as a modelling
+consequence to revisit with alternative filtrations, not as evidence that access
+``deserts'' are absent. To keep the exact Wasserstein matching tractable
 on city-scale diagrams we discard $H_0$ classes with lifetime below $1$~walk-minute.
 This cut is principled rather than arbitrary: a one-minute difference in walk time
 is below the resolution at which the constant-speed ($4.8$~km/h) field is
@@ -213,13 +212,12 @@ per-city constant collinear with the fixed effects). We then fit
 an ordinary-least-squares regression of district AUC on morphology
 $\mathbf{m}_i$ with \emph{city fixed effects} $\alpha_{c(i)}$ absorbing all
 between-city confounds. The five cities serve as a typological overlay, not as
-the inferential sample. Crucially, this design sidesteps the cross-city
-comparability problem of AUC: because $\alpha_{c(i)}$ absorbs each city's overall
-AUC level---which scales with network and diagram size---the morphology
-coefficients are identified purely from \emph{within-city} variation, so the
-inference never rests on comparing absolute AUC across cities (it is only the
-descriptive city typology, not the regression, that would require a size
-normalisation).
+the inferential sample. This design also sidesteps the cross-city comparability
+problem of AUC. Because $\alpha_{c(i)}$ absorbs each city's overall AUC level, which
+scales with network and diagram size, the morphology coefficients are identified
+purely from \emph{within-city} variation, and the inference never rests on comparing
+absolute AUC across cities. Only the descriptive city typology, not the regression,
+would need a size normalisation.
 
 \section{Case studies}
 We study five cities chosen to span street morphology, planning regime and
@@ -286,7 +284,7 @@ to how the remaining patches are split, and because the inclusive patch definiti
 (Section~\ref{sec:method}) mixes very different green-space types into one count. Because districts nest within
 five cities and are spatially contiguous, we further report city-clustered standard
 errors (Table~\ref{tab:clustered}), a spatial-autocorrelation diagnostic
-(Table~\ref{tab:moran}), and---since that diagnostic is positive---two
+(Table~\ref{tab:moran}), and, since that diagnostic is positive, two
 \emph{estimated} spatial models (Table~\ref{tab:spatial}). Anselin Lagrange-
 multiplier tests on the OLS residuals decisively reject the non-spatial model
 (LM-error $p<10^{-99}$, LM-lag $p<10^{-125}$; the robust LM statistics favour the
@@ -404,9 +402,9 @@ than the per-district means of Table~\ref{tab:typology} and scales with network
 size; it is \emph{not} normalised, so only the relative ordering---never the
 level---should be read, and a size-normalised cross-city AUC is left to future work.
 On that ordering, city-level AUC is
-lowest---most resilient---for Barcelona ($620$) and Amsterdam ($898$), and highest
+lowest, and so most resilient, for Barcelona ($620$) and Amsterdam ($898$), and highest
 for İstanbul ($2440$) and Bogotá ($2828$), with Phoenix in between ($2053$). The
-cities we would informally call compact---Barcelona and Amsterdam---retain more of
+cities we would informally call compact, Barcelona and Amsterdam, retain more of
 their access topology under disruption than the large, sprawling or polycentric
 ones; we describe this pattern with the measured morphology descriptors rather
 than with ``walkability,'' which we do not model directly. Under
@@ -453,7 +451,7 @@ removes \emph{all} inundated edges.
 $8\times10$ disruption grid. A coarser $5\times3$ grid (fewer intensities and
 replicates) leaves every coefficient sign unchanged and keeps the three headline
 descriptors significant at $p<10^{-3}$ (circuity $-8.99$, mean street length
-$-0.0478$---essentially identical to the full grid's $-0.0476$---and orientation
+$-0.0478$, essentially identical to the full grid's $-0.0476$, and orientation
 entropy $+1.17$), while the city AUC ranking and $\rhostar$ values agree within
 $\approx0.02$. The one descriptor that moves across grids is intersection density:
 significant on the coarse grid ($-0.199$, $p=8.6\times10^{-3}$) but not on the full
@@ -524,29 +522,29 @@ centre distance (km) & --- & $-0.107$ $^{***}$\\
 \end{tabular}
 \end{table}
 
-\paragraph{Criterion validity: benchmark against an accessibility measure.} A
-topological metric should earn its complexity. We benchmark it, per district,
-against a \emph{distance-based} accessibility-degradation measure---the increase in
-mean walk-time to green space under the same disruption, a proximity-accessibility
-degradation of the kind used throughout the field---and, separately, against a
-\emph{connectivity} degradation (the increase in the fraction of nodes left unable
-to reach any green space), the natural non-persistent counterpart since $H_0$ of a
-sublevel filtration is single-linkage connectivity. The crucial point is the level
-of comparison. Our inference identifies morphology from \emph{within-city}
-variation (city fixed effects); the matching validity question is therefore also
-within-city, once each city's overall AUC level---which scales with network
-size---is removed. Within city, the topological AUC is positively and highly
-significantly correlated with the distance benchmark ($\rho=+0.36$, $p<10^{-79}$;
-positive in all five cities, Table~\ref{tab:validity}); the metric tracks a simple
-accessibility-degradation ground truth at exactly the level at which it is used. The
-\emph{naive pooled} correlation is much weaker ($\rho=+0.07$) purely because
-cross-city AUC scale swamps it---a Simpson's-paradox effect, and the same scale the
-city fixed effects absorb. Two qualifications remain. First, the metric adds value
-rather than merely echoing the benchmark: controlling for both baselines and city
-fixed effects, the three headline morphology descriptors stay significant
-($p<10^{-6}$), so it carries configurational information the simple measures miss.
-Second, the convergent validity is with \emph{graded} access loss, not
-\emph{disconnection}: within city, AUC correlates near zero-to-negative with
+\paragraph{Criterion validity: benchmark against an accessibility measure.} If the
+topological machinery is to be worth its cost it should track a simpler measure of
+access loss. We benchmark it, per district, against a \emph{distance-based}
+accessibility-degradation measure, namely the increase in mean walk-time to green
+space under the same disruption (a proximity-accessibility degradation of the kind
+used throughout the field). As a second reference we use a \emph{connectivity}
+degradation, the increase in the fraction of nodes left unable to reach any green
+space; this is the natural non-persistent counterpart, since $H_0$ of a sublevel
+filtration is single-linkage connectivity. The level of comparison is what settles
+the question. Our inference identifies morphology from \emph{within-city} variation
+(city fixed effects), so the matching validity question is also within-city, once
+each city's overall AUC level (which scales with network size) is removed. Within
+city, the topological AUC correlates positively and highly significantly with the
+distance benchmark ($\rho=+0.36$, $p<10^{-79}$, positive in all five cities;
+Table~\ref{tab:validity}), so the metric tracks a simple accessibility-degradation
+ground truth at the level at which it is used. The naive pooled correlation is much
+weaker ($\rho=+0.07$) only because cross-city AUC scale swamps it, a Simpson's
+paradox driven by the same scale the fixed effects absorb. Two qualifications
+remain. The metric adds value rather than echoing the benchmark: controlling for
+both baselines and city fixed effects, the three headline morphology descriptors
+stay significant ($p<10^{-6}$), so it carries configurational information the simple
+measures miss. And the convergent validity is with \emph{graded} access loss, not
+with \emph{disconnection}. Within city, AUC correlates near zero-to-negative with
 connectivity degradation, because disconnected nodes leave the finite diagram. The
 metric is thus validly read as the resilience of the \emph{connected} served
 structure, and should be paired with a disconnection count for total access loss; we
@@ -588,7 +586,7 @@ the coefficient signs agree across scenarios, and the three headline descriptors
 intersection density crosses zero under random disruption. \textbf{(b)} Sign and
 significance of each coefficient across H3 resolutions $7$/$8$/$9$: the three
 headline descriptors stay significant with a constant sign, while intersection
-density---the weakest, grid-sensitive effect---is not significant at the headline
+density, the weakest and grid-sensitive effect, is not significant at the headline
 full-grid specification.}
 \label{fig:robustness}
 \end{figure}
@@ -681,27 +679,27 @@ and yields a morphology relationship that survives disruption model, district
 resolution, denoising threshold, pivot count, spatial-error/lag modelling and four
 omitted-variable controls. On \emph{criterion} validity, the benchmark against a
 distance-based accessibility-degradation measure (Table~\ref{tab:validity}) is
-positive at the level at which the metric is used: within city---the unit the fixed
-effects identify from---the topological AUC correlates $+0.36$ ($p<10^{-79}$) with
+positive at the level at which the metric is used. Within city, the unit the fixed
+effects identify from, the topological AUC correlates $+0.36$ ($p<10^{-79}$) with
 the benchmark and is positive in all five cities, while remaining non-redundant (the
-morphology signal survives controlling for it). We are explicit about the scope of
-that validity: it holds for \emph{graded} access degradation, not for total
-\emph{disconnection}. Within city, AUC correlates near zero-to-negative with
-connectivity degradation, because unreachable nodes leave the finite diagram, so the
-metric measures the resilience of the \emph{connected} served structure and should
-be paired with a disconnection count for total access loss. We tried to fold
-disconnection into a single scalar and report the outcome plainly: a finite cap
-($\tau=60$~min) recovers the connectivity sign ($-0.10\to+0.02$ on a two-city check)
-but erodes the graded-distance correlation ($+0.41\to+0.06$), and a principled
-extended-persistence diagram (which gives the disconnected components finite
-coordinates in a separate channel) behaves the same way on Amsterdam (connectivity
-$+0.31$ but distance only $+0.05$), because the high-persistence component classes
-dominate a single Wasserstein match. The honest conclusion is that graded resilience
-and disconnection are \emph{two channels} that a single scalar conflates; reporting
-them separately---as we now do---is the correct treatment, and a joint
-multi-channel metric with a full head-to-head against an established measure (e.g.\ a
-population-weighted two-step floating catchment degradation, or observed
-post-disruption service loss) is the natural next step. Two further caveats:
+morphology signal survives controlling for it). That validity has a definite scope:
+it holds for \emph{graded} access degradation, not for total \emph{disconnection}.
+Within city, AUC correlates near zero-to-negative with connectivity degradation,
+because unreachable nodes leave the finite diagram, so the metric measures the
+resilience of the \emph{connected} served structure and should be paired with a
+disconnection count for total access loss. We tried to fold disconnection into a
+single scalar, and the result is instructive. A finite cap ($\tau=60$~min) recovers the
+connectivity sign ($-0.10\to+0.02$ on a two-city check) but erodes the
+graded-distance correlation ($+0.41\to+0.06$), and a principled extended-persistence
+diagram, which gives the disconnected components finite coordinates in a separate
+channel, behaves the same way on Amsterdam (connectivity $+0.31$ but distance only
+$+0.05$), because the high-persistence component classes dominate a single
+Wasserstein match. Graded resilience and disconnection are, then, two channels that
+a single scalar conflates; reporting them separately, as we now do, is the right
+treatment. A joint multi-channel metric with a full head-to-head against an
+established measure (a population-weighted two-step floating catchment degradation,
+say, or observed post-disruption service loss) is the natural next step. Two further
+caveats:
 AUC depends on network and district size and on the number of $H_0$ classes, so it
 is comparable across cities only in relative ranking, not in absolute level (city
 fixed effects absorb this scale in the regression), and $\rhostar$ depends on the
