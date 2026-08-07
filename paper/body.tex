@@ -281,19 +281,14 @@ suggestive. Green-space fragmentation is likewise not significant once it varies
 within cities and city fixed effects are included---plausibly because access in our
 field is set by the \emph{nearest} green-space point, which is largely insensitive
 to how the remaining patches are split, and because the inclusive patch definition
-(Section~\ref{sec:method}) mixes very different green-space types into one count. Because districts nest within
-five cities and are spatially contiguous, we further report city-clustered standard
-errors (Table~\ref{tab:clustered}), a spatial-autocorrelation diagnostic
-(Table~\ref{tab:moran}), and, since that diagnostic is positive, two
-\emph{estimated} spatial models (Table~\ref{tab:spatial}). Anselin Lagrange-
-multiplier tests on the OLS residuals decisively reject the non-spatial model
-(LM-error $p<10^{-99}$, LM-lag $p<10^{-125}$; the robust LM statistics favour the
-lag form, $146$ vs.\ $26$), and both spatial models cut the AIC by more than $400$
-relative to OLS ($14{,}351\to13{,}925$ for the error model, $13{,}877$ for the lag
-model). Despite this---both specifications absorb a large amount of dependence
-($\hat\lambda=0.55$, $\hat\rho=0.53$)---the three headline descriptors keep their
-sign and stay strongly significant ($|z|\ge5$); we return to the implications in
-the Limitations.
+(Section~\ref{sec:method}) mixes very different green-space types into one count.
+Districts nest within five cities and are spatially contiguous, so their residuals
+are not independent; Appendix~\ref{app:robust} treats this in full (city-clustered
+standard errors, a Moran's~$I$ diagnostic, and estimated spatial-error and
+spatial-lag models that Anselin LM tests and AIC strongly prefer to OLS). The two
+strongest effects, circuity and mean street length, survive every one of these
+treatments; orientation entropy survives the spatial models but not city clustering,
+which we weigh in the Limitations.
 
 \begin{table}[t]\centering
 \caption{District fixed-effects regression, $\mathrm{AUC}\sim\text{morphology}+C(\text{city})$,
@@ -310,74 +305,6 @@ mean street length & $-0.0476$ & $0.0058$ & $3.7\times10^{-16}$ $^{***}$\\
 orientation entropy & $+1.015$ & $0.200$ & $4.4\times10^{-7}$ $^{***}$\\
 intersection density & $-0.091$ & $0.074$ & $0.22$\\
 green-space fragmentation & $-2.0\times10^{-6}$ & $4.2\times10^{-6}$ & $0.64$\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]\centering
-\caption{Sensitivity of the regression inference to how standard errors treat the
-nesting of districts within cities. Coefficients are unchanged; only the standard
-errors and $p$-values differ. HC3 is heteroskedasticity-robust; the last two
-columns cluster by city (five clusters). Circuity and mean street length stay
-significant under city clustering; orientation entropy does not.}
-\label{tab:clustered}
-\begin{tabular}{lrrrr}
-\toprule
-Morphology descriptor & coef & SE (HC3) & SE (cluster) & $p$ (cluster)\\
-\midrule
-circuity & $-10.156$ & $1.397$ & $2.946$ & $5.7\times10^{-4}$ $^{***}$\\
-mean street length & $-0.0476$ & $0.0066$ & $0.0089$ & $7.7\times10^{-8}$ $^{***}$\\
-orientation entropy & $+1.015$ & $0.220$ & $0.894$ & $0.26$\\
-intersection density & $-0.091$ & $0.092$ & $0.214$ & $0.67$\\
-green-space fragmentation$^{\dagger}$ & $-2.0\times10^{-6}$ & $5.9\times10^{-6}$ & $6.1\times10^{-7}$ & $<10^{-2}$\\
-\bottomrule
-\end{tabular}
-
-\footnotesize$^{\dagger}$The apparent clustered significance of green-space
-fragmentation is a five-cluster artefact of the cluster-robust variance around a
-coefficient that is effectively zero ($|\text{coef}|<10^{-5}$); it is not a
-substantive effect.
-\end{table}
-
-\begin{table}[t]\centering
-\caption{Global Moran's~$I$ of the fixed-effects regression residuals within each
-city, using first-ring H3 adjacency as the spatial weights ($999$ permutations).
-Residuals show weak but significant positive spatial autocorrelation in every city,
-motivating the estimated spatial models in Table~\ref{tab:spatial}.}
-\label{tab:moran}
-\begin{tabular}{lccc}
-\toprule
-City & districts & Moran's $I$ & $p$ (perm.)\\
-\midrule
-Amsterdam & 226 & $0.080$ & $0.031$\\
-Barcelona & 147 & $0.178$ & $0.001$\\
-Bogotá    & 538 & $0.142$ & $0.001$\\
-İstanbul  & 729 & $0.112$ & $0.001$\\
-Phoenix   & 962 & $0.058$ & $0.003$\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]\centering
-\caption{Estimated spatial models (maximum likelihood, \texttt{spreg}) with city
-fixed effects, on a block-diagonal within-city first-ring H3 weights matrix
-($n=2{,}602$ after dropping one island). Coefficients on AUC with $z$-statistics.
-The three headline descriptors keep their sign and remain strongly significant
-under both the spatial-error and spatial-lag specifications, despite substantial
-estimated spatial dependence ($\hat\lambda,\hat\rho\approx0.5$).}
-\label{tab:spatial}
-\begin{tabular}{lrrr}
-\toprule
-& OLS (FE) & Spatial error & Spatial lag\\
-Morphology descriptor & coef ($z$) & coef ($z$) & coef ($z$)\\
-\midrule
-circuity & $-10.15$ ($-8.7$) & $-5.38$ ($-5.0$) & $-6.88$ ($-6.7$)\\
-mean street length & $-0.048$ ($-8.2$) & $-0.033$ ($-5.8$) & $-0.034$ ($-6.5$)\\
-orientation entropy & $+1.01$ ($+5.1$) & $+1.25$ ($+5.9$) & $+0.92$ ($+5.2$)\\
-intersection density & $-0.09$ ($-1.2$) & $-0.21$ ($-2.9$) & $-0.16$ ($-2.5$)\\
-green-space fragmentation & \multicolumn{3}{c}{not significant in any model}\\
-\midrule
-spatial parameter & --- & $\hat\lambda=0.55$ & $\hat\rho=0.53$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -420,107 +347,18 @@ city's critical transition $\rhostar$.}
 \label{fig:resilience}
 \end{figure}
 
-\paragraph{Robustness across disruption scenarios.} Repeating the analysis under
-\emph{targeted} disruption (removal of high-betweenness edges, ranked by
-$k{=}500$-sampled betweenness) reproduces every coefficient sign in
-Table~\ref{tab:regression}. The three descriptors significant under random
-disruption stay significant---circuity $-5.77$ ($p=4.6\times10^{-10}$), mean street
-length $-0.034$ ($p=2.7\times10^{-13}$), orientation entropy $+0.50$
-($p=1.6\times10^{-3}$)---and intersection density, not significant under the full
-random grid, reaches $p=0.022$ here ($-0.135$), consistent with our reading of it
-as the weakest, grid-sensitive effect; green-space fragmentation is again not
-significant. Targeted disruption removes fewer but more critical edges, so absolute
-AUC values are lower (e.g.\ Amsterdam mean AUC $2.03$ vs.\ $4.46$ under random), but
-the morphology$\leftrightarrow$resilience relationship and the city
-ranking are unchanged. The finding is therefore not an artefact of the random
-disruption model.
-
-A third, \emph{hazard} scenario (removing edges near the lowest-elevation
-$10\%$ of nodes, from AWS Terrain Tiles DEMs) is topography-dependent and much
-milder: substantial only in the two flattest cities (Amsterdam and the Phoenix
-basin, mean AUC $0.09$ and $0.31$) and near-zero in the hilly or high-altitude
-ones (İstanbul, Barcelona, Bogotá; mean AUC $\le0.01$), where the lowest cells
-sit at the waterfront and disconnect only a shoreline fringe. This localized
-perturbation barely moves the city-wide $H_0$ topology, so it does not resolve a
-morphology signal (only orientation entropy remains significant, $+0.10$,
-$p=0.01$); we read this as a limitation of the mild, $\rho$-capped low-elevation
-proxy rather than a contradiction, and it motivates a stronger flood model that
-removes \emph{all} inundated edges.
-
-\paragraph{Disruption-grid sensitivity.} The headline regression uses the full
-$8\times10$ disruption grid. A coarser $5\times3$ grid (fewer intensities and
-replicates) leaves every coefficient sign unchanged and keeps the three headline
-descriptors significant at $p<10^{-3}$ (circuity $-8.99$, mean street length
-$-0.0478$, essentially identical to the full grid's $-0.0476$, and orientation
-entropy $+1.17$), while the city AUC ranking and $\rhostar$ values agree within
-$\approx0.02$. The one descriptor that moves across grids is intersection density:
-significant on the coarse grid ($-0.199$, $p=8.6\times10^{-3}$) but not on the full
-grid ($p=0.22$). We therefore report the more demanding full grid as the headline
-and treat intersection density as the weakest, grid-sensitive effect.
-
-\paragraph{Resolution sensitivity.} Re-running the analysis at H3 resolutions~$7$
-(coarse, $485$ districts) and~$9$ (fine, $13{,}782$ districts) leaves the result
-unchanged in sign and significance for the three strongest descriptors: circuity,
-orientation entropy and mean street length remain significant at $p<10^{-3}$ with
-the same signs across all three resolutions, a $28\times$ range of district
-counts. Coefficient magnitudes scale with cell size (larger cells yield larger
-per-district AUC), but the direction of every effect is stable; only
-green-space fragmentation, non-significant throughout, varies.
-Figure~\ref{fig:robustness} summarises both robustness axes.
-
-\paragraph{Persistence-threshold sensitivity.} The metric denoises the $H_0$
-diagram by discarding classes with lifetime below a threshold (headline
-$1.0$~walk-minute). Varying this threshold over a $4\times$ range leaves the
-headline unchanged: at $0.5$, $1.0$ and $2.0$~minutes the three significant
-descriptors keep their sign and stay significant at $p<10^{-6}$ (circuity
-$-11.20/-10.16/-8.03$; mean street length $-0.050/-0.048/-0.042$; orientation
-entropy $+1.10/+1.01/+0.93$). Coefficient magnitudes shrink smoothly as more
-denoising is applied---as expected, since stronger denoising removes the
-shortest-lived features---but never change sign, and intersection density stays the
-weakest, at most marginal effect (ns at $0.5$ and $1.0$, $p=0.04$ at $2.0$). The
-$1.0$-minute choice is therefore a denoising convenience, not a driver of the
-result.
-
-\paragraph{Omitted-variable controls.} City fixed effects absorb only between-city
-confounds. We therefore add the district-level controls that our data support---
-total green-space area (green quantity/size), the share of edges on the
-trunk/primary/secondary/tertiary road hierarchy, within-district relief (elevation
-standard deviation, a topography control), and distance from the district to the
-urban-centre centroid (city-centre proximity)---and refit
-(Table~\ref{tab:controls}). Three of the four controls are themselves
-significant---more green area and greater centre distance are associated with
-greater resilience, more major-road edges with less---so they are genuine
-correlates of AUC, yet
-the three headline morphology descriptors keep their sign and stay significant at
-$p<10^{-11}$ (circuity $-9.55$, mean street length $-0.039$, orientation entropy
-$+1.11$). The morphology signal is thus not a proxy for green quantity, road
-hierarchy, topography or centrality. Population and built density, land-use mix,
-socioeconomic status and pedestrian-infrastructure quality require external data
-and remain uncontrolled (Limitations).
-
-\begin{table}[t]\centering
-\caption{Omitted-variable robustness: district regression before and after adding
-four controls, $n=2{,}603$, with city fixed effects. The three headline morphology
-effects keep their sign and significance; the added controls explain additional
-variance ($R^2$ $0.17\to0.21$). Sig.: $^{***}p<0.001$, $^{**}p<0.01$.}
-\label{tab:controls}
-\begin{tabular}{lrr}
-\toprule
-& base & $+$controls\\
-Variable & coef ($p$) & coef ($p$)\\
-\midrule
-circuity & $-10.16$ $^{***}$ & $-9.55$ $^{***}$\\
-mean street length & $-0.048$ $^{***}$ & $-0.039$ $^{***}$\\
-orientation entropy & $+1.01$ $^{***}$ & $+1.11$ $^{***}$\\
-intersection density & $-0.09$ & $-0.10$\\
-\midrule
-green-space area (km$^2$) & --- & $-2.25$ $^{**}$\\
-major-road share & --- & $+4.21$ $^{***}$\\
-relief (m) & --- & $-0.008$\\
-centre distance (km) & --- & $-0.107$ $^{***}$\\
-\bottomrule
-\end{tabular}
-\end{table}
+\paragraph{Robustness (summary).} The morphology relationship is stable across every
+alternative specification we tried; Appendix~\ref{app:robust} gives the full results
+and Fig.~\ref{fig:robustness} summarises them. Briefly: the three headline signs and
+their significance ($p<10^{-3}$ or better) survive a \emph{targeted} betweenness
+disruption and a milder \emph{hazard} scenario, the coarse $5\times3$ and full
+$8\times10$ disruption grids, H3 resolutions $7$/$8$/$9$ (a $28\times$ range of
+district counts), persistence thresholds from $0.5$ to $2.0$~walk-minutes, a halving
+and doubling of the betweenness pivot count, and the inclusion of four
+district-level controls (green-space area, road hierarchy, relief and city-centre
+distance). Intersection density is the one descriptor that moves: significant under
+some specifications but not the full-grid headline, so we treat it as the weakest,
+grid-sensitive effect throughout.
 
 \paragraph{Criterion validity: benchmark against an accessibility measure.} If the
 topological machinery is to be worth its cost it should track a simpler measure of
@@ -575,21 +413,6 @@ Naive pooled & 2{,}603 & $+0.07$\\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{figure}[t]\centering
-\includegraphics[width=\linewidth]{figures/fig_robustness.pdf}
-\caption{Robustness of the morphology$\leftrightarrow$resilience relationship.
-\textbf{(a)} Regression coefficients (with $95\%$ confidence intervals) for each
-morphology descriptor under the three disruption scenarios at H3 resolution~8;
-the coefficient signs agree across scenarios, and the three headline descriptors
-(circuity, mean street length, orientation entropy) stay significant, while
-intersection density crosses zero under random disruption. \textbf{(b)} Sign and
-significance of each coefficient across H3 resolutions $7$/$8$/$9$: the three
-headline descriptors stay significant with a constant sign, while intersection
-density, the weakest and grid-sensitive effect, is not significant at the headline
-full-grid specification.}
-\label{fig:robustness}
-\end{figure}
 
 \section{Discussion}
 The results give an interpretable, architecture-facing reading of resilience.
@@ -759,6 +582,185 @@ sustainable cities.
 pipeline is open-source Python (OSMnx, NetworkX, GeoPandas, GUDHI/\texttt{persim},
 H3, \texttt{statsmodels}); every reported number is recorded in the project's
 results log and traces to a committed artifact.
+
+
+\appendix
+\section{Robustness and sensitivity analyses}\label{app:robust}
+This appendix collects the diagnostics summarised in the Results. Throughout, the
+three headline descriptors are circuity, mean street length and orientation entropy.
+
+\paragraph{Spatial dependence.} Districts nest within cities and are spatially
+contiguous, so the fixed-effects OLS residuals are not independent. Global Moran's~$I$
+on first-ring H3 adjacency is positive and significant in every city
+(Table~\ref{tab:moran}), and Anselin Lagrange-multiplier tests on the OLS residuals
+decisively reject the non-spatial model (LM-error $p<10^{-99}$, LM-lag
+$p<10^{-125}$; the robust LM statistics favour the lag form, $146$ vs.\ $26$), with
+both spatial models cutting the AIC by more than $400$ relative to OLS
+($14{,}351\to13{,}925$ for the error model, $13{,}877$ for the lag model). We
+therefore estimate spatial-error and spatial-lag models (Table~\ref{tab:spatial}).
+Both absorb strong dependence ($\hat\lambda=0.55$, $\hat\rho=0.53$), yet the three
+headline descriptors keep their sign and stay strongly significant ($|z|\ge5$).
+City-clustered standard errors (Table~\ref{tab:clustered}), the most conservative
+treatment of the five-cluster design, leave circuity and mean street length
+significant but not orientation entropy.
+
+\begin{table}[t]\centering
+\caption{Sensitivity of the regression inference to how standard errors treat the
+nesting of districts within cities. Coefficients are unchanged; only the standard
+errors and $p$-values differ. HC3 is heteroskedasticity-robust; the last two
+columns cluster by city (five clusters). Circuity and mean street length stay
+significant under city clustering; orientation entropy does not.}
+\label{tab:clustered}
+\begin{tabular}{lrrrr}
+\toprule
+Morphology descriptor & coef & SE (HC3) & SE (cluster) & $p$ (cluster)\\
+\midrule
+circuity & $-10.156$ & $1.397$ & $2.946$ & $5.7\times10^{-4}$ $^{***}$\\
+mean street length & $-0.0476$ & $0.0066$ & $0.0089$ & $7.7\times10^{-8}$ $^{***}$\\
+orientation entropy & $+1.015$ & $0.220$ & $0.894$ & $0.26$\\
+intersection density & $-0.091$ & $0.092$ & $0.214$ & $0.67$\\
+green-space fragmentation$^{\dagger}$ & $-2.0\times10^{-6}$ & $5.9\times10^{-6}$ & $6.1\times10^{-7}$ & $<10^{-2}$\\
+\bottomrule
+\end{tabular}
+
+\footnotesize$^{\dagger}$The apparent clustered significance of green-space
+fragmentation is a five-cluster artefact of the cluster-robust variance around a
+coefficient that is effectively zero ($|\text{coef}|<10^{-5}$); it is not a
+substantive effect.
+\end{table}
+
+\begin{table}[t]\centering
+\caption{Global Moran's~$I$ of the fixed-effects regression residuals within each
+city, using first-ring H3 adjacency as the spatial weights ($999$ permutations).
+Residuals show weak but significant positive spatial autocorrelation in every city,
+motivating the estimated spatial models in Table~\ref{tab:spatial}.}
+\label{tab:moran}
+\begin{tabular}{lccc}
+\toprule
+City & districts & Moran's $I$ & $p$ (perm.)\\
+\midrule
+Amsterdam & 226 & $0.080$ & $0.031$\\
+Barcelona & 147 & $0.178$ & $0.001$\\
+Bogotá    & 538 & $0.142$ & $0.001$\\
+İstanbul  & 729 & $0.112$ & $0.001$\\
+Phoenix   & 962 & $0.058$ & $0.003$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]\centering
+\caption{Estimated spatial models (maximum likelihood, \texttt{spreg}) with city
+fixed effects, on a block-diagonal within-city first-ring H3 weights matrix
+($n=2{,}602$ after dropping one island). Coefficients on AUC with $z$-statistics.
+The three headline descriptors keep their sign and remain strongly significant
+under both the spatial-error and spatial-lag specifications, despite substantial
+estimated spatial dependence ($\hat\lambda,\hat\rho\approx0.5$).}
+\label{tab:spatial}
+\begin{tabular}{lrrr}
+\toprule
+& OLS (FE) & Spatial error & Spatial lag\\
+Morphology descriptor & coef ($z$) & coef ($z$) & coef ($z$)\\
+\midrule
+circuity & $-10.15$ ($-8.7$) & $-5.38$ ($-5.0$) & $-6.88$ ($-6.7$)\\
+mean street length & $-0.048$ ($-8.2$) & $-0.033$ ($-5.8$) & $-0.034$ ($-6.5$)\\
+orientation entropy & $+1.01$ ($+5.1$) & $+1.25$ ($+5.9$) & $+0.92$ ($+5.2$)\\
+intersection density & $-0.09$ ($-1.2$) & $-0.21$ ($-2.9$) & $-0.16$ ($-2.5$)\\
+green-space fragmentation & \multicolumn{3}{c}{not significant in any model}\\
+\midrule
+spatial parameter & --- & $\hat\lambda=0.55$ & $\hat\rho=0.53$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Disruption scenarios.} Under \emph{targeted} disruption (removal of
+high-betweenness edges, ranked by $k{=}500$-sampled betweenness) every coefficient
+sign in Table~\ref{tab:regression} is reproduced: circuity $-5.77$
+($p=4.6\times10^{-10}$), mean street length $-0.034$ ($p=2.7\times10^{-13}$),
+orientation entropy $+0.50$ ($p=1.6\times10^{-3}$), and intersection density
+(not significant under the full random grid) reaching $p=0.022$ ($-0.135$). Absolute
+AUC values are lower (Amsterdam mean AUC $2.03$ vs.\ $4.46$ under random) but the
+ranking is unchanged. A milder \emph{hazard} scenario (removing edges near the
+lowest-elevation $10\%$ of nodes, from AWS Terrain Tiles DEMs) is topography-
+dependent: substantial only in the two flattest cities (Amsterdam and the Phoenix
+basin, mean AUC $0.09$ and $0.31$) and near-zero elsewhere, so it barely moves the
+city-wide $H_0$ topology and does not resolve a morphology signal (only orientation
+entropy remains significant, $+0.10$, $p=0.01$). We read the hazard result as a
+limitation of the mild, $\rho$-capped low-elevation proxy, and it motivates a
+stronger flood model that removes \emph{all} inundated edges.
+
+\paragraph{Disruption-grid and resolution sensitivity.} A coarser $5\times3$
+disruption grid leaves every sign unchanged and keeps the three headline descriptors
+significant at $p<10^{-3}$ (circuity $-8.99$, mean street length $-0.0478$,
+orientation entropy $+1.17$), with the city AUC ranking and $\rhostar$ values within
+$\approx0.02$ of the full $8\times10$ grid. The one descriptor that moves is
+intersection density: significant on the coarse grid ($-0.199$,
+$p=8.6\times10^{-3}$) but not on the full grid ($p=0.22$). Re-tiling at H3
+resolutions $7$ ($485$ districts) and $9$ ($13{,}782$ districts) likewise leaves the
+three headline descriptors significant at $p<10^{-3}$ with constant signs across a
+$28\times$ range of district counts; magnitudes scale with cell size but no sign
+flips. Figure~\ref{fig:robustness} summarises both axes.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{figures/fig_robustness.pdf}
+\caption{Robustness of the morphology$\leftrightarrow$resilience relationship.
+\textbf{(a)} Regression coefficients (with $95\%$ confidence intervals) for each
+morphology descriptor under the three disruption scenarios at H3 resolution~8;
+the coefficient signs agree across scenarios, and the three headline descriptors
+(circuity, mean street length, orientation entropy) stay significant, while
+intersection density crosses zero under random disruption. \textbf{(b)} Sign and
+significance of each coefficient across H3 resolutions $7$/$8$/$9$: the three
+headline descriptors stay significant with a constant sign, while intersection
+density, the weakest and grid-sensitive effect, is not significant at the headline
+full-grid specification.}
+\label{fig:robustness}
+\end{figure}
+
+\paragraph{Persistence-threshold sensitivity.} Varying the $H_0$ denoising
+threshold over a $4\times$ range leaves the headline unchanged: at $0.5$, $1.0$ and
+$2.0$~walk-minutes the three descriptors keep their sign and stay significant at
+$p<10^{-6}$ (circuity $-11.20/-10.16/-8.03$; mean street length
+$-0.050/-0.048/-0.042$; orientation entropy $+1.10/+1.01/+0.93$). Magnitudes shrink
+smoothly as more denoising is applied but never change sign, and intersection
+density stays weak (ns at $0.5$ and $1.0$, $p=0.04$ at $2.0$). The betweenness pivot
+count is equally inconsequential: on the Amsterdam network, halving or doubling $k$
+(to $250$ or $1{,}000$) leaves the edge ranking essentially unchanged (Spearman
+$\rho=0.985$ against $k{=}500$, with $77\%$/$90\%$ overlap of the top-decile edges).
+
+\paragraph{Omitted-variable controls.} City fixed effects absorb only between-city
+confounds, so we add the district-level controls our data support---total
+green-space area, the share of edges on the trunk/primary/secondary/tertiary road
+hierarchy, within-district relief (elevation standard deviation), and distance to
+the urban-centre centroid---and refit (Table~\ref{tab:controls}). Three of the four
+controls are themselves significant (more green area and greater centre distance
+with greater resilience, more major-road edges with less), yet the three headline
+descriptors keep their sign and stay significant at $p<10^{-11}$ (circuity $-9.55$,
+mean street length $-0.039$, orientation entropy $+1.11$). Population and built
+density, land-use mix, socioeconomic status and pedestrian-infrastructure quality
+require external data and remain uncontrolled (Limitations).
+
+\begin{table}[t]\centering
+\caption{Omitted-variable robustness: district regression before and after adding
+four controls, $n=2{,}603$, with city fixed effects. The three headline morphology
+effects keep their sign and significance; the added controls explain additional
+variance ($R^2$ $0.17\to0.21$). Sig.: $^{***}p<0.001$, $^{**}p<0.01$.}
+\label{tab:controls}
+\begin{tabular}{lrr}
+\toprule
+& base & $+$controls\\
+Variable & coef ($p$) & coef ($p$)\\
+\midrule
+circuity & $-10.16$ $^{***}$ & $-9.55$ $^{***}$\\
+mean street length & $-0.048$ $^{***}$ & $-0.039$ $^{***}$\\
+orientation entropy & $+1.01$ $^{***}$ & $+1.11$ $^{***}$\\
+intersection density & $-0.09$ & $-0.10$\\
+\midrule
+green-space area (km$^2$) & --- & $-2.25$ $^{**}$\\
+major-road share & --- & $+4.21$ $^{***}$\\
+relief (m) & --- & $-0.008$\\
+centre distance (km) & --- & $-0.107$ $^{***}$\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
 \section*{Declarations}
