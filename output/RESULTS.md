@@ -283,6 +283,22 @@ resilience UNDER THE TESTED SYNTHETIC, DISTRIBUTED disruption scenarios"; added 
 distributed-vs-clustered mechanism explanation (diffuse thinning vs contiguous block
 removal → dominated by WHERE the hazard falls). Conclusion + scope paragraph updated.
 
+### 3j. External validity / out-of-sample (#9, `scripts/loco_validation.py`)
+
+Reviewer: only 8 independent clusters; why these cities; OSM heterogeneity; FE don't fix
+slopes; want out-of-sample validation.
+- **Leave-one-city-out cross-validation**: fit within-city slopes on 7 cities, predict
+  held-out city's district AUC ranking. **Positive in 8/8, mean out-of-sample Spearman
+  +0.42.** Barcelona +0.61, Singapore +0.58, Vienna +0.49, İstanbul +0.47, Nairobi
+  +0.39, Amsterdam +0.36, Bogotá +0.34, Phoenix +0.07 (weak but positive).
+  `output/loco_validation.csv`. → genuine cross-city transfer, the strongest external-
+  validity evidence the 8-city design can give.
+- **Paper actions:** city selection now framed as PURPOSIVE MAXIMUM-CONTRAST sample (not
+  a probability sample of world cities); LOCO paragraph added after tab:hetero; OSM
+  data-quality heterogeneity stated as a real external-validity limit that FE do NOT fix
+  (FE absorb mean level, not data quality or slope heterogeneity); abstract updated with
+  LOCO + clustered-flood scope.
+
 ### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
 
 Test whether the wrong-sign connectivity result is the disconnection mechanism: cap

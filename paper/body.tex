@@ -263,7 +263,12 @@ regime and the Global North/South divide: İstanbul (organic, hilly, polycentric
 seismic), Barcelona (Cerdà grid with superblock interventions), Amsterdam (compact,
 canal, walkable), Bogotá (dense informal--formal mix), Phoenix (low-density grid
 sprawl), Singapore (planned, tropical), Nairobi (rapidly growing, mixed-formality)
-and Vienna (compact, central European on the Danube). Boundaries are the GHS-UCDB
+and Vienna (compact, central European on the Danube). This is a \emph{purposive
+maximum-contrast} sample, selected to maximise morphological and planning diversity so
+that any consistent morphology--resilience relationship is stress-tested against very
+different urban forms; it is explicitly \emph{not} a probability sample of world
+cities, so the findings are framed as holding for these eight cities and are tested for
+out-of-sample transfer (below) rather than asserted as universal. Boundaries are the GHS-UCDB
 urban-centre polygons; homonymous centres (e.g.\ Barcelona, Spain vs.\ Venezuela)
 are disambiguated by largest true (equal-area) extent. Two further candidates
 (Copenhagen, Melbourne) were dropped because the OpenStreetMap place query did not
@@ -650,8 +655,14 @@ useful range. Green spaces are treated as equivalent point sources at their
 centroids, ignoring size, quality and public/private status; a large park reduced to
 its centroid can misplace the true walking distance to its entrances, and the
 sensitivity of the results to multi-entrance or area-based access points is not
-tested here. OSM mapping completeness and semantic consistency also vary across
-cities and are not quantified, so data-quality heterogeneity is not fully controlled.
+tested here. OSM mapping completeness, pedestrian-network coverage, green-space classification and
+topological conventions also vary across countries and are not quantified, so
+data-quality heterogeneity is a genuine external-validity limit, and one the city fixed
+effects do \emph{not} remove: fixed effects absorb each city's unobserved mean level,
+not city-specific differences in data quality or in the morphology--resilience slope
+itself. The per-city coefficients (Table~\ref{tab:hetero}) and the leave-one-city-out
+transfer above are what speak to slope stability; absolute cross-city comparison of
+coefficients is not warranted.
 The class-exclusion sensitivity below addresses the tag-mix concern but not these
 geometric and completeness ones.
 
@@ -817,6 +828,19 @@ Vienna    & $-5.56$ & $-0.04$ & $+3.39$\\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{Out-of-sample cross-city transfer (leave-one-city-out).} With only eight
+clusters, the sharper question is whether the relationship \emph{transfers} to a city
+the model never saw. A leave-one-city-out test addresses this directly: within-city
+slopes are fitted on seven cities and used to predict the ordering of districts in the
+held-out eighth (the held-out city's own mean is removed, so the target is its
+within-city ranking, which needs no estimated fixed effect). The transfer is positive
+in \emph{all eight} held-out cities, with mean out-of-sample Spearman $+0.42$
+(Barcelona $+0.61$, Singapore $+0.58$, Vienna $+0.49$, İstanbul $+0.47$, Nairobi
+$+0.39$, Amsterdam $+0.36$, Bogotá $+0.34$, and Phoenix the weak case at $+0.07$,
+$p=0.02$). Morphology fitted elsewhere therefore predicts, imperfectly but consistently,
+the resilience ranking of an unseen city's districts---the strongest external-validity
+evidence the eight-city design can offer, short of an independent validation sample.
 
 \paragraph{Disruption scenarios (five-city core).} Under \emph{targeted} disruption (removal of
 high-betweenness edges, ranked by $k{=}500$-sampled betweenness) every coefficient
