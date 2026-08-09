@@ -577,6 +577,15 @@ signs, significances, ranking and $\rhostar$. OSM completeness varies by city an
 is not quantified here, and the network-distance Vietoris--Rips variant of the
 filtration is left to future work.
 
+\emph{Modelling choices.} Two inputs could in principle shape the results: the
+inclusive green-space definition and the constant $4.8$~km/h walking speed. We tested
+both. The strict, accessibility-conservative green-space subset leaves the headline
+signs and significance unchanged (Section~\ref{sec:results}); and, because speed
+enters only as a global rescaling of the field, the walking-speed choice cannot alter
+the coefficient signs, significances or the city ranking, which we confirm
+empirically ($\rho>0.98$ between the $4.8$ and $4.0$/$5.0$~km/h district AUCs). These
+are therefore not load-bearing assumptions.
+
 Finally, ``resilience'' here is a \emph{structural} property---the robustness of the
 access topology to synthetic edge removal, measured on a single cross-sectional
 snapshot per city---not a temporal recovery process; we do not observe how access
@@ -596,12 +605,16 @@ disruption, and showed across $3{,}999$ districts in eight contrasting cities on
 continents that street-network morphology is associated with how robustly a city's
 pedestrian network keeps its \emph{connected} served locations close to nature. Two
 effects are robust throughout---longer street segments (the largest) and more
-circuitous routing predict greater resilience, and both survive a wild cluster
-bootstrap and spatial-error and spatial-lag models---while higher orientation entropy
-predicts less resilience and is strong in the spatial models but less certain across
-cities. The association is consistent rather than proven causal, the study
-is cross-sectional, and eight cities still furnish only eight clusters (see
-Limitations). We are also precise
+circuitous routing are associated with greater resilience, and both survive a wild
+cluster bootstrap and spatial-error and spatial-lag models---while higher orientation
+entropy is associated with less resilience and is strong in the spatial models but
+less certain across cities. Two boundaries frame the contribution. The relationship
+is an \emph{association}, not a causal effect: the design is cross-sectional and
+observational. And it is an association with our \emph{proposed} topological
+indicator; whether that indicator is a fully valid measure of resilience---rather
+than a well-behaved, configuration-sensitive proxy---is the study's central open
+question. Eight cities also still furnish only eight clusters (see
+Limitations). We are precise
 about what the metric captures: the resilience of the \emph{connected} access
 structure, validated within city against a distance-based accessibility benchmark,
 rather than total accessibility including outright disconnection. The mathematics of persistence turns a
