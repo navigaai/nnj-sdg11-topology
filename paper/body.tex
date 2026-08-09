@@ -363,7 +363,9 @@ Dotted vertical lines mark each city's critical transition $\rhostar$.}
 
 \paragraph{Robustness (summary).} The morphology relationship is stable across every
 alternative specification we tried; Appendix~\ref{app:robust} gives the full results
-and Fig.~\ref{fig:robustness} summarises them. Briefly: the three headline signs and
+(the additional sensitivity checks were run on the original five-city core and are
+labelled there) and Fig.~\ref{fig:robustness} summarises them. Briefly: the three
+headline signs and
 their significance ($p<10^{-3}$ or better) survive a \emph{targeted} betweenness
 disruption, the coarse $5\times3$ and full
 $8\times10$ disruption grids, H3 resolutions $7$/$8$/$9$ (a $28\times$ range of
@@ -433,10 +435,9 @@ The results give an interpretable, architecture-facing reading of resilience.
 The robust effects are circuity and segment length: districts with more circuitous
 routing and longer segments retain more of their well-served structure when edges
 are removed, because alternative paths to green space survive the loss of any one
-link. Denser intersections point the same way (locally redundant networks should
-be more resilient) but the effect is not statistically robust here, so we do not
-lean on it. Districts with more disordered street orientation (higher entropy) are
-more brittle. That the signal
+link. Intersection density is not significant, and its sign is not even stable
+between the five- and eight-city samples, so we draw no conclusion from it. Districts
+with more disordered street orientation (higher entropy) are more brittle. That the signal
 is carried by $H_0$ rather than $H_1$ has a concrete planning meaning. In
 green-dense cities the structure that matters is not isolated ``deserts''
 surrounded by served land but the connectivity of the served regions themselves,
@@ -495,7 +496,7 @@ topology that behaves as if it were highly circuitous. We therefore read the
 regression as characterising \emph{which} formal properties co-vary with resilient
 access, not as an external cause acting on an independent outcome. Two observations
 temper the concern: the morphology descriptors explain only a modest share of the
-variance ($R^2\approx0.21$ with controls), so the outcome is far from a
+variance ($R^2\approx0.20$), so the outcome is far from a
 deterministic re-encoding of the predictors; and the accessibility field also
 depends on the green-space configuration, which is exogenous to street form. Still,
 a design that predicted one city's resilience from another's morphology would be
@@ -642,7 +643,7 @@ spatial parameter & & & $\hat\lambda=0.53$ & $\hat\rho=0.51$\\
 \end{tabular}
 \end{table}
 
-\paragraph{Disruption scenarios.} Under \emph{targeted} disruption (removal of
+\paragraph{Disruption scenarios (five-city core).} Under \emph{targeted} disruption (removal of
 high-betweenness edges, ranked by $k{=}500$-sampled betweenness) every coefficient
 sign in Table~\ref{tab:regression} is reproduced: circuity $-5.77$
 ($p=4.6\times10^{-10}$), mean street length $-0.034$ ($p=2.7\times10^{-13}$),
@@ -670,7 +671,7 @@ concretely demonstrates, our caveat that resilience to network-wide disruption i
 different quantity from resilience to a localised, geographically concentrated
 hazard; morphology governs the former, not necessarily the latter.
 
-\paragraph{Disruption-grid and resolution sensitivity.} A coarser $5\times3$
+\paragraph{Disruption-grid and resolution sensitivity (five-city core).} A coarser $5\times3$
 disruption grid leaves every sign unchanged and keeps the three headline descriptors
 significant at $p<10^{-3}$ (circuity $-8.99$, mean street length $-0.0478$,
 orientation entropy $+1.17$), with the city AUC ranking and $\rhostar$ values within
@@ -697,7 +698,7 @@ full-grid specification.}
 \label{fig:robustness}
 \end{figure}
 
-\paragraph{Persistence-threshold sensitivity.} Varying the $H_0$ denoising
+\paragraph{Persistence-threshold sensitivity (five-city core).} Varying the $H_0$ denoising
 threshold over a $4\times$ range leaves the headline unchanged: at $0.5$, $1.0$ and
 $2.0$~walk-minutes the three descriptors keep their sign and stay significant at
 $p<10^{-6}$ (circuity $-11.20/-10.16/-8.03$; mean street length
