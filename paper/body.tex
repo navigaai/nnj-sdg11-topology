@@ -431,34 +431,46 @@ filtration is single-linkage connectivity. The level of comparison is what settl
 the question. The inference identifies morphology from \emph{within-city} variation
 (city fixed effects), so the matching validity question is also within-city, once
 each city's overall AUC level (which scales with network size) is removed. Within
-city, the topological AUC correlates positively with the distance benchmark, with a
-\emph{moderate} magnitude (within-city pooled Spearman $\rho=+0.36$; the tiny
-$p<10^{-79}$ reflects the sample size, not strength). The correlation is positive in
-every city but heterogeneous, and weak in some: Amsterdam $+0.47$, Bogotá $+0.16$,
-İstanbul $+0.10$, Barcelona $+0.05$, Phoenix $+0.03$. This is moderate supporting
-evidence---not strong validation---that the metric tracks a simple
-accessibility-degradation ground truth at the level at which it is used. The naive pooled correlation is much
+city, and the benchmark is computed for all \emph{eight} headline cities, so the
+validation sample matches the analysis sample. The topological AUC correlates
+positively with the distance benchmark, with a \emph{moderate} pooled magnitude
+(within-city pooled Spearman $\rho=+0.33$ over the $3{,}999$ districts; the tiny
+$p<10^{-102}$ reflects the sample size, not strength). The relationship is, however,
+markedly \emph{heterogeneous}: positive in seven of the eight cities but strong in
+only one---Amsterdam $+0.47$---modest in Bogotá $+0.16$ and İstanbul $+0.10$, near
+zero in Nairobi $+0.09$, Vienna $+0.07$, Barcelona $+0.05$ and Phoenix $+0.03$, and
+marginally negative in Singapore $-0.03$ (not significant). This is moderate
+supporting evidence---not strong validation---that the metric tracks a simple
+accessibility-degradation ground truth \emph{on average} at the level at which it is
+used, while being an unreliable graded-accessibility proxy within any single city. The naive pooled correlation is much
 weaker ($\rho=+0.07$) only because cross-city AUC scale swamps it, a Simpson's
 paradox driven by the same scale the fixed effects absorb. The benchmark also holds
 when access is \emph{population-weighted} rather than node-uniform: weighting each
 node by the open GHS-POP residential-population grid \citep{ghsl2023pop} (JRC,
 $1$~km, $2020$; the same GHSL family and Mollweide grid as the urban-centre
-boundaries) gives an almost identical within-city correlation ($\rho=+0.35$,
-$p<10^{-76}$). So the topological signal is not an artefact of weighting locations
+boundaries), on the five-city core, gives an almost identical within-city
+correlation ($\rho=+0.35$, $p<10^{-76}$). So the topological signal is not an artefact of weighting locations
 equally, and it speaks, at least for graded access, to the population-coverage
 dimension of SDG~11.7 and not only to bare network reach. Two qualifications
 remain. The metric adds value rather than echoing the benchmark: controlling for
 both baselines and city fixed effects, the three headline morphology descriptors
 stay significant ($p<10^{-6}$), so it carries configurational information the simple
 measures miss. And the convergent validity is with \emph{graded} access loss, not
-with \emph{disconnection}. Within city, AUC correlates near zero-to-negative with
-connectivity degradation, because disconnected nodes leave the finite diagram. The
-metric is thus validly read as the resilience of the \emph{connected} served
-structure, and should be paired with a disconnection count for total access loss; the
-Limitations show that neither a naive finite cap nor extended persistence
-fixes this cleanly (both recover the connectivity sign only by sacrificing the
-graded signal), so the two channels are kept separate and the claim is scoped
-accordingly.
+with \emph{disconnection}: against the connectivity-degradation reference the
+eight-city correlation is significantly \emph{negative} ($\rho=-0.21$,
+$p\approx10^{-42}$), because disconnected nodes leave the finite diagram. Rather than
+a failure, this negative relation is \emph{discriminant} validity---it establishes
+that $\Drho$ is not a repackaged connectivity or percolation-robustness measure but
+captures a distinct construct. Precisely, $\Drho$ measures the
+\emph{graded topological persistence of the connected green-access structure under
+progressive network thinning}: how stably locations stay organised into well-served,
+mutually close $H_0$ components as edges are removed, rather than whether they stay
+connected at all. It is thus validly read as the resilience of the \emph{connected}
+served structure and should be paired with a disconnection count for total access
+loss; the Limitations show that neither a naive finite cap nor extended persistence
+folds the two into one scalar cleanly (both recover the connectivity sign only by
+sacrificing the graded signal), so the two channels are kept separate and the claim
+is scoped accordingly.
 
 \section{Discussion}
 The results give an interpretable, architecture-facing reading of resilience.
@@ -548,16 +560,21 @@ domain \citep{cohensteiner2007stability} (with the domain-change caveat of
 Section~\ref{sec:method}), and yields a morphology relationship that survives
 disruption model, district resolution, denoising threshold, pivot count,
 spatial-error/lag modelling and four omitted-variable controls. On \emph{criterion} validity, the benchmark against a
-distance-based accessibility-degradation measure is
-positive at the level at which the metric is used. Within city, the unit the fixed
-effects identify from, the topological AUC correlates $+0.36$ ($p<10^{-79}$) with
-the benchmark and is positive in all five cities of the original core, while remaining non-redundant (the
-morphology signal survives controlling for it). That validity has a definite scope:
-it holds for \emph{graded} access degradation, not for total \emph{disconnection}.
-Within city, AUC correlates near zero-to-negative with connectivity degradation,
-because unreachable nodes leave the finite diagram, so the metric measures the
-resilience of the \emph{connected} served structure and should be paired with a
-disconnection count for total access loss. An attempt to fold disconnection into a
+distance-based accessibility-degradation measure, computed for all eight headline
+cities so that validation and analysis samples coincide, is positive at the level at
+which the metric is used but only moderately and heterogeneously so. Within city, the
+unit the fixed effects identify from, the topological AUC correlates $+0.33$
+($p<10^{-102}$) with the benchmark pooled over the $3{,}999$ districts and is positive
+in seven of the eight cities, yet strong in only one (Amsterdam $+0.47$) and near zero
+in most; it remains non-redundant (the morphology signal survives controlling for it).
+Its \emph{discriminant} validity is cleaner: against connectivity degradation the
+eight-city correlation is significantly negative ($\rho=-0.21$), which shows the
+metric is not a restatement of connectivity or percolation robustness but a distinct
+construct---the graded topological persistence of the \emph{connected} green-access
+structure under progressive network thinning. That construct has a definite scope: it
+captures graded access degradation, not total \emph{disconnection} (unreachable nodes
+leave the finite diagram), so the metric should be paired with a disconnection count
+for total access loss. An attempt to fold disconnection into a
 single scalar is reported, and the result is instructive. A finite cap ($\tau=60$~min) recovers the
 connectivity sign ($-0.10\to+0.02$ on a two-city check) but erodes the
 graded-distance correlation ($+0.41\to+0.06$), and a principled extended-persistence
@@ -644,9 +661,12 @@ indicator; whether that indicator is a fully valid measure of resilience---rathe
 than a well-behaved, configuration-sensitive proxy---is the study's central open
 question. Eight cities also still furnish only eight clusters (see
 Limitations). The paper is precise
-about what the metric captures: the resilience of the \emph{connected} access
-structure, validated within city against a distance-based accessibility benchmark,
-rather than total accessibility including outright disconnection. The mathematics of persistence turns a
+about what the metric captures: the graded topological persistence of the
+\emph{connected} green-access structure under progressive network thinning---moderately
+and heterogeneously validated within city against a distance-based accessibility
+benchmark across all eight cities, and shown by its negative correlation with
+connectivity degradation to be a distinct construct from percolation robustness rather
+than total accessibility including outright disconnection. The mathematics of persistence turns a
 static SDG~11.7 indicator into a dynamic, form-aware one. Future work will
 extend the real-hazard analysis beyond river floods to earthquakes and multi-hazard
 scenarios, and add a network-metric Vietoris--Rips filtration, toward a

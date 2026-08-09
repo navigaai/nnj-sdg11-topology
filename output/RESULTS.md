@@ -209,6 +209,21 @@ degradation (captures distinct configurational info), but its convergent validit
 with a distance-based ground truth is weak → criterion validation only partially met;
 the metric is a distinct indicator, not yet a validated substitute.
 
+**8-city extension (`scripts/benchmark_extend.py`, reviewer: match validation to
+analysis sample).** Benchmark computed for Singapore/Nairobi/Vienna too → all 8
+headline cities, merged n=3999. `output/criterion_validity_8city.csv`.
+- **Within-city pooled Spearman(AUC, distance-degrad) = +0.331** (p=8e-103) — the
+  primary criterion result, now on the full sample (5-city core was +0.36).
+- Per city (positive in **7 of 8**): Amsterdam +0.465, Bogotá +0.156, İstanbul +0.095,
+  Nairobi +0.085, Vienna +0.068, Barcelona +0.053, Phoenix +0.027, Singapore −0.032
+  (ns). → moderate **on average**, heterogeneous, unreliable within any single city.
+- **Discriminant validity:** connectivity-degradation ρ = **−0.214** (p=1e-42, 8-city)
+  → significant negative confirms D(ρ) is a *distinct construct* from connectivity /
+  percolation robustness, not a failed proxy for it. Reframed in paper as discriminant
+  (not just a scope caveat).
+- **Precise construct definition** now stated: D(ρ) = *graded topological persistence
+  of the connected green-access structure under progressive network thinning*.
+
 ### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
 
 Test whether the wrong-sign connectivity result is the disconnection mechanism: cap
