@@ -463,3 +463,18 @@ distributed-disruption morphology signal does NOT carry over to spatially-cluste
 flooding → resilience to a localised hazard is a genuinely different quantity (which
 the paper does not claim to explain). This replaces the DEM low-elevation proxy with
 real flood data and concretely demonstrates the "random ≠ clustered disaster" caveat.
+
+### 6. HEADLINE PROMOTED TO EIGHT CITIES (full grid)
+
+district_table.csv is now 8 cities (orig 5 + Singapore/Nairobi/Vienna), full 8x10
+grid, n=3999. Headline regression (auc ~ morphology + C(city)):
+- circuity −7.39 (p=3.6e-17), mean_street_length −0.050 (p=4.9e-29),
+  orientation_entropy +1.85 (p=1.4e-27); intersection_density +0.02 (ns); greenspace ns
+- 8-cluster SE: circuity 2.2e-4, mean 4.5e-19, orient 0.036 → ALL THREE survive
+- spatial error/lag: all three |z|≥5 (orient z~10); λ=0.53 ρ=0.51; pooled Moran 0.244
+- typology: Amsterdam most resilient (4.46) → Bogotá least (8.02); Nairobi earliest ρ*=0.11
+Robustness done on the FIVE-CITY CORE (labelled in paper): criterion validity
+(distance +0.36, population +0.35), omitted-variable controls, green-space & grid/
+threshold/k sensitivities, city-level curves (fig5). Real-flood + benchmark unchanged.
+Paper shortened 19→17 pages (9→6 tables: coverage→typology, validity/moran inline,
+clustered+spatial merged, extval removed).
