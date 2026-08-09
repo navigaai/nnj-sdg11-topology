@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1786312067.72084 "main.aux" "main.bbl" "main" 1786312068.06164 0
+["bibtex main"] 1786312464.73258 "main.aux" "main.bbl" "main" 1786312465.07258 0
   "./references.bib" 1786294638.5829 7410 134013d5b9b53f5708acde6192841663 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1786312067.98557 15311 7bd9ad4189dab0870295a2030303c33f "pdflatex"
+  "main.aux" 1786312464.99965 15313 f8c3e2a6764f7699de23283799e5d323 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1786312067.73589 "main.tex" "main.pdf" "main" 1786312068.06178 0
+["pdflatex"] 1786312464.74902 "main.tex" "main.pdf" "main" 1786312465.07271 0
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1000.tfm" 1136768653 3584 2d666ecf6d466d8b007246bc2f94d9da ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1095.tfm" 1136768653 3584 21b378cca2e40816b0e6d74a4dc98f04 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1136768653 3584 13049b61b922a28b158a38aeff75ee9b ""
@@ -123,16 +123,16 @@
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.600pk" 1783145981.64143 12644 01d1f6e7dd5544923e9b786d4f98c2f1 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/web2c/pdftex/pdflatex.fmt" 1780202383 2246599 398ca3dfc973a32830de978ee106b945 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf.cnf" 1780202336 637 edd806fb06a89761a6034e1968af9017 ""
-  "abstract.tex" 1786312017.15194 2700 4bb1dcfbf5cd5ab56d674a0a012b8f9d ""
-  "body.tex" 1786312037.41567 58628 80ae465c888d82813a3bc6751cffc923 ""
+  "abstract.tex" 1786312374.33675 2723 88bfca0d2ad478be384500a2bc58cfd3 ""
+  "body.tex" 1786312411.34812 58700 d5e23afea47ae9be3b137e04d7468023 ""
   "figures/fig5_resilience.pdf" 1784801883.53959 18595 e16f10cea23696b4dfddd9cbda2cd615 ""
   "figures/fig6_morphology.pdf" 1786302238.82646 80982 f52ed93fb3499d70ddaf5f974043d818 ""
   "figures/fig_accessfield.pdf" 1785324640.50612 1221565 8ef570ecc138be612bfa345ad55c0d94 ""
   "figures/fig_persistence.pdf" 1785321643.50259 48859 6f2a01616848b36a34b89bfbf135e4c1 ""
   "figures/fig_robustness.pdf" 1786295126.04024 22947 4c73d8dc5a3f1173cd52a4238a3c7f57 ""
-  "main.aux" 1786312067.98557 15311 7bd9ad4189dab0870295a2030303c33f "pdflatex"
-  "main.bbl" 1786312067.73416 6384 d177c020625db50b18bbdbfd7124a6aa "bibtex main"
-  "main.out" 1786312067.98667 1065 009b5a5ee9c6438c81a87fa72fe53662 "pdflatex"
+  "main.aux" 1786312464.99965 15313 f8c3e2a6764f7699de23283799e5d323 "pdflatex"
+  "main.bbl" 1786312464.74736 6384 d177c020625db50b18bbdbfd7124a6aa "bibtex main"
+  "main.out" 1786312465.00067 1065 009b5a5ee9c6438c81a87fa72fe53662 "pdflatex"
   "main.tex" 1784801883.54352 1216 0dc3680883e7ac4977f0583e7ac87bc0 ""
   (generated)
   "main.aux"

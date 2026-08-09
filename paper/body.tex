@@ -419,7 +419,7 @@ $p=2\times10^{-7}$) keep their sign and significance, and intersection density
 remains the weak, non-robust term. The morphology result is thus not an artefact of
 counting inaccessible green as accessible.
 
-\paragraph{Criterion validity: benchmark against an accessibility measure (five-city core).} If the
+\paragraph{Criterion validity: benchmark against an accessibility measure (all eight cities).} If the
 topological machinery is to be worth its cost it should track a simpler measure of
 access loss. It is benchmarked, per district, against a \emph{distance-based}
 accessibility-degradation measure, namely the increase in mean walk-time to green
@@ -448,8 +448,8 @@ paradox driven by the same scale the fixed effects absorb. The benchmark also ho
 when access is \emph{population-weighted} rather than node-uniform: weighting each
 node by the open GHS-POP residential-population grid \citep{ghsl2023pop} (JRC,
 $1$~km, $2020$; the same GHSL family and Mollweide grid as the urban-centre
-boundaries), on the five-city core, gives an almost identical within-city
-correlation ($\rho=+0.35$, $p<10^{-76}$). So the topological signal is not an artefact of weighting locations
+boundaries), computed for all eight cities, gives an almost identical within-city
+correlation ($\rho=+0.33$, $p<10^{-101}$). So the topological signal is not an artefact of weighting locations
 equally, and it speaks, at least for graded access, to the population-coverage
 dimension of SDG~11.7 and not only to bare network reach. Two qualifications
 remain. The metric adds value rather than echoing the benchmark: controlling for
@@ -583,9 +583,10 @@ channel, behaves the same way on Amsterdam (connectivity $+0.31$ but distance on
 $+0.05$), because the high-persistence component classes dominate a single
 Wasserstein match. Graded resilience and disconnection are, then, two channels that
 a single scalar conflates; reporting them separately, as done here, is the right
-treatment. A joint multi-channel metric with a full head-to-head against an
-established measure (a population-weighted two-step floating catchment degradation,
-say, or observed post-disruption service loss) is the natural next step. Two further
+treatment. A joint multi-channel metric, and a full head-to-head against an
+externally \emph{validated} criterion (a formal two-step floating catchment
+accessibility model, or observed post-disruption service loss) rather than the
+convergent proxies benchmarked here, is the natural next step. Two further
 caveats:
 AUC depends on network and district size and on the number of $H_0$ classes, so it
 is comparable across cities only in relative ranking, not in absolute level (city

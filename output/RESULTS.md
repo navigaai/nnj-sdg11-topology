@@ -224,6 +224,15 @@ headline cities, merged n=3999. `output/criterion_validity_8city.csv`.
 - **Precise construct definition** now stated: D(ρ) = *graded topological persistence
   of the connected green-access structure under progressive network thinning*.
 
+**Population-weighted 8-city extension (`scripts/population_extend.py`).** GHS-POP
+R2023A weighting now on all 8 cities too. `output/population_validity_8city.csv`.
+- **Within-city pooled Spearman(AUC, popw-degrad) = +0.330** (p=3.7e-102) — nearly
+  identical to distance benchmark (+0.331) and to 5-city popw (+0.35).
+- Positive in 6/8: Amsterdam +0.458, Bogotá +0.157, Vienna +0.129, İstanbul +0.091,
+  Nairobi +0.069, Phoenix +0.020; Barcelona −0.019, Singapore −0.034 (both ns).
+- → population weighting does not change the picture: both convergent benchmarks now
+  match the analysis sample and agree at ρ≈+0.33.
+
 ### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
 
 Test whether the wrong-sign connectivity result is the disconnection mechanism: cap
