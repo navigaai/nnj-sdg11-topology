@@ -110,9 +110,12 @@ Centre Database \citep{ghsl2019ucdb} so that extents are comparable across
 countries. Green spaces are the OSM classes \texttt{leisure=park|garden|recreation\_ground},
 \texttt{landuse=grass|recreation\_ground}, \texttt{place=square} and
 \texttt{natural=wood}; their centroids, snapped to the nearest network node, are
-the access points. These are termed \emph{green} spaces, not \emph{public} spaces: OSM
-tags do not certify public accessibility, so a private garden, a fenced lawn or an
-impenetrable wood can enter the set. This is a deliberately inclusive definition: it
+the access points. These are termed \emph{OSM-mapped green} spaces, not \emph{public}
+spaces: OSM tags do not certify public accessibility, so a private garden, a fenced
+lawn or an impenetrable wood can enter the set. The classes are included because
+together they capture the everyday green and open spaces a pedestrian can plausibly
+reach; the trade-off is heterogeneity, addressed by the class-exclusion sensitivity
+below. This is a deliberately inclusive definition: it
 merges spaces of very different type, size and usability (a pocket garden, a city
 square and a large wood all count equally), and it takes the centroid as a single
 access point rather than modelling entrances or area. A sensitivity analysis under a
@@ -237,7 +240,14 @@ problem of AUC. Because $\alpha_{c(i)}$ absorbs each city's overall AUC level, w
 scales with network and diagram size, the morphology coefficients are identified
 purely from \emph{within-city} variation, and the inference never rests on comparing
 absolute AUC across cities. Only the descriptive city typology, not the regression,
-would need a size normalisation.
+would need a size normalisation. For inference that respects the nesting, standard
+errors are also clustered at the \emph{city} level---the eight clusters are the eight
+cities, the level at which each disruption and each fixed effect operate, and within
+which districts share a network, climate and planning regime. Eight clusters is a
+small number, at which the asymptotic cluster-robust $p$-values are only approximate;
+they are therefore reported alongside a wild cluster bootstrap
+(Appendix~\ref{app:robust}), and the cities are treated as the practical, if not
+strictly independent, units of between-city variation.
 
 \section{Case studies}
 Eight cities on four continents are studied, chosen to span street morphology, planning
@@ -413,11 +423,13 @@ filtration is single-linkage connectivity. The level of comparison is what settl
 the question. The inference identifies morphology from \emph{within-city} variation
 (city fixed effects), so the matching validity question is also within-city, once
 each city's overall AUC level (which scales with network size) is removed. Within
-city, the topological AUC correlates positively and highly significantly with the
-distance benchmark (within-city pooled Spearman $\rho=+0.36$, $p<10^{-79}$; positive
-in every city: Amsterdam $+0.47$, Bogotá $+0.16$, İstanbul $+0.10$, Barcelona
-$+0.05$, Phoenix $+0.03$), so the metric tracks a simple accessibility-degradation
-ground truth at the level at which it is used. The naive pooled correlation is much
+city, the topological AUC correlates positively with the distance benchmark, with a
+\emph{moderate} magnitude (within-city pooled Spearman $\rho=+0.36$; the tiny
+$p<10^{-79}$ reflects the sample size, not strength). The correlation is positive in
+every city but heterogeneous, and weak in some: Amsterdam $+0.47$, Bogotá $+0.16$,
+İstanbul $+0.10$, Barcelona $+0.05$, Phoenix $+0.03$. This is moderate supporting
+evidence---not strong validation---that the metric tracks a simple
+accessibility-degradation ground truth at the level at which it is used. The naive pooled correlation is much
 weaker ($\rho=+0.07$) only because cross-city AUC scale swamps it, a Simpson's
 paradox driven by the same scale the fixed effects absorb. The benchmark also holds
 when access is \emph{population-weighted} rather than node-uniform: weighting each
@@ -667,6 +679,36 @@ orientation entropy & $+1.85$ & $0.036$ $^{*}$ & $+10.1$ & $+9.6$\\
 intersection density & $+0.02$ & $0.89$ & $-1.5$ & $-1.2$\\
 \midrule
 spatial parameter & & & $\hat\lambda=0.53$ & $\hat\rho=0.51$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Multicollinearity and cross-city heterogeneity.} The headline descriptors
+are not collinear: within-city, the largest pairwise correlation among circuity, mean
+street length and orientation entropy is $0.31$, and all variance-inflation factors
+are below three (the only strong pair is mean street length and intersection density,
+$r=-0.80$, which is why intersection density is unstable and not relied on). The
+pooled slopes are also not a pooling artefact: fitting the regression separately per
+city, each headline sign holds in seven of the eight cities (Table~\ref{tab:hetero}),
+with Nairobi the exception for circuity and Phoenix for orientation entropy.
+
+\begin{table}[t]\centering
+\caption{Per-city regression coefficients (AUC on morphology, one city at a time).
+Each headline sign---circuity ($-$), mean street length ($-$), orientation entropy
+($+$)---holds in seven of the eight cities.}
+\label{tab:hetero}
+\begin{tabular}{lrrr}
+\toprule
+City & circuity & mean street length & orientation entropy\\
+\midrule
+Amsterdam & $-4.07$ & $-0.04$ & $+1.17$\\
+Barcelona & $-6.57$ & $+0.02$ & $+6.17$\\
+Bogotá    & $-18.62$ & $-0.21$ & $+1.46$\\
+İstanbul  & $-14.51$ & $-0.03$ & $+3.59$\\
+Nairobi   & $+4.86$ & $-0.05$ & $+2.56$\\
+Phoenix   & $-3.70$ & $-0.06$ & $-0.72$\\
+Singapore & $-4.12$ & $-0.04$ & $+4.58$\\
+Vienna    & $-5.56$ & $-0.04$ & $+3.39$\\
 \bottomrule
 \end{tabular}
 \end{table}
