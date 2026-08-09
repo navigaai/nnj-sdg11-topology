@@ -42,16 +42,16 @@ def robustness():
     """Two panels: (A) coefficients across 3 disruption scenarios (res 8, from CSVs);
     (B) sign+significance grid across H3 resolutions 7/8/9 (recorded in RESULTS.md)."""
     scen = {s: pd.read_csv(f"output/regression_{s}.csv").set_index("term")
-            for s in ("random", "targeted", "hazard")}
+            for s in ("random", "targeted")}
 
     fig, (axA, axB) = plt.subplots(1, 2, figsize=(9.5, 4.2),
                                    gridspec_kw={"width_ratios": [1.5, 1]})
 
     # Panel A: forest plot, coef +/- 1.96 se, per descriptor per scenario
     ypos = np.arange(len(DESC))[::-1]
-    offs = {"random": +0.22, "targeted": 0.0, "hazard": -0.22}
-    col = {"random": CB[0], "targeted": CB[1], "hazard": CB[2]}
-    for s in ("random", "targeted", "hazard"):
+    offs = {"random": +0.15, "targeted": -0.15}
+    col = {"random": CB[0], "targeted": CB[1]}
+    for s in ("random", "targeted"):
         df = scen[s]
         xs = [df.loc[d, "coef"] for d in DESC]
         es = [1.96 * df.loc[d, "std_err"] for d in DESC]
@@ -61,7 +61,7 @@ def robustness():
     axA.set_yticks(ypos)
     axA.set_yticklabels([DESC_LABEL[d] for d in DESC])
     axA.set_xlabel(r"coefficient on AUC (higher AUC = less resilient)")
-    axA.set_title("(a) Across disruption scenarios (H3 res 8)")
+    axA.set_title("(a) Across distributed disruption scenarios (H3 res 8)")
     axA.legend(frameon=False, fontsize=8, loc="lower right")
 
     # Panel B: sign x significance grid across resolutions (recorded values).
