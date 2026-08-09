@@ -405,14 +405,16 @@ city's critical transition $\rhostar$.}
 alternative specification we tried; Appendix~\ref{app:robust} gives the full results
 and Fig.~\ref{fig:robustness} summarises them. Briefly: the three headline signs and
 their significance ($p<10^{-3}$ or better) survive a \emph{targeted} betweenness
-disruption and a milder \emph{hazard} scenario, the coarse $5\times3$ and full
+disruption, the coarse $5\times3$ and full
 $8\times10$ disruption grids, H3 resolutions $7$/$8$/$9$ (a $28\times$ range of
 district counts), persistence thresholds from $0.5$ to $2.0$~walk-minutes, a halving
 and doubling of the betweenness pivot count, and the inclusion of four
 district-level controls (green-space area, road hierarchy, relief and city-centre
 distance). Intersection density is the one descriptor that moves: significant under
 some specifications but not the full-grid headline, so we treat it as the weakest,
-grid-sensitive effect throughout.
+grid-sensitive effect throughout. The one disruption family that does \emph{not}
+carry the signal is the spatially clustered real-flood hazard, which we treat as a
+distinct question (below).
 
 \paragraph{Green-space definition sensitivity.} Because our inclusive green-space set
 mixes reliably public parks with possibly-private gardens, fenced grass and
@@ -613,9 +615,12 @@ quality and public/private status.
 
 \emph{Disruption and data.} Random removal is spatially uniform and does not
 reproduce the clustered failures of a real flood or earthquake; targeted removal
-addresses criticality but not spatial correlation, and the hazard scenario, a
-$\rho$-capped low-elevation proxy, is too mild and topography-dependent to test the
-morphology signal and should be replaced by a full flood-zone edge removal.
+addresses criticality but not spatial correlation. The real $100$-year flood
+scenario we add (above) makes this concrete: it materially affects only Vienna and
+does not carry the distributed-disruption morphology signal, showing that resilience
+to a localised hazard is a genuinely different quantity---one this paper does not
+claim to explain. Earthquake and multi-hazard disruption models are left to future
+work.
 Targeted betweenness is approximated from $k{=}500$ sampled pivots, as exact
 $O(V\lvert E\rvert)$ betweenness is intractable at city scale; the ranking is
 stable in the pivot count: on the Amsterdam network, halving or
@@ -657,8 +662,9 @@ about what the metric captures: the resilience of the \emph{connected} access
 structure, validated within city against a distance-based accessibility benchmark,
 rather than total accessibility including outright disconnection. The mathematics of persistence turns a
 static SDG~11.7 indicator into a dynamic, form-aware one. Future work will
-strengthen the hazard model to a full flood-zone removal and add a network-metric
-Vietoris--Rips filtration, toward a resilience-aware accessibility standard for
+extend the real-hazard analysis beyond river floods to earthquakes and multi-hazard
+scenarios, and add a network-metric Vietoris--Rips filtration, toward a
+resilience-aware accessibility standard for
 sustainable cities.
 
 \paragraph{Reproducibility.} All data are open (OpenStreetMap, GHS-UCDB) and the
@@ -762,14 +768,26 @@ sign in Table~\ref{tab:regression} is reproduced: circuity $-5.77$
 orientation entropy $+0.50$ ($p=1.6\times10^{-3}$), and intersection density
 (not significant under the full random grid) reaching $p=0.022$ ($-0.135$). Absolute
 AUC values are lower (Amsterdam mean AUC $2.03$ vs.\ $4.46$ under random) but the
-ranking is unchanged. A milder \emph{hazard} scenario (removing edges near the
-lowest-elevation $10\%$ of nodes, from AWS Terrain Tiles DEMs) is topography-
-dependent: substantial only in the two flattest cities (Amsterdam and the Phoenix
-basin, mean AUC $0.09$ and $0.31$) and near-zero elsewhere, so it barely moves the
-city-wide $H_0$ topology and does not resolve a morphology signal (only orientation
-entropy remains significant, $+0.10$, $p=0.01$). We read the hazard result as a
-limitation of the mild, $\rho$-capped low-elevation proxy, and it motivates a
-stronger flood model that removes \emph{all} inundated edges.
+ranking is unchanged.
+
+\paragraph{Real flood-hazard scenario.} We replace the earlier low-elevation
+proxy with a \emph{real} $100$-year river-flood scenario, using the open JRC Global
+Flood Hazard maps \citep{dottori2016globalflood} (floodMapGL, water depth per
+$\approx1$~km cell): a node is flood-exposed if it lies in a cell with $\ge0.5$~m of
+inundation, and the hazard removal progressively cuts flood-exposed edges. Two
+honest findings follow. First, real $100$-year exposure among these urban centres is
+strongly city-specific: it is material only in Vienna ($23\%$ of nodes, on the
+Danube floodplain) and negligible elsewhere (Phoenix $0.7\%$, Amsterdam $0.4\%$,
+Barcelona $0.3\%$; İstanbul, Bogotá, Singapore and Nairobi essentially $0\%$, their
+centres sitting off the modelled river-flood plain). Second, where the scenario
+bites (Vienna), the morphology signal established for \emph{distributed} disruption
+does \emph{not} cleanly carry over to this \emph{spatially clustered} flood: in a
+pooled flood-scenario regression the morphology coefficients are non-significant,
+and within Vienna only circuity keeps a weak same-signed effect (Spearman $-0.13$,
+$p=0.006$) while orientation entropy even reverses. This is consistent with, and
+concretely demonstrates, our caveat that resilience to network-wide disruption is a
+different quantity from resilience to a localised, geographically concentrated
+hazard; morphology governs the former, not necessarily the latter.
 
 \paragraph{Disruption-grid and resolution sensitivity.} A coarser $5\times3$
 disruption grid leaves every sign unchanged and keeps the three headline descriptors
@@ -856,8 +874,9 @@ centre distance (km) & --- & $-0.107$ $^{***}$\\
 Pedestrian networks and green spaces were obtained from OpenStreetMap via
 OSMnx; urban-centre boundaries from the GHS Urban Centre Database (GHS-UCDB
 R2019A, European Commission Joint Research Centre); residential population from the
-GHS-POP grid (R2023A, $1$~km) for the population-weighted validation; and elevation
-data from the public AWS Terrain Tiles service. No new data were collected. The derived
+GHS-POP grid (R2023A, $1$~km) for the population-weighted validation; $100$-year
+river-flood depth from the open JRC Global Flood Hazard maps (floodMapGL) for the
+real-flood scenario; and elevation data from the public AWS Terrain Tiles service. No new data were collected. The derived
 artifacts underlying every reported figure and table (per-district resilience and
 morphology tables, regression outputs, and city-level resilience curves) are
 recorded in the project's results log, released with the code at

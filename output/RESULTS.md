@@ -442,3 +442,24 @@ survive city-clustered SE — orientation entropy recovered (0.26 at 5 clusters 
 at 8).** → the 5-cluster failure was a power problem; external validity + cluster
 inference materially strengthened. Districts per city: ams227 bcn147 bog538 ist729
 nai363 phx962 sng573 vie460.
+
+### 5. Real flood-hazard scenario (open JRC global flood data, reviewer request)
+
+Open data: **JRC Global Flood Hazard maps** (Dottori et al. 2016, floodMapGL_rp100y,
+~1km water depth, DOI 10.1016/j.advwatres.2016.05.002) → data/flood/. Node flood-
+exposed if depth ≥0.5m. `scripts/flood_hazard.py`; `output/flood_exposure.csv`,
+`output/regression_flood.csv`.
+
+**100-yr flood exposure (% nodes):** Vienna 23.4% (Danube), Phoenix 0.7%, Amsterdam
+0.4%, Barcelona 0.3%, İstanbul/Bogotá/Singapore/Nairobi 0% (off the modelled river-
+flood plain — hilly/high-altitude/non-riverine).
+
+**Flood-scenario regression** (4 exposed cities, n=1796): morphology coefficients all
+ns (circuity −0.63 p=0.23, etc.). Vienna single-city: circuity Spearman −0.13 (p=0.006,
+weak same sign), orientation_entropy −0.21 (p=9e-6, REVERSED), mean_street_length ns.
+
+**Honest conclusion:** real 100-yr flood is materially present only in Vienna, and the
+distributed-disruption morphology signal does NOT carry over to spatially-clustered
+flooding → resilience to a localised hazard is a genuinely different quantity (which
+the paper does not claim to explain). This replaces the DEM low-elevation proxy with
+real flood data and concretely demonstrates the "random ≠ clustered disaster" caveat.

@@ -1,0 +1,9 @@
+city,n_nodes,flood_nodes,flood_frac
+istanbul,143687,0,0.0
+barcelona,72924,227,0.0031
+amsterdam,49215,185,0.0038
+bogota,146023,0,0.0
+phoenix,217806,1446,0.0066
+singapore,161913,0,0.0
+nairobi,54134,0,0.0
+vienna,130869,30628,0.234
