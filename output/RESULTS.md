@@ -375,3 +375,24 @@ both (a key robustness check).*
 
 *Populated from committed artifacts (`output/*.csv`, `output/amsterdam/resilience_random.json`)
 on 2026-07-04. Numbers rounded for display; full precision in the CSVs.*
+
+### 3i. Walking-speed sensitivity (reviewer A, `scripts/speed_sensitivity.py`)
+
+Speed enters only via time=length/speed → global linear rescale of field/diagram/AUC
+→ regression signs/significance/ranking invariant. Amsterdam empirical check:
+- 4.0 km/h vs 4.8: Spearman 0.985, median AUC ratio 1.24 (expected 1.20)
+- 5.0 km/h vs 4.8: Spearman 0.996, median AUC ratio 0.96 (expected 0.96)
+4.8 km/h = 1.33 m/s cited to Bohannon (1997), within 1.27–1.46 m/s comfortable range.
+
+### 3j. Green-space definition sensitivity (reviewer B, `scripts/green_sensitivity.py`)
+
+Re-downloaded green WITH tags (green_tagged.gpkg); STRICT subset = park +
+recreation_ground + square (drop wood/grass/garden). Reduced grid, all 5 cities:
+- Spearman(auc_all, auc_strict) = 0.82 (large green cut, e.g. Amsterdam 23657→369)
+- circuity −8.08 (p=4e-9), mean_street_length −0.048 (p=2e-12), orientation_entropy
+  +1.21 (p=2e-7) keep sign+significance under strict green; intersection_density
+  weak (p=0.13). → morphology result not an artefact of counting inaccessible green.
+
+### Citation fixes (reviewers G/H)
+- 1-Wasserstein stability → Cohen-Steiner et al. 2010 (FoCM, Lp-stability), DOI 10.1007/s10208-010-9060-6
+- Hickok et al. → SIAM Review 66(3):481–500 (2024), DOI 10.1137/22M150410X
