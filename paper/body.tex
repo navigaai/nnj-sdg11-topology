@@ -88,8 +88,10 @@ $1$-Wasserstein distance is
 W_1(X,Y)=\min_{\gamma}\sum_{x\in X}\lVert x-\gamma(x)\rVert,
 \]
 minimised over bijections $\gamma$ between the diagrams (with matching to the
-diagonal allowed). Wasserstein and bottleneck distances are stable to
-perturbations of $f$ \citep{cohensteiner2007stability}: a small change in the
+diagonal allowed). These diagram distances are stable to perturbations of $f$: the
+bottleneck distance by the classical stability theorem
+\citep{cohensteiner2007stability}, and the $1$-Wasserstein distance we use by the
+$L_p$-stability result of \citet{cohensteiner2010lpstable}. A small change in the
 field produces a small change in the distance. Stability is a mathematical
 well-posedness property, not a validation that diagram distance measures
 \emph{urban} resilience; we use it only to justify that $\Drho$ responds
@@ -100,30 +102,45 @@ as ground truth. We compute PH with GUDHI \citep{gudhi} and diagram distances wi
 \texttt{persim}.
 
 \section{Methodology}\label{sec:method}
-\paragraph{Data.} For each city we take the pedestrian network and green/public
-spaces from OpenStreetMap via OSMnx \citep{boeing2017osmnx}, and we fix the
+\paragraph{Data.} For each city we take the pedestrian network and green spaces
+from OpenStreetMap via OSMnx \citep{boeing2017osmnx}, and we fix the
 analysis extent to the city's \emph{urban centre} polygon from the GHS Urban
 Centre Database \citep{ghsl2019ucdb} so that extents are comparable across
 countries. Green spaces are the OSM classes \texttt{leisure=park|garden|recreation\_ground},
 \texttt{landuse=grass|recreation\_ground}, \texttt{place=square} and
 \texttt{natural=wood}; their centroids, snapped to the nearest network node, are
-the access points. This is a deliberately inclusive definition: it merges spaces
-of very different type, size and usability (a pocket garden, a city square and a
-large wood all count equally), and it takes the centroid as a single access point
-rather than modelling entrances or area. We treat every green space as an
+the access points. We call these \emph{green} spaces, not \emph{public} spaces: OSM
+tags do not certify public accessibility, so a private garden, a fenced lawn or an
+impenetrable wood can enter the set. This is a deliberately inclusive definition: it
+merges spaces of very different type, size and usability (a pocket garden, a city
+square and a large wood all count equally), and it takes the centroid as a single
+access point rather than modelling entrances or area. A sensitivity analysis under a
+strict, accessibility-conservative subset (dropping wood, grass and gardens; keeping
+parks, recreation grounds and squares) is reported below. We treat every green space
+as an
 equivalent point source; distinguishing quality, size, or public/private status
 is left to future work (see Limitations).
 
-\paragraph{Accessibility field.} We assign each node its network walking time (at
-$4.8$~km/h) to the nearest green-space access point by multi-source Dijkstra,
-giving the field $f$ (Fig.~\ref{fig:accessfield}). The field is defined over
-\emph{network nodes}, each weighted equally; it is a property of the pedestrian
-network's spatial reach to green space, not a population-weighted or
-distributional measure. Our metric therefore speaks to one facet of SDG~11.7---the
-network's capacity to keep locations close to green and public space, and how that
-capacity degrades under disruption---and not to the target's population-coverage or
-inclusivity dimensions, which would require census and land-use data we do not use
-here.
+\paragraph{Accessibility field.} We assign each node its network walking time to the
+nearest green-space access point by multi-source Dijkstra, giving the field $f$
+(Fig.~\ref{fig:accessfield}). We convert length to time at a constant
+$4.8$~km/h ($1.33$~m/s), which sits within the comfortable adult gait speed of
+$1.27$--$1.46$~m/s reported by \citet{bohannon1997walking}. The exact value does not
+matter for our conclusions: speed enters only through $\text{time}=\text{length}/
+\text{speed}$, so a different speed rescales the whole field, and hence every
+diagram, Wasserstein distance and AUC, by the same constant. The regression signs,
+significances and the city ranking are therefore invariant to the speed choice (if
+the persistence threshold is rescaled with speed the invariance is exact). We
+confirm this empirically: on Amsterdam, recomputing at $4.0$ and $5.0$~km/h leaves
+the district AUC a near-exact rescaling of the $4.8$~km/h values (Spearman
+$\rho=0.98$ and $0.996$; median AUC ratios $1.24$ and $0.96$, matching the expected
+$4.8/4.0$ and $4.8/5.0$). The field is defined over \emph{network nodes}, each weighted equally;
+it is a property of the pedestrian network's spatial reach to green space, not a
+population-weighted or distributional measure. Our metric therefore speaks to one
+facet of SDG~11.7, the network's capacity to keep locations close to green space and
+how that capacity degrades under disruption, and not to the target's
+population-coverage or inclusivity dimensions, which would require census and
+land-use data we do not use here.
 
 \begin{figure}[t]\centering
 \includegraphics[width=0.72\linewidth]{figures/fig_accessfield.pdf}
@@ -211,8 +228,11 @@ per-city constant collinear with the fixed effects). We then fit
 \]
 an ordinary-least-squares regression of district AUC on morphology
 $\mathbf{m}_i$ with \emph{city fixed effects} $\alpha_{c(i)}$ absorbing all
-between-city confounds. The five cities serve as a typological overlay, not as
-the inferential sample. This design also sidesteps the cross-city comparability
+\emph{additive between-city} differences (any confound constant within a city, such
+as climate, planning regime or data vintage). They do not remove within-city
+confounding or effects that vary across districts inside a city; we address those
+separately with explicit controls and spatial models below. The five cities serve
+as a typological overlay, not as the inferential sample. This design also sidesteps the cross-city comparability
 problem of AUC. Because $\alpha_{c(i)}$ absorbs each city's overall AUC level, which
 scales with network and diagram size, the morphology coefficients are identified
 purely from \emph{within-city} variation, and the inference never rests on comparing
@@ -360,6 +380,19 @@ distance). Intersection density is the one descriptor that moves: significant un
 some specifications but not the full-grid headline, so we treat it as the weakest,
 grid-sensitive effect throughout.
 
+\paragraph{Green-space definition sensitivity.} Because our inclusive green-space set
+mixes reliably public parks with possibly-private gardens, fenced grass and
+impenetrable woods, we re-ran the analysis on a strict, accessibility-conservative
+subset: only \texttt{leisure=park}, \texttt{recreation\_ground} and
+\texttt{place=square}, dropping wood, grass and gardens. This is a large cut (in
+Amsterdam, from $23{,}657$ features to $369$), yet the district AUC is largely
+preserved (Spearman $0.82$ against the inclusive set on the same reduced grid), and
+the regression is unchanged in substance: circuity ($-8.08$, $p=4\times10^{-9}$),
+mean street length ($-0.048$, $p=2\times10^{-12}$) and orientation entropy ($+1.21$,
+$p=2\times10^{-7}$) keep their sign and significance, and intersection density
+remains the weak, non-robust term. The morphology result is thus not an artefact of
+counting inaccessible green as accessible.
+
 \paragraph{Criterion validity: benchmark against an accessibility measure.} If the
 topological machinery is to be worth its cost it should track a simpler measure of
 access loss. We benchmark it, per district, against a \emph{distance-based}
@@ -445,7 +478,7 @@ more redundant fabrics that degrade most gracefully.
 observational, so the regression identifies \emph{associations} between morphology
 and topological resilience, not causal effects. Districts are also not independent:
 they nest within five cities and are spatially contiguous. City fixed effects
-absorb between-city confounds, but two residual problems remain. First, the $2{,}603$
+absorb additive between-city differences, but two residual problems remain. First, the $2{,}603$
 districts furnish only five clusters for cross-city inference; clustering the
 standard errors by city (the level at which disruption is applied) widens the
 intervals substantially (Table~\ref{tab:clustered}). Under this conservative
@@ -564,15 +597,19 @@ disruption models, district resolutions, spatial specifications and the added
 controls---rather than a causally identified or cross-city-generalisable driver.
 
 \section{Conclusion}
-We defined a topological resilience metric for green-space accessibility---the
+We defined a topological metric for the resilience of green-space access, the
 Wasserstein degradation curve of persistent-homology diagrams under network
-disruption---and showed, across $2{,}603$ districts in five contrasting cities,
-that street-network morphology is associated with how robustly a city's
-pedestrian network keeps its \emph{locations} close to nature. The association is
-consistent rather than proven causal: random and targeted disruption agree on
-every coefficient sign, and the signs are stable across H3 district resolutions
-spanning a $28\times$ range of unit counts, but the study is cross-sectional and
-rests on five cities (see Limitations). The mathematics of persistence turns a
+disruption, and showed across $2{,}603$ districts in five contrasting cities that
+street-network morphology is associated with how robustly a city's pedestrian
+network keeps its \emph{connected} served locations close to nature. Two effects are
+robust and survive spatial-error and spatial-lag models: more circuitous routing and
+longer street segments predict greater resilience. A third, orientation entropy, is
+weaker, significant at the district level but not once errors are clustered by the
+five cities. The association is consistent rather than proven causal, the study is
+cross-sectional, and it rests on five cities (see Limitations). We are also precise
+about what the metric captures: the resilience of the \emph{connected} access
+structure, validated within city against a distance-based accessibility benchmark,
+rather than total accessibility including outright disconnection. The mathematics of persistence turns a
 static SDG~11.7 indicator into a dynamic, form-aware one. Future work will
 strengthen the hazard model to a full flood-zone removal and add a network-metric
 Vietoris--Rips filtration, toward a resilience-aware accessibility standard for
@@ -770,7 +807,7 @@ centre distance (km) & --- & $-0.107$ $^{***}$\\
 \paragraph{Competing interests.} The author declares no competing interests.
 
 \paragraph{Data availability.} All input data are open and publicly available.
-Pedestrian networks and green/public spaces were obtained from OpenStreetMap via
+Pedestrian networks and green spaces were obtained from OpenStreetMap via
 OSMnx; urban-centre boundaries from the GHS Urban Centre Database (GHS-UCDB
 R2019A, European Commission Joint Research Centre); and elevation data from the
 public AWS Terrain Tiles service. No new data were collected. The derived
