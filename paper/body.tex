@@ -566,8 +566,14 @@ fixed effects absorb this scale in the regression), and $\rhostar$ depends on th
 chosen disruption range. The down-turn of the İstanbul and Phoenix curves at
 $\rho=0.5$ reflects finite nodes dropping out of the diagram under near-total
 fragmentation, not recovered access, and marks the upper edge of the metric's
-useful range. Green spaces are treated as equivalent point sources, ignoring size,
-quality and public/private status.
+useful range. Green spaces are treated as equivalent point sources at their
+centroids, ignoring size, quality and public/private status; a large park reduced to
+its centroid can misplace the true walking distance to its entrances, and the
+sensitivity of the results to multi-entrance or area-based access points is not
+tested here. OSM mapping completeness and semantic consistency also vary across
+cities and are not quantified, so data-quality heterogeneity is not fully controlled.
+The class-exclusion sensitivity below addresses the tag-mix concern but not these
+geometric and completeness ones.
 
 \emph{Disruption and data.} Random removal is spatially uniform and does not
 reproduce the clustered failures of a real flood or earthquake; targeted removal
