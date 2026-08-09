@@ -307,8 +307,42 @@ are not independent; Appendix~\ref{app:robust} treats this in full (city-cluster
 standard errors, a Moran's~$I$ diagnostic, and estimated spatial-error and
 spatial-lag models that Anselin LM tests and AIC strongly prefer to OLS). The two
 strongest effects, circuity and mean street length, survive every one of these
-treatments; orientation entropy survives the spatial models but not city clustering,
-which we weigh in the Limitations.
+treatments; orientation entropy survives the spatial models but not city clustering
+at five cities, which we weigh below.
+
+\paragraph{External validity: replication across eight cities.} Five cities give
+only five clusters, so the cluster-robust test above is underpowered. We therefore
+extended the analysis to three further cities on different continents---Singapore
+(planned, tropical), Nairobi (rapidly growing, mixed-formality) and Vienna (compact,
+central European)---for a $3{,}999$-district, eight-city sample, and refit at a
+common reduced disruption grid (Table~\ref{tab:extval}). The three headline signs
+replicate: more circuitous routing ($-6.41$) and longer segments ($-0.046$) predict
+greater resilience and higher orientation entropy ($+1.85$) less, all significant at
+$p<10^{-11}$. Crucially, with eight clusters instead of five, \emph{all three}---now
+including orientation entropy ($p=0.025$)---survive city-clustered standard errors,
+indicating that its earlier failure was largely a small-cluster power problem rather
+than a fragile effect. Intersection density remains non-significant. (Two candidate
+cities, Copenhagen and Melbourne, were dropped because the OpenStreetMap place query
+did not resolve their full urban extent.)
+
+\begin{table}[t]\centering
+\caption{External-validity replication on eight cities ($n=3{,}999$ districts;
+original five plus Singapore, Nairobi, Vienna) at a common reduced disruption grid,
+with city fixed effects. The three headline signs replicate, and with eight clusters
+all three---including orientation entropy---survive city-clustered standard errors.
+Sig.: $^{***}p<0.001$, $^{*}p<0.05$.}
+\label{tab:extval}
+\begin{tabular}{lrrr}
+\toprule
+Morphology descriptor & coef & $p$ (classical) & $p$ (8-cluster)\\
+\midrule
+circuity & $-6.41$ & $3\times10^{-12}$ & $1.6\times10^{-4}$ $^{***}$\\
+mean street length & $-0.046$ & $9\times10^{-23}$ & $8\times10^{-18}$ $^{***}$\\
+orientation entropy & $+1.85$ & $3\times10^{-25}$ & $0.025$ $^{*}$\\
+intersection density & $-0.023$ & $0.70$ & $0.88$\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[t]\centering
 \caption{District fixed-effects regression, $\mathrm{AUC}\sim\text{morphology}+C(\text{city})$,
@@ -490,12 +524,14 @@ districts furnish only five clusters for cross-city inference; clustering the
 standard errors by city (the level at which disruption is applied) widens the
 intervals substantially (Table~\ref{tab:clustered}). Under this conservative
 treatment the two strongest effects---circuity ($p=6\times10^{-4}$) and mean
-street length ($p=8\times10^{-8}$)---remain significant, but orientation entropy,
-significant at the district level, does not ($p=0.26$); with only five clusters
-even cluster-robust inference is underpowered, so the classical $p$-values in
-Table~\ref{tab:regression} understate uncertainty and are best read as
-within-sample descriptive strength rather than as a precise cross-city
-significance claim.
+street length ($p=8\times10^{-8}$)---remain significant, while orientation entropy,
+significant at the district level, does not ($p=0.26$). This last failure is largely
+a small-cluster power problem: in the eight-city extension (Table~\ref{tab:extval}),
+with eight clusters, orientation entropy \emph{does} survive city clustering
+($p=0.025$). With only five clusters, cluster-robust inference is underpowered, so
+the classical $p$-values in Table~\ref{tab:regression} understate uncertainty and
+are best read as within-sample descriptive strength; the eight-city replication is
+the more reliable cross-city test.
 Second, the residuals retain weak but statistically significant positive spatial
 autocorrelation within \emph{every} city (global Moran's~$I$ on the first-ring H3
 adjacency runs from $0.06$ in Phoenix to $0.18$ in Barcelona, all with permutation
@@ -505,9 +541,11 @@ spatial-error and spatial-lag models on a within-city weights matrix
 ($\hat\lambda=0.55$, $\hat\rho=0.53$), yet the three headline descriptors keep
 their sign and remain significant at $|z|\ge5$, and intersection density in fact
 turns significant. The morphology signal is therefore not an artefact of spatial
-autocorrelation; what remains is genuinely a matter of external validity---richer
-geographic replication beyond five cities---rather than of within-sample spatial
-confounding.
+autocorrelation. On external validity, the eight-city extension
+(Table~\ref{tab:extval}) shows the three signs replicating on three further cities
+across different continents, with all three surviving the now better-powered
+eight-cluster test; broader replication (more cities, and cities with sparser
+OpenStreetMap coverage than our set) remains the natural next step.
 
 \emph{Omitted variables.} Morphology is only one of many district attributes that
 could be associated with resilience. We control for the four that our data

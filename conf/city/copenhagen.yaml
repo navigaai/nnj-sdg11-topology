@@ -1,0 +1,3 @@
+name: copenhagen
+place: "Copenhagen, Denmark"
+crs: "EPSG:32632"   # UTM 32N

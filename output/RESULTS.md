@@ -422,3 +422,23 @@ barcelona/phoenix weak.)
   integrated (would replace the DEM low-elevation hazard proxy with real flood zones).
 - **Observed post-disaster green-access service loss:** no clean open per-city dataset
   exists; only flood *extent* (modelled/observed) is available.
+
+### 4. External validity — eight-city replication (reviewer: 5 cities / 5 clusters)
+
+Added 3 cities on other continents (configs conf/city/{singapore,nairobi,vienna}.yaml)
+→ 8 cities, n=3999 districts, reduced grid (5ρ×2rep), `scripts/run_new_cities.sh`,
+`output/district_table_10city.csv`, `output/regression_8city.csv`. Copenhagen +
+Melbourne dropped (OSM place query / Overpass didn't resolve full extent).
+
+| descriptor | coef | p (classical) | p (8-cluster) |
+|---|---|---|---|
+| circuity | −6.41 | 3e-12 | 1.6e-4 *** |
+| mean_street_length | −0.046 | 9e-23 | 8e-18 *** |
+| orientation_entropy | +1.85 | 3e-25 | 0.025 * |
+| intersection_density | −0.023 | 0.70 | 0.88 ns |
+
+**3 headline signs replicate across 8 cities/4 continents; with 8 clusters ALL THREE
+survive city-clustered SE — orientation entropy recovered (0.26 at 5 clusters → 0.025
+at 8).** → the 5-cluster failure was a power problem; external validity + cluster
+inference materially strengthened. Districts per city: ams227 bcn147 bog538 ist729
+nai363 phx962 sng573 vie460.

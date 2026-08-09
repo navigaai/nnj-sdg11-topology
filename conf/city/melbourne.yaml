@@ -1,0 +1,3 @@
+name: melbourne
+place: "Melbourne, Australia"
+crs: "EPSG:32755"   # UTM 55S

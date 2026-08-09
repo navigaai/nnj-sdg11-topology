@@ -1,0 +1,3 @@
+name: nairobi
+place: "Nairobi, Kenya"
+crs: "EPSG:32737"   # UTM 37S

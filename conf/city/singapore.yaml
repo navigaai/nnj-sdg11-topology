@@ -1,0 +1,3 @@
+name: singapore
+place: "Singapore"
+crs: "EPSG:32648"   # UTM 48N
