@@ -470,7 +470,16 @@ served structure and should be paired with a disconnection count for total acces
 loss; the Limitations show that neither a naive finite cap nor extended persistence
 folds the two into one scalar cleanly (both recover the connectivity sign only by
 sacrificing the graded signal), so the two channels are kept separate and the claim
-is scoped accordingly.
+is scoped accordingly. Reporting the disconnection channel as an explicit
+\emph{companion outcome} makes the complementarity concrete: regressing the
+connectivity-loss AUC on the same morphology and fixed effects, street form predicts
+outright disconnection too ($R^2=0.44$) but with a different and sometimes
+\emph{opposing} signature---most strikingly, more circuitous districts are graded-more-
+resilient yet also \emph{more} disconnection-prone (standardised $\beta=+0.15$,
+$p<10^{-28}$ on the connectivity channel). The two are not substitutes: a full account
+of access resilience must report both the graded-persistence and the connectivity-loss
+channels, as done here, and the metric's ``resilience'' should be read as the former,
+not as global accessibility resilience.
 
 \paragraph{Mechanism: is the association mediated by path redundancy?} The natural
 reading of the circuity and segment-length effects is that they proxy
@@ -575,8 +584,18 @@ access, not as an external cause acting on an independent outcome. Two observati
 temper the concern: the morphology descriptors explain only a modest share of the
 variance ($R^2\approx0.20$), so the outcome is far from a
 deterministic re-encoding of the predictors; and the accessibility field also
-depends on the green-space configuration, which is exogenous to street form. Still,
-a design that predicted one city's resilience from another's morphology would be
+depends on the green-space configuration, which is exogenous to street form. A direct
+check sharpens the picture. Because the AUC scales strongly with the raw size of the
+persistence diagram (its correlation with the district's total $H_0$ persistence is
+$+0.83$), the morphology signal is refitted while controlling for that
+same-network measure of diagram magnitude. Circuity and mean street length survive
+($-7.39\to-2.88$ and $-0.050\to-0.014$, both still $p<10^{-8}$), so they carry
+configurational information beyond the sheer size of the diagram; orientation entropy,
+by contrast, loses significance and flips sign ($+1.85\to-0.14$, $p=0.10$), revealing
+that its apparent effect was largely a re-encoding of diagram magnitude---a concrete
+instance of the shared-origin risk. This is only a partial mitigation: the control is
+itself network-derived, and a design that predicted one city's resilience from
+another's morphology, or from an independent disruption dataset, would be
 needed to break the shared-origin coupling entirely.
 
 \emph{What the metric measures, and how far it is validated.} $\Drho$ is a
@@ -673,22 +692,36 @@ rebuilds over time after a real disruption, and the term should be read in that
 narrower, topological sense.
 
 Read together, these caveats narrow the claim: within these eight cities, and under
-synthetic edge-removal disruption, street-network morphology is a consistent
-descriptive correlate of green-space access resilience---robust in sign across
-disruption models, district resolutions, spatial specifications and the added
-controls---rather than a causally identified or cross-city-generalisable driver.
+the tested \emph{synthetic, distributed} edge-removal disruption (random and targeted),
+street-network morphology is a consistent descriptive correlate of green-space access
+resilience---robust in sign across disruption models, district resolutions, spatial
+specifications and the added controls---rather than a causally identified or
+cross-city-generalisable driver. Crucially, this scope is \emph{empirical}, not merely
+cautionary: under the real, spatially \emph{clustered} $100$-year flood scenario the
+pooled morphology effects do not reproduce (Section~\ref{sec:results}). Distributed
+removal thins links roughly evenly, so the descriptors that govern how a district's
+served $H_0$ structure reorganises under diffuse loss are exactly what the metric
+responds to; a clustered flood instead removes a spatially contiguous block of the
+network at once, a regime in which local morphology is dominated by \emph{where} the
+hazard falls rather than by routing form. The general phrasing ``street morphology
+predicts urban resilience'' therefore overreaches; the defensible statement is that
+street morphology is associated with topological access resilience \emph{under the
+tested synthetic, distributed disruption scenarios}, and its transfer to real
+clustered hazards is not established.
 
 \section{Conclusion}
 This study defines a topological metric for the resilience of green-space access, the
 Wasserstein degradation curve of persistent-homology diagrams under network
 disruption, and showed across $3{,}999$ districts in eight contrasting cities on four
-continents that street-network morphology is associated with how robustly a city's
+continents that, under synthetic distributed disruption, street-network morphology is
+associated with how robustly a city's
 pedestrian network keeps its \emph{connected} served locations close to nature. Two
 effects are robust throughout---longer street segments (the largest) and more
 circuitous routing are associated with greater resilience, and both survive a wild
 cluster bootstrap and spatial-error and spatial-lag models---while higher orientation
-entropy is associated with less resilience and is strong in the spatial models but
-less certain across cities. Two boundaries frame the contribution. The relationship
+entropy is associated with less resilience but proves the least dependable, weakening
+across cities and vanishing once diagram magnitude is controlled. These associations
+hold for distributed disruption and do not carry to the real clustered-flood scenario. Two boundaries frame the contribution. The relationship
 is an \emph{association}, not a causal effect: the design is cross-sectional and
 observational. And it is an association with the \emph{proposed} topological
 indicator; whether that indicator is a fully valid measure of resilience---rather

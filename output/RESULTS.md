@@ -255,6 +255,34 @@ not circular): **meshedness** α=(e−v+p)/(2v−5) [Barthélemy 2011] + mean no
   paths survive" causal language to interpretation (Discussion rewritten). Combines both
   reviewer options (add analysis + soften claim — the analysis forced the softening).
 
+### 3h. Companion outcome (#6) + shared-origin/circularity check (#4) (`scripts/companion_and_circularity.py`)
+
+**#6 Disconnection as a companion outcome.** degrad_unreach_auc (connectivity loss,
+8-city) regressed on morphology + FE:
+- Spearman(topological AUC, connectivity-loss AUC) = **−0.21** → complementary/opposing.
+- morphology → connectivity loss (R²=0.44): circuity **std-β +0.15** (p=2e-29),
+  mean_street_length +0.05 (p=0.01), orient_entropy −0.035 (p=0.02).
+- **Key:** circuity is graded-more-resilient (AUC −7.4) yet MORE disconnection-prone
+  (+0.15) → the two channels can OPPOSE. Paper: metric's "resilience" = graded connected
+  persistence, NOT global accessibility resilience; both channels must be reported.
+
+**#4 Shared-origin/circularity.** corr(AUC, total_persistence)=**+0.83**. Netting out
+diagram magnitude (total_persistence, same-network topological size):
+- circuity −7.39→−2.88 (survives, p=1e-9), mean_street_length −0.050→−0.014 (p=2e-8):
+  carry signal beyond diagram size.
+- orientation_entropy +1.85→−0.14 (**vanishes**, p=0.10): was largely re-encoding
+  diagram magnitude — concrete instance of the shared-origin risk.
+- R² 0.196→0.766. Partial mitigation only (control is network-derived); full break needs
+  independent disruption data. Paper: shared-origin Limitation strengthened with this.
+
+### 3i. Real-disaster scope (#5) — framing
+
+Flood (clustered) morphology effects don't reproduce (already in paper). Sharpened:
+"street morphology predicts urban resilience" → "associated with topological access
+resilience UNDER THE TESTED SYNTHETIC, DISTRIBUTED disruption scenarios"; added the
+distributed-vs-clustered mechanism explanation (diffuse thinning vs contiguous block
+removal → dominated by WHERE the hazard falls). Conclusion + scope paragraph updated.
+
 ### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
 
 Test whether the wrong-sign connectivity result is the disconnection mechanism: cap
