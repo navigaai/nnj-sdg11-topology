@@ -292,33 +292,43 @@ AUC (higher AUC = less resilient), a negative coefficient means the descriptor i
 associated with \emph{greater} resilience. More circuitous networks (coef $-7.39$)
 and longer street segments ($-0.050$) are associated with more resilient green-space
 access, whereas higher orientation entropy ($+1.85$) is associated with less
-(Fig.~\ref{fig:morphology}). Intersection density is not significant ($p=0.71$), so we
-do not lean on it, and green-space fragmentation is likewise not significant---
-plausibly because access in our field is set by the \emph{nearest} green-space point,
-which is largely insensitive to how the remaining patches are split, and because the
-inclusive patch definition (Section~\ref{sec:method}) mixes very different green-space
-types into one count. Districts nest within the eight cities and are spatially
-contiguous, so their residuals are not independent; Appendix~\ref{app:robust} treats
-this in full. All three headline descriptors survive city-clustered standard errors
-(eight clusters: circuity $p=2\times10^{-4}$, mean street length $p=5\times10^{-19}$,
-orientation entropy $p=0.036$) and estimated spatial-error and spatial-lag models that
-Anselin LM tests and AIC strongly prefer to OLS.
+(Fig.~\ref{fig:morphology}). Because the raw coefficients sit on different scales, we
+read magnitude from the standardised $\beta$ and the $10$th--$90$th percentile effect
+(Table~\ref{tab:regression}): \emph{mean street length} is the largest effect (std.\
+$\beta=-0.28$; a $10$th-to-$90$th-percentile change moves AUC by $62\%$ of its
+standard deviation), then orientation entropy ($+0.16$) and circuity ($-0.13$); the
+tiny $p$-values reflect the large sample, not effect magnitude. The descriptors are
+not collinear (all variance-inflation factors $<3$), and the pooled signs are not a
+pooling artefact---each of the three holds in seven of the eight cities. Intersection
+density is not significant ($p=0.71$) and its sign is unstable across samples, and
+green-space fragmentation is likewise not significant. Districts nest within the eight
+cities and are spatially contiguous, so their residuals are not independent;
+Appendix~\ref{app:robust} treats this in full. Under a wild cluster bootstrap---the
+appropriate small-cluster correction for our eight clusters (the eight cities)---
+circuity and mean street length remain significant ($p=0.0002$ each), while
+orientation entropy does not ($p=0.16$); orientation entropy is nonetheless strong in
+the spatial-error and spatial-lag models ($|z|\approx10$). We therefore treat circuity
+and mean street length as the robust pair and orientation entropy as a real but
+less certain third effect.
 
 \begin{table}[t]\centering
 \caption{District fixed-effects regression, $\mathrm{AUC}\sim\text{morphology}+C(\text{city})$,
 $n=3{,}999$ across eight cities, random-disruption scenario at the full disruption
-grid ($8\times10$). Classical OLS standard errors; see Table~\ref{tab:spatial} for
-city-clustered and spatial-model inference. Sig.: $^{***}p<0.001$.}
+grid ($8\times10$). We report the standardised coefficient (std.\ $\beta$) and the
+change in AUC across each descriptor's $10$th--$90$th percentile (as \% of the AUC
+standard deviation) so that effects on different scales are comparable and not read
+off the raw coefficient or the (large-$n$) $p$-value alone. See Table~\ref{tab:spatial}
+for city-clustered and spatial-model inference. Sig.: $^{***}p<0.001$.}
 \label{tab:regression}
-\begin{tabular}{lrrr}
+\begin{tabular}{lrrrr}
 \toprule
-Morphology descriptor & coef & std.\ err. & $p$-value\\
+Morphology descriptor & coef & std.\ $\beta$ & $\Delta_{10\text{--}90}$ (\% SD) & $p$-value\\
 \midrule
-circuity & $-7.387$ & $0.873$ & $3.6\times10^{-17}$ $^{***}$\\
-mean street length & $-0.0505$ & $0.0045$ & $4.9\times10^{-29}$ $^{***}$\\
-orientation entropy & $+1.845$ & $0.168$ & $1.4\times10^{-27}$ $^{***}$\\
-intersection density & $+0.021$ & $0.057$ & $0.71$\\
-green-space fragmentation & $-3.7\times10^{-7}$ & $1.4\times10^{-6}$ & $0.79$\\
+mean street length & $-0.0505$ & $-0.28$ & $-62$ & $4.9\times10^{-29}$ $^{***}$\\
+orientation entropy & $+1.845$ & $+0.16$ & $+51$ & $1.4\times10^{-27}$ $^{***}$\\
+circuity & $-7.387$ & $-0.13$ & $-27$ & $3.6\times10^{-17}$ $^{***}$\\
+intersection density & $+0.021$ & $+0.01$ & $+2$ & $0.71$\\
+green-space fragmentation & $-3.7\times10^{-7}$ & $-0.00$ & $-0$ & $0.79$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -579,11 +589,12 @@ We defined a topological metric for the resilience of green-space access, the
 Wasserstein degradation curve of persistent-homology diagrams under network
 disruption, and showed across $3{,}999$ districts in eight contrasting cities on four
 continents that street-network morphology is associated with how robustly a city's
-pedestrian network keeps its \emph{connected} served locations close to nature. Three
-effects are robust: more circuitous routing and longer street segments predict
-greater resilience and higher orientation entropy less, and all three keep their sign
-and significance under city-clustered standard errors and estimated spatial-error and
-spatial-lag models. The association is consistent rather than proven causal, the study
+pedestrian network keeps its \emph{connected} served locations close to nature. Two
+effects are robust throughout---longer street segments (the largest) and more
+circuitous routing predict greater resilience, and both survive a wild cluster
+bootstrap and spatial-error and spatial-lag models---while higher orientation entropy
+predicts less resilience and is strong in the spatial models but less certain across
+cities. The association is consistent rather than proven causal, the study
 is cross-sectional, and eight cities still furnish only eight clusters (see
 Limitations). We are also precise
 about what the metric captures: the resilience of the \emph{connected} access

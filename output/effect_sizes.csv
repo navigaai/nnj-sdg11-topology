@@ -1,0 +1,6 @@
+term,coef_raw,std_beta,d10_90_AUC,d10_90_pctSD
+circuity,-7.38741,-0.13,-1.118,-27.0
+orientation_entropy,1.84487,0.161,2.121,51.2
+mean_street_length,-0.05046,-0.28,-2.556,-61.7
+intersection_density,0.0209,0.009,0.099,2.4
+greenspace_fragmentation,-0.0,-0.004,-0.0,-0.0
