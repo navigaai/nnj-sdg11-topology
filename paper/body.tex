@@ -410,7 +410,14 @@ distance benchmark ($\rho=+0.36$, $p<10^{-79}$, positive in all five cities;
 Table~\ref{tab:validity}), so the metric tracks a simple accessibility-degradation
 ground truth at the level at which it is used. The naive pooled correlation is much
 weaker ($\rho=+0.07$) only because cross-city AUC scale swamps it, a Simpson's
-paradox driven by the same scale the fixed effects absorb. Two qualifications
+paradox driven by the same scale the fixed effects absorb. The benchmark also holds
+when access is \emph{population-weighted} rather than node-uniform: weighting each
+node by the open GHS-POP residential-population grid \citep{ghsl2023pop} (JRC,
+$1$~km, $2020$; the same GHSL family and Mollweide grid as our urban-centre
+boundaries) gives an almost identical within-city correlation ($\rho=+0.35$,
+$p<10^{-76}$). So the topological signal is not an artefact of weighting locations
+equally, and it speaks, at least for graded access, to the population-coverage
+dimension of SDG~11.7 and not only to bare network reach. Two qualifications
 remain. The metric adds value rather than echoing the benchmark: controlling for
 both baselines and city fixed effects, the three headline morphology descriptors
 stay significant ($p<10^{-6}$), so it carries configurational information the simple
@@ -810,8 +817,9 @@ centre distance (km) & --- & $-0.107$ $^{***}$\\
 \paragraph{Data availability.} All input data are open and publicly available.
 Pedestrian networks and green spaces were obtained from OpenStreetMap via
 OSMnx; urban-centre boundaries from the GHS Urban Centre Database (GHS-UCDB
-R2019A, European Commission Joint Research Centre); and elevation data from the
-public AWS Terrain Tiles service. No new data were collected. The derived
+R2019A, European Commission Joint Research Centre); residential population from the
+GHS-POP grid (R2023A, $1$~km) for the population-weighted validation; and elevation
+data from the public AWS Terrain Tiles service. No new data were collected. The derived
 artifacts underlying every reported figure and table (per-district resilience and
 morphology tables, regression outputs, and city-level resilience curves) are
 recorded in the project's results log, released with the code at

@@ -396,3 +396,29 @@ recreation_ground + square (drop wood/grass/garden). Reduced grid, all 5 cities:
 ### Citation fixes (reviewers G/H)
 - 1-Wasserstein stability → Cohen-Steiner et al. 2010 (FoCM, Lp-stability), DOI 10.1007/s10208-010-9060-6
 - Hickok et al. → SIAM Review 66(3):481–500 (2024), DOI 10.1137/22M150410X
+
+### 3k. Population-weighted criterion validity (open GHS-POP, reviewer request)
+
+Open data: **GHS-POP R2023A** (JRC, 1 km, 2020; same GHSL/Mollweide family as GHS-UCDB),
+downloaded to data/ghsl/. `scripts/population_validation.py` builds a
+POPULATION-WEIGHTED accessibility-degradation benchmark (weighted mean walk-time over
+reachable nodes, weights = GHS-POP) and correlates with topological AUC.
+
+Spearman(AUC, population-weighted degradation):
+- amsterdam +0.458, bogota +0.157, istanbul +0.091, phoenix +0.020, barcelona −0.019
+- **WITHIN-CITY pooled +0.354 (p=1e-77)**; naive pooled +0.067
+
+≈ identical to the unweighted distance benchmark (+0.36) → topological signal is not
+an artefact of weighting nodes equally, and it tracks population-weighted graded
+access degradation → partially engages the SDG 11.7 population-coverage dimension.
+(Weighting is coarse: 1 km cells, node-level sampling; heterogeneous across cities,
+barcelona/phoenix weak.)
+
+### Open-source data found for the two hardest gaps
+- **Population:** GHS-POP R2023A (JRC) — DONE, integrated above.
+- **Real flood extent:** JRC river flood-hazard maps (10–500 yr, ~90 m,
+  https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/CEMS-EFAS/flood_hazard/) and the
+  Global Flood Database (913 observed events 2000–2018, GEE) — FOUND, not yet
+  integrated (would replace the DEM low-elevation hazard proxy with real flood zones).
+- **Observed post-disaster green-access service loss:** no clean open per-city dataset
+  exists; only flood *extent* (modelled/observed) is available.
