@@ -89,17 +89,25 @@ $1$-Wasserstein distance is
 W_1(X,Y)=\min_{\gamma}\sum_{x\in X}\lVert x-\gamma(x)\rVert,
 \]
 minimised over bijections $\gamma$ between the diagrams (with matching to the
-diagonal allowed). These diagram distances are stable to perturbations of $f$: the
-bottleneck distance by the classical stability theorem
-\citep{cohensteiner2007stability}, and the $1$-Wasserstein distance used here by the
-$L_p$-stability result of \citet{cohensteiner2010lpstable}. A small change in the
-field produces a small change in the distance. Stability is a mathematical
-well-posedness property, not a validation that diagram distance measures
-\emph{urban} resilience; it justifies only that $\Drho$ responds
-continuously and monotonically to progressive network damage, and the
-metric is treated throughout as a \emph{proposed proxy} for how the access topology
-holds up, to be validated against independent resilience evidence in future work
-rather than as ground truth. PH is computed with GUDHI \citep{gudhi} and diagram distances with
+diagonal allowed). For a \emph{fixed} domain, these diagram distances are stable to
+perturbations of the field $f$: the bottleneck distance by the classical stability
+theorem \citep{cohensteiner2007stability}, and the $1$-Wasserstein distance used here
+by the $L_p$-stability result of \citet{cohensteiner2010lpstable}. A caveat must be
+stated precisely here, because it bounds what stability can justify. These theorems
+control the effect of changing the \emph{field} on a fixed simplicial complex; the
+disruption in this study, however, also removes edges, changing the underlying graph
+(the domain) and not only $f$. The classical stability theorem therefore does
+\emph{not} directly bound $\Drho$: it guarantees only that the two ingredients that
+\emph{are} pure field changes---re-snapping the accessibility field on the surviving
+subgraph---behave continuously, not that the whole map from disruption intensity to
+diagram distance is well-behaved. In particular, stability does not imply
+monotonicity, and $\Drho$ is indeed \emph{not} always monotone: at high $\rho$ the
+İstanbul and Phoenix curves turn down as the network fragments and finite classes
+vanish (Section~\ref{sec:results}). Stability is thus a mathematical well-posedness
+property of the field-to-diagram map, not a guarantee about the metric under network
+damage; the metric is treated throughout as a \emph{proposed proxy} for how the
+access topology holds up, to be validated against independent resilience evidence in
+future work rather than as ground truth. PH is computed with GUDHI \citep{gudhi} and diagram distances with
 \texttt{persim}.
 
 \section{Methodology}\label{sec:method}
@@ -533,11 +541,13 @@ and this particular Wasserstein/AUC topological indicator; that circuity and mea
 street length ``explain resilience'' in a broader sense follows only to the extent
 that the indicator is itself a valid measure of resilience, which is not fully
 demonstrated. Evidence of two kinds is offered. Its
-\emph{construct validity} is supported by its behaviour---it rises monotonically
-with disruption, is stable to field perturbations \citep{cohensteiner2007stability},
-and yields a morphology relationship that survives disruption model, district
-resolution, denoising threshold, pivot count, spatial-error/lag modelling and four
-omitted-variable controls. On \emph{criterion} validity, the benchmark against a
+\emph{construct validity} is supported by its behaviour---it rises with disruption
+over most of the range (though not monotonically at high $\rho$, where finite classes
+vanish), builds on field-perturbation stability of the diagram distance on the fixed
+domain \citep{cohensteiner2007stability} (with the domain-change caveat of
+Section~\ref{sec:method}), and yields a morphology relationship that survives
+disruption model, district resolution, denoising threshold, pivot count,
+spatial-error/lag modelling and four omitted-variable controls. On \emph{criterion} validity, the benchmark against a
 distance-based accessibility-degradation measure is
 positive at the level at which the metric is used. Within city, the unit the fixed
 effects identify from, the topological AUC correlates $+0.36$ ($p<10^{-79}$) with
