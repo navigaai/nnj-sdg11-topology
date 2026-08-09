@@ -472,12 +472,42 @@ folds the two into one scalar cleanly (both recover the connectivity sign only b
 sacrificing the graded signal), so the two channels are kept separate and the claim
 is scoped accordingly.
 
+\paragraph{Mechanism: is the association mediated by path redundancy?} The natural
+reading of the circuity and segment-length effects is that they proxy
+\emph{alternative-path redundancy}---more ways to reach the same green space, so that
+losing one link rarely isolates a served region. This mechanism is testable directly.
+For each district a structural redundancy measure is computed from the network alone,
+independent of the disruption simulation and the accessibility field (so it is not
+circular with $\Drho$): the \emph{meshedness} (the $\alpha$ index, the density of
+independent cycles, $\alpha=(e-v+p)/(2v-5)$, the standard planar-network route-
+availability measure \citep{barthelemy2011spatial}), and, as a coarse check, mean
+node degree. The direct test does \emph{not} support the redundancy story. Within
+city, redundancy correlates with \emph{lower} resilience, not higher: meshedness
+against the degradation AUC gives Spearman $\rho=+0.50$ and mean degree $\rho=+0.60$
+(both $p<10^{-250}$; recall higher AUC is less resilient). Morphology predicts
+redundancy with the sign that \emph{opposes} the mechanism---more circuitous
+($-0.045$, $p=10^{-4}$) and longer-segment ($-6\times10^{-4}$, $p<10^{-19}$) districts
+are \emph{less} mesh-redundant---and adding meshedness to the headline regression
+leaves the morphology effects essentially intact (circuity attenuates by $10\%$,
+segment length by $18\%$, orientation entropy not at all), while meshedness itself
+enters with the counter-mechanism sign ($+16.4$, $p<10^{-44}$; $R^2$ $0.196\to0.235$).
+The metric therefore rewards \emph{coarse}, low-cycle-density configurations (long,
+circuitous segments, few redundant loops) whose served $H_0$ structure reorganises
+little under random thinning, rather than finely meshed grids with many alternative
+paths; part of this may be that denser districts carry more $H_0$ classes and hence
+larger Wasserstein mass. Either way, the simple alternative-path account is refuted,
+and the mechanistic language below is kept at the level of interpretation.
+
 \section{Discussion}
 The results give an interpretable, architecture-facing reading of resilience.
 The robust effects are circuity and segment length: districts with more circuitous
 routing and longer segments retain more of their well-served structure when edges
-are removed, because alternative paths to green space survive the loss of any one
-link. Intersection density is not significant, and its sign is not even stable
+are removed. The intuitive explanation---that alternative paths to green space survive
+the loss of any one link---is, however, \emph{not} borne out by the direct redundancy
+test above: a standard mesh-redundancy index runs the wrong way, so the effect is
+better read as coarse, low-cycle configurations producing a more stable $H_0$
+signature than as path substitution. Intersection density is not significant, and its
+sign is not even stable
 between the five- and eight-city samples, so no conclusion is drawn from it. Districts
 with more disordered street orientation (higher entropy) are more brittle. That the signal
 is carried by $H_0$ rather than $H_1$ has a concrete planning meaning. In
@@ -485,18 +515,21 @@ green-dense cities the structure that matters is not isolated ``deserts''
 surrounded by served land but the connectivity of the served regions themselves,
 and that connectivity is what disruption erodes.
 
-For design, this suggests a \emph{hypothesis} rather than a prescription: that
-\emph{path redundancy}, not raw proximity, may be what protects access to nature
-under stress, since the descriptors associated with resilience (circuitous routing,
-longer segments) are hallmarks of networks offering several comparable ways to reach
-the same green space, so that losing one link rarely isolates a served region. If it
-holds, it would reframe an SDG~11.7 design brief from ``put a park within $x$ metres''
-toward ``ensure the walk to it survives the loss of individual streets.'' This stops
-short of a planning prescription: the association is observational, the outcome is a
-proposed topological indicator rather than a validated resilience measure, and
-green-space quality, public accessibility and real hazard exposure are not modelled,
-so any design implication is a direction for testing, not a warrant to redesign
-street networks.
+For design, this suggests a \emph{hypothesis} rather than a prescription, and one the
+present data qualify. The tempting reading---that \emph{path redundancy}, not raw
+proximity, protects access to nature under stress---was tested directly and not
+supported: the descriptors associated with resilience (circuitous routing, longer
+segments) are in fact associated with \emph{less} mesh redundancy, not more. What the
+metric rewards is a coarser, more stable served configuration under random link loss.
+Whether that stability is a genuine planning virtue or partly an artefact of how the
+topological summary scales with configuration granularity is exactly what an
+independent, validated resilience outcome would have to settle. Any reframing of an
+SDG~11.7 design brief from ``put a park within $x$ metres'' toward ``ensure the walk
+to it survives the loss of individual streets'' therefore remains a direction for
+testing: the association is observational, the outcome is a proposed topological
+indicator rather than a validated resilience measure, its own proposed mechanism does
+not survive a direct test, and green-space quality, public accessibility and real
+hazard exposure are not modelled.
 
 \paragraph{Limitations.} The caveats are grouped by the kind of claim they qualify.
 

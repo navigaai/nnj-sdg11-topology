@@ -233,6 +233,28 @@ R2023A weighting now on all 8 cities too. `output/population_validity_8city.csv`
 - → population weighting does not change the picture: both convergent benchmarks now
   match the analysis sample and agree at ρ≈+0.33.
 
+### 3g. Mechanism test: does path redundancy mediate? (`scripts/redundancy_mediation.py`)
+
+Reviewer: paper claims resilience arises "because alternative paths survive" but never
+measures redundancy. Independent per-district structural redundancy (NO disruption sim,
+not circular): **meshedness** α=(e−v+p)/(2v−5) [Barthélemy 2011] + mean node degree.
+8 cities, merged n=3999. `output/redundancy_mediation.csv`.
+
+**Result — the redundancy mechanism is REFUTED (honest bad news):**
+- Within-city Spearman(redundancy, degradation AUC): meshedness **+0.50**, avg_degree
+  **+0.60** (recall higher AUC = LESS resilient) → **more redundancy = LESS resilient**.
+- Morphology → meshedness (wrong sign for the mechanism): circuity −0.045 (p=1e-4),
+  mean_street_length −6e-4 (p<1e-19), orient_entropy ns → circuitous/long-segment
+  districts are LESS mesh-redundant.
+- Mediation (add meshedness to headline reg): circuity attenuates 10%, msl 18%, oe 0%;
+  meshedness coef +16.4 (p<1e-44); R² 0.196→0.235. Morphology effects survive intact.
+- **Interpretation:** metric rewards COARSE, low-cycle configs (long/circuitous segments,
+  few loops) whose H0 structure reorganizes little under random thinning — NOT path
+  substitution. Possibly partly an H0-class-count/granularity scaling effect.
+- **Paper action:** added Results mechanism paragraph; DEMOTED all "because alternative
+  paths survive" causal language to interpretation (Discussion rewritten). Combines both
+  reviewer options (add analysis + soften claim — the analysis forced the softening).
+
 ### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
 
 Test whether the wrong-sign connectivity result is the disconnection mechanism: cap
