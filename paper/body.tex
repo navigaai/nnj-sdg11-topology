@@ -474,7 +474,7 @@ boundaries), computed for all eight cities, gives an almost identical within-cit
 correlation ($\rho=+0.33$, $p<10^{-101}$). So the topological signal is not an artefact of weighting locations
 equally, and it speaks, at least for graded access, to the population-coverage
 dimension of SDG~11.7 and not only to bare network reach. Two qualifications
-remain. The metric adds value rather than echoing the benchmark: controlling for
+apply. The metric adds value rather than echoing the benchmark: controlling for
 both baselines and city fixed effects, the three headline morphology descriptors
 stay significant ($p<10^{-6}$), so it carries configurational information the simple
 measures miss. And the convergent validity is with \emph{graded} access loss, not
@@ -496,7 +496,7 @@ is scoped accordingly. Reporting the disconnection channel as an explicit
 \emph{companion outcome} makes the complementarity concrete: regressing the
 connectivity-loss AUC on the same morphology and fixed effects, street form predicts
 outright disconnection too ($R^2=0.44$) but with a different and sometimes
-\emph{opposing} signature---most strikingly, more circuitous districts are graded-more-
+\emph{opposing} signature: more circuitous districts are graded-more-
 resilient yet also \emph{more} disconnection-prone (standardised $\beta=+0.15$,
 $p<10^{-28}$ on the connectivity channel). The two are not substitutes: a full account
 of access resilience must report both the graded-persistence and the connectivity-loss
@@ -548,13 +548,13 @@ surrounded by served land but the connectivity of the served regions themselves,
 and that connectivity is what disruption erodes.
 
 For design, this suggests a \emph{hypothesis} rather than a prescription, and one the
-present data qualify. The tempting reading---that \emph{path redundancy}, not raw
+present data qualify. One reading---that \emph{path redundancy}, not raw
 proximity, protects access to nature under stress---was tested directly and not
 supported: the descriptors associated with resilience (circuitous routing, longer
 segments) are in fact associated with \emph{less} mesh redundancy, not more. What the
 metric rewards is a coarser, more stable served configuration under random link loss.
 Whether that stability is a genuine planning virtue or partly an artefact of how the
-topological summary scales with configuration granularity is exactly what an
+topological summary scales with configuration granularity is what an
 independent, validated resilience outcome would have to settle. Any reframing of an
 SDG~11.7 design brief from ``put a park within $x$ metres'' toward ``ensure the walk
 to it survives the loss of individual streets'' therefore remains a direction for
@@ -608,7 +608,7 @@ temper the concern: the morphology descriptors explain only a modest share of th
 variance ($R^2\approx0.20$), so the outcome is far from a
 deterministic re-encoding of the predictors; and the accessibility field also
 depends on the green-space configuration, which is exogenous to street form. A direct
-check sharpens the picture. Because the AUC scales strongly with the raw size of the
+check is available. Because the AUC scales strongly with the raw size of the
 persistence diagram (its correlation with the district's total $H_0$ persistence is
 $+0.83$), the morphology signal is refitted while controlling for that
 same-network measure of diagram magnitude. Circuity and mean street length survive
@@ -650,7 +650,7 @@ structure under progressive network thinning. That construct has a definite scop
 captures graded access degradation, not total \emph{disconnection} (unreachable nodes
 leave the finite diagram), so the metric should be paired with a disconnection count
 for total access loss. An attempt to fold disconnection into a
-single scalar is reported, and the result is instructive. A finite cap ($\tau=60$~min) recovers the
+single scalar is reported, and the result is informative. A finite cap ($\tau=60$~min) recovers the
 connectivity sign ($-0.10\to+0.02$ on a two-city check) but erodes the
 graded-distance correlation ($+0.41\to+0.06$), and a principled extended-persistence
 diagram, which gives the disconnected components finite coordinates in a separate
@@ -729,7 +729,7 @@ cross-city-generalisable driver. Crucially, this scope is \emph{empirical}, not 
 cautionary: under the real, spatially \emph{clustered} $100$-year flood scenario the
 pooled morphology effects do not reproduce (Section~\ref{sec:results}). Distributed
 removal thins links roughly evenly, so the descriptors that govern how a district's
-served $H_0$ structure reorganises under diffuse loss are exactly what the metric
+served $H_0$ structure reorganises under diffuse loss are what the metric
 responds to; a clustered flood instead removes a spatially contiguous block of the
 network at once, a regime in which local morphology is dominated by \emph{where} the
 hazard falls rather than by routing form. The general phrasing ``street morphology
@@ -752,7 +752,7 @@ circuitous routing are associated with greater resilience, and both survive a wi
 cluster bootstrap and spatial-error and spatial-lag models---while higher orientation
 entropy is associated with less resilience but proves the least dependable, weakening
 across cities and vanishing once diagram magnitude is controlled. These associations
-hold for distributed disruption and do not carry to the real clustered-flood scenario. Two boundaries frame the contribution. The relationship
+hold for distributed disruption and do not carry to the real clustered-flood scenario. The contribution has two boundaries. The relationship
 is an \emph{association}, not a causal effect: the design is cross-sectional and
 observational. And it is an association with the \emph{proposed} topological
 indicator; whether that indicator is a fully valid measure of resilience---rather
@@ -829,11 +829,11 @@ city, each headline sign holds in seven of the eight cities (Table~\ref{tab:hete
 with Nairobi the exception for circuity and Phoenix for orientation entropy.
 The magnitudes, however, are \emph{not} constant across cities, and this is stated
 explicitly rather than assumed away. A joint test of the morphology$\times$city
-interactions decisively rejects slope homogeneity ($F=12.5$ on $21$ terms,
+interactions rejects slope homogeneity ($F=12.5$ on $21$ terms,
 $p<10^{-41}$), and the per-city slopes are widely dispersed (for circuity and mean
 street length the between-city standard deviation is of the same order as the mean
 slope; coefficient of variation $\approx1.0$). A random-slopes mixed model
-(standardised) tells the same story: the mean slope and its between-city SD are
+(standardised) agrees: the mean slope and its between-city SD are
 $-0.31\pm0.17$ for mean street length, $+0.28\pm0.21$ for orientation entropy and
 $-0.14\pm0.13$ for circuity---directionally consistent but with real magnitude
 heterogeneity. City fixed effects remove only mean-level differences, not this
