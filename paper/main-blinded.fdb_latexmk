@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1786356808.04866 "main.aux" "main.bbl" "main" 1786356808.42977 0
+["bibtex main-blinded"] 1786356808.90826 "main-blinded.aux" "main-blinded.bbl" "main-blinded" 1786356809.30755 0
   "./references.bib" 1786313203.74275 7694 ffd958a313c81f4a64159a5784d8500b ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1786356808.35004 15699 4ba72c88d23115cc0ef7628016ff6865 "pdflatex"
+  "main-blinded.aux" 1786356809.2223 15699 4ba72c88d23115cc0ef7628016ff6865 "pdflatex"
   (generated)
-  "main.bbl"
-  "main.blg"
+  "main-blinded.bbl"
+  "main-blinded.blg"
   (rewritten before read)
-["pdflatex"] 1786356808.06782 "main.tex" "main.pdf" "main" 1786356808.42992 0
+["pdflatex"] 1786356808.92567 "main-blinded.tex" "main-blinded.pdf" "main-blinded" 1786356809.3077 0
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1000.tfm" 1136768653 3584 2d666ecf6d466d8b007246bc2f94d9da ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1095.tfm" 1136768653 3584 21b378cca2e40816b0e6d74a4dc98f04 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1136768653 3584 13049b61b922a28b158a38aeff75ee9b ""
@@ -114,7 +114,6 @@
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0800.600pk" 1786306850.28553 19056 86b20f2d9bac9be8cd4ffc05d1285966 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk" 1783145983.4527 23784 fa01700a03b19d3e837d09ee2100d0ad ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1095.600pk" 1783145982.42171 26208 f8c6abfc68ed3c52609ef14135684854 ""
-  "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk" 1783145983.71627 28416 1b28dea59443c8564619b2bd7df0330b ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1728.600pk" 1783145983.99358 42496 de72eebfbccec0cdebd0b964c3c140a4 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1000.600pk" 1783145982.93821 31872 973bf2fb14efb14a44f7fe4c7e8c2d74 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1095.600pk" 1783145981.89884 35180 77cba42b6d4b6aa05c43a94fec783a63 ""
@@ -123,19 +122,19 @@
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/web2c/pdftex/pdflatex.fmt" 1780202383 2246599 398ca3dfc973a32830de978ee106b945 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf.cnf" 1780202336 637 edd806fb06a89761a6034e1968af9017 ""
   "abstract.tex" 1786356771.44422 1018 712dc76425b4ae61cbb58e12caae789e ""
-  "body.tex" 1786355706.83849 68663 e79c3703aac54f12db68db75bc890d11 ""
+  "body-blinded.tex" 1786356344.74083 68637 20b0b23040997a5d6779bcc6afb63a7f ""
   "figures/fig5_resilience.pdf" 1784801883.53959 18595 e16f10cea23696b4dfddd9cbda2cd615 ""
   "figures/fig6_morphology.pdf" 1786302238.82646 80982 f52ed93fb3499d70ddaf5f974043d818 ""
   "figures/fig_accessfield.pdf" 1785324640.50612 1221565 8ef570ecc138be612bfa345ad55c0d94 ""
   "figures/fig_persistence.pdf" 1785321643.50259 48859 6f2a01616848b36a34b89bfbf135e4c1 ""
   "figures/fig_robustness.pdf" 1786295126.04024 22947 4c73d8dc5a3f1173cd52a4238a3c7f57 ""
-  "main.aux" 1786356808.35004 15699 4ba72c88d23115cc0ef7628016ff6865 "pdflatex"
-  "main.bbl" 1786356808.06527 6612 14323712809402c257e0b69e6dd6d16c "bibtex main"
-  "main.out" 1786356808.35115 1065 009b5a5ee9c6438c81a87fa72fe53662 "pdflatex"
-  "main.tex" 1784801883.54352 1216 0dc3680883e7ac4977f0583e7ac87bc0 ""
+  "main-blinded.aux" 1786356809.2223 15699 4ba72c88d23115cc0ef7628016ff6865 "pdflatex"
+  "main-blinded.bbl" 1786356808.92373 6612 14323712809402c257e0b69e6dd6d16c "bibtex main-blinded"
+  "main-blinded.out" 1786356809.22345 1065 009b5a5ee9c6438c81a87fa72fe53662 "pdflatex"
+  "main-blinded.tex" 1786356344.74109 1206 6cbebd9089c81f99ed2b783911da5123 ""
   (generated)
-  "main.aux"
-  "main.log"
-  "main.out"
-  "main.pdf"
+  "main-blinded.aux"
+  "main-blinded.log"
+  "main-blinded.out"
+  "main-blinded.pdf"
   (rewritten before read)
