@@ -93,14 +93,26 @@ diagonal allowed). For a \emph{fixed} domain, these diagram distances are stable
 perturbations of the field $f$: the bottleneck distance by the classical stability
 theorem \citep{cohensteiner2007stability}, and the $1$-Wasserstein distance used here
 by the $L_p$-stability result of \citet{cohensteiner2010lpstable}. A caveat must be
-stated precisely here, because it bounds what stability can justify. These theorems
-control the effect of changing the \emph{field} on a fixed simplicial complex; the
-disruption in this study, however, also removes edges, changing the underlying graph
-(the domain) and not only $f$. The classical stability theorem therefore does
-\emph{not} directly bound $\Drho$: it guarantees only that the two ingredients that
-\emph{are} pure field changes---re-snapping the accessibility field on the surviving
-subgraph---behave continuously, not that the whole map from disruption intensity to
-diagram distance is well-behaved. In particular, stability does not imply
+stated precisely here, because it bounds what stability can justify. Both theorems
+bound the diagram distance by $\lVert f-g\rVert_\infty$ \emph{for two functions on the
+same simplicial complex} $K$: they control the effect of perturbing the \emph{field}
+while the domain is held fixed. Edge removal is not of this form. Removing edges
+replaces the complex $K$ by a proper subcomplex $K'\subsetneq K$ and only then
+recomputes the walk-time field on $K'$, so the baseline and disrupted diagrams are
+sublevel-persistence of \emph{different} filtrations, $f$ on $K$ and $f'$ on $K'$, and
+there is no single ambient function whose sup-norm the stability inequality could
+apply to. Forcing a common domain---extending $f'$ to all of $K$ by assigning the
+removed structure, and any node thereby cut off from green space, the value
+$+\infty$---makes the mismatch explicit: points of the diagram escape to infinity and
+leave the finite $1$-Wasserstein matching, so the finite diagram distance is not
+bounded by any $\lVert f-f'\rVert$ term and can even \emph{decrease} as mass departs
+(the mechanism behind the weak/negative connectivity relation in
+Section~\ref{sec:results}). The classical stability theorem therefore does
+\emph{not} directly bound $\Drho$: it rigorously controls only the one part of the
+disruption that is a pure field change on a fixed domain---re-snapping the
+accessibility field where the surviving subgraph coincides with the original---while
+the genuine domain change $K\to K'$ carries no such guarantee, so the whole map from
+disruption intensity to diagram distance need not be well-behaved. In particular, stability does not imply
 monotonicity, and $\Drho$ is indeed \emph{not} always monotone: at high $\rho$ the
 İstanbul and Phoenix curves turn down as the network fragments and finite classes
 vanish (Section~\ref{sec:results}). Stability is thus a mathematical well-posedness
@@ -807,6 +819,20 @@ $r=-0.80$, which is why intersection density is unstable and not relied on). The
 pooled slopes are also not a pooling artefact: fitting the regression separately per
 city, each headline sign holds in seven of the eight cities (Table~\ref{tab:hetero}),
 with Nairobi the exception for circuity and Phoenix for orientation entropy.
+The magnitudes, however, are \emph{not} constant across cities, and this is stated
+explicitly rather than assumed away. A joint test of the morphology$\times$city
+interactions decisively rejects slope homogeneity ($F=12.5$ on $21$ terms,
+$p<10^{-41}$), and the per-city slopes are widely dispersed (for circuity and mean
+street length the between-city standard deviation is of the same order as the mean
+slope; coefficient of variation $\approx1.0$). A random-slopes mixed model
+(standardised) tells the same story: the mean slope and its between-city SD are
+$-0.31\pm0.17$ for mean street length, $+0.28\pm0.21$ for orientation entropy and
+$-0.14\pm0.13$ for circuity---directionally consistent but with real magnitude
+heterogeneity. City fixed effects remove only mean-level differences, not this
+variation in slope. The pooled coefficient is therefore interpreted throughout as the
+\emph{average within-city conditional association across these eight cities}, not as a
+homogeneous or universal effect of morphology on resilience; mean street length is the
+most stable (largest mean-to-SD ratio), circuity the least.
 
 \begin{table}[t]\centering
 \caption{Per-city regression coefficients (AUC on morphology, one city at a time).

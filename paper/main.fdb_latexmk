@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1786314810.61471 "main.aux" "main.bbl" "main" 1786314810.96017 0
+["bibtex main"] 1786342003.94296 "main.aux" "main.bbl" "main" 1786342004.29049 0
   "./references.bib" 1786313203.74275 7694 ffd958a313c81f4a64159a5784d8500b ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1786314810.88737 15699 28b8baab4cac46086fc5dcf398628f22 "pdflatex"
+  "main.aux" 1786342004.21707 15700 b36484983fd95cc6f818eeb452281f7f "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1786314810.63161 "main.tex" "main.pdf" "main" 1786314810.9603 0
+["pdflatex"] 1786342003.96144 "main.tex" "main.pdf" "main" 1786342004.29065 0
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1000.tfm" 1136768653 3584 2d666ecf6d466d8b007246bc2f94d9da ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1095.tfm" 1136768653 3584 21b378cca2e40816b0e6d74a4dc98f04 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1136768653 3584 13049b61b922a28b158a38aeff75ee9b ""
@@ -124,15 +124,15 @@
   "/Users/seydaemekci/Library/TinyTeX/texmf-var/web2c/pdftex/pdflatex.fmt" 1780202383 2246599 398ca3dfc973a32830de978ee106b945 ""
   "/Users/seydaemekci/Library/TinyTeX/texmf.cnf" 1780202336 637 edd806fb06a89761a6034e1968af9017 ""
   "abstract.tex" 1786314772.06689 2982 f3d60e24f80118d02830b7cf12930d92 ""
-  "body.tex" 1786314760.15897 65961 adce89b59983f0b9919ee7711df8efde ""
+  "body.tex" 1786341994.96998 68075 5fff7bd82df100ade842282a9555c669 ""
   "figures/fig5_resilience.pdf" 1784801883.53959 18595 e16f10cea23696b4dfddd9cbda2cd615 ""
   "figures/fig6_morphology.pdf" 1786302238.82646 80982 f52ed93fb3499d70ddaf5f974043d818 ""
   "figures/fig_accessfield.pdf" 1785324640.50612 1221565 8ef570ecc138be612bfa345ad55c0d94 ""
   "figures/fig_persistence.pdf" 1785321643.50259 48859 6f2a01616848b36a34b89bfbf135e4c1 ""
   "figures/fig_robustness.pdf" 1786295126.04024 22947 4c73d8dc5a3f1173cd52a4238a3c7f57 ""
-  "main.aux" 1786314810.88737 15699 28b8baab4cac46086fc5dcf398628f22 "pdflatex"
-  "main.bbl" 1786314810.62962 6612 14323712809402c257e0b69e6dd6d16c "bibtex main"
-  "main.out" 1786314810.8885 1065 009b5a5ee9c6438c81a87fa72fe53662 "pdflatex"
+  "main.aux" 1786342004.21707 15700 b36484983fd95cc6f818eeb452281f7f "pdflatex"
+  "main.bbl" 1786342003.95959 6612 14323712809402c257e0b69e6dd6d16c "bibtex main"
+  "main.out" 1786342004.21831 1065 009b5a5ee9c6438c81a87fa72fe53662 "pdflatex"
   "main.tex" 1784801883.54352 1216 0dc3680883e7ac4977f0583e7ac87bc0 ""
   (generated)
   "main.aux"

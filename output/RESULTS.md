@@ -299,6 +299,29 @@ slopes; want out-of-sample validation.
   (FE absorb mean level, not data quality or slope heterogeneity); abstract updated with
   LOCO + clustered-flood scope.
 
+### 3j2. Slope heterogeneity / pooled-model assumption (#7, `scripts/slope_heterogeneity.py`)
+
+Reviewer: FE control mean differences, not whether the slope is the same across cities;
+pooled coef should be "average conditional association," not universal effect.
+- **Joint morphology×city interaction test: F=12.5 on 21 terms, p=5.8e-42** → slopes
+  are NOT homogeneous across cities.
+- Per-city slope dispersion (signs 7/8 each): circuity pooled −7.39, city SD 6.69,
+  CV≈1.0; mean_street_length −0.050, SD 0.059, CV≈1.0; orient_entropy +1.85, SD 1.94.
+- Random-slopes mixed model (standardized, mean±between-city SD): msl −0.31±0.17 (most
+  stable), orient_entropy +0.28±0.21, circuity −0.14±0.13 (least stable).
+- **Paper:** heterogeneity paragraph reports F-test + random-slope SDs; pooled coef
+  reinterpreted as "average within-city conditional association across these eight
+  cities." `output/slope_heterogeneity.csv`.
+
+### 3j3. Stability→domain-change justification strengthened (#1 reinforced)
+
+Math background now formalizes: stability bounds diagram distance by ‖f−g‖∞ for two
+functions on the SAME complex K; edge removal replaces K by subcomplex K'⊊K → baseline/
+disrupted diagrams are persistence of DIFFERENT filtrations. Common-domain embedding
+(extend f' by +∞ on removed structure/cut-off nodes) → points escape to infinity, leave
+the finite Wasserstein matching → distance not bounded by any ‖f−f'‖, can DECREASE as
+mass departs. Theorem controls only the pure-field part on fixed domain.
+
 ### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
 
 Test whether the wrong-sign connectivity result is the disconnection mechanism: cap
