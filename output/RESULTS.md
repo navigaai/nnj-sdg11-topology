@@ -322,6 +322,20 @@ disrupted diagrams are persistence of DIFFERENT filtrations. Common-domain embed
 the finite Wasserstein matching → distance not bounded by any ‖f−f'‖, can DECREASE as
 mass departs. Theorem controls only the pure-field part on fixed domain.
 
+### 3m. Terminology consistency (#8)
+
+Reviewer: the construct the metric measures must use ONE consistent term everywhere.
+- Canonical term **"connected-access resilience"** DEFINED at first use (contribution
+  list): resilience of the connected green-space access structure = how stably locations
+  stay in well-served H0 components under thinning, distinct from total accessibility
+  loss or global urban resilience. Now 5 uses.
+- Aligned claim-bearing instances (contributions, companion-outcome, central-limitation,
+  scope, Discussion opening) to the canonical term.
+- All 4 remaining "urban resilience" mentions are explicit CONTRASTS ("not global urban
+  resilience" / the corrected overreaching phrase) — verified, not overclaims.
+- Abstract already used "resilience of the connected green-space access structure"
+  consistently.
+
 ### 3f. Extended-persistence (finite-cap) diagnostic (`scripts/extended_persistence.py`)
 
 Test whether the wrong-sign connectivity result is the disconnection mechanism: cap

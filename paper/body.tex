@@ -35,13 +35,18 @@ many people retain access.
     defined as the Wasserstein distance between the persistent-homology diagram of
     the green-space accessibility field before and after disruption of intensity
     $\rho$, and is summarised by an area-under-curve (AUC) and a critical
-    transition $\rhostar$ (Section~\ref{sec:method}).
+    transition $\rhostar$ (Section~\ref{sec:method}). Throughout, $\Drho$ is taken to
+    measure one specific construct---the resilience of the \emph{connected} green-space
+    access structure, hereafter \emph{connected-access resilience}: how stably locations
+    stay organised into well-served $H_0$ components as the network is thinned, as
+    distinct from total accessibility loss or global urban resilience. This term is used
+    consistently for what the metric captures.
   \item \textbf{First topological treatment of SDG~11.7 green-space access} in an
     architecture--mathematics framing.
   \item \textbf{A district-level morphology$\leftrightarrow$resilience result}
     across $3{,}999$ districts in eight cities, with city fixed effects, showing a
-    consistent association between street-network morphology and access resilience
-    whose sign is stable across disruption models and district resolutions
+    consistent association between street-network morphology and connected-access
+    resilience whose sign is stable across disruption models and district resolutions
     (Section~\ref{sec:results}).
 \end{itemize}
 
@@ -495,8 +500,8 @@ outright disconnection too ($R^2=0.44$) but with a different and sometimes
 resilient yet also \emph{more} disconnection-prone (standardised $\beta=+0.15$,
 $p<10^{-28}$ on the connectivity channel). The two are not substitutes: a full account
 of access resilience must report both the graded-persistence and the connectivity-loss
-channels, as done here, and the metric's ``resilience'' should be read as the former,
-not as global accessibility resilience.
+channels, as done here, and the metric's ``resilience'' is exactly the former,
+\emph{connected-access resilience}, not global accessibility or urban resilience.
 
 \paragraph{Mechanism: is the association mediated by path redundancy?} The natural
 reading of the circuity and segment-length effects is that they proxy
@@ -525,7 +530,8 @@ larger Wasserstein mass. Either way, the simple alternative-path account is refu
 and the mechanistic language below is kept at the level of interpretation.
 
 \section{Discussion}
-The results give an interpretable, architecture-facing reading of resilience.
+The results give an interpretable, architecture-facing reading of connected-access
+resilience.
 The robust effects are circuity and segment length: districts with more circuitous
 routing and longer segments retain more of their well-served structure when edges
 are removed. The intuitive explanation---that alternative paths to green space survive
@@ -616,7 +622,7 @@ another's morphology, or from an independent disruption dataset, would be
 needed to break the shared-origin coupling entirely.
 
 \emph{What the metric measures, and how far it is validated.} $\Drho$ is a
-\emph{proposed proxy} for access resilience, and this is the study's central
+\emph{proposed proxy} for connected-access resilience, and this is the study's central
 limitation. What is established rigorously is an \emph{association} between morphology
 and this particular Wasserstein/AUC topological indicator; that circuity and mean
 street length ``explain resilience'' in a broader sense follows only to the extent
@@ -727,8 +733,10 @@ served $H_0$ structure reorganises under diffuse loss are exactly what the metri
 responds to; a clustered flood instead removes a spatially contiguous block of the
 network at once, a regime in which local morphology is dominated by \emph{where} the
 hazard falls rather than by routing form. The general phrasing ``street morphology
-predicts urban resilience'' therefore overreaches; the defensible statement is that
-street morphology is associated with topological access resilience \emph{under the
+predicts urban resilience'' therefore overreaches on two counts---``urban resilience''
+(the metric measures connected-access resilience, not global urban resilience) and
+``predicts'' (the relationship is associational); the defensible statement is that
+street morphology is associated with connected-access resilience \emph{under the
 tested synthetic, distributed disruption scenarios}, and its transfer to real
 clustered hazards is not established.
 
